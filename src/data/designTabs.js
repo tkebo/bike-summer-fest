@@ -1,0 +1,63 @@
+export const designTabs = {
+    header: [
+      ["headerWidth", "Width", 0, 1900], ["headerHeight", "Height", 0, 500], ["headerMaxWidth", "Max Width", 0, 1900],
+      ["headerPaddingX", "Padding X", 0, 100], ["headerPaddingY", "Padding Y", 0, 100], ["headerTop", "Top Pos", -50, 100],
+      ["headerBorderRadius", "Radius", 0, 100], ["headerBgOpacity", "Bg Opacity", 0, 100], ["headerBlur", "Blur", 0, 100],
+      ["headerBorderOpacity", "Border Opac", 0, 100], ["headerGlow", "Glow", 0, 100],
+    ],
+    logo: [
+      ["logoFontSize", "Font Size", 20, 200], ["logoLetterSpacing", "Letter Space", 0, 1, 0.01], ["logoLineHeight", "Line Height", 0.5, 3, 0.05],
+      ["logoPosX", "Position X", -200, 200], ["logoPosY", "Position Y", -200, 200],
+      ["logoSummerColor", "Summer Color", 0, 0, 0, "color"], ["logoSummerGlow", "Summer Glow", 0, 100],
+    ],
+    nav: [
+      ["navWidth", "Width", 0, 300], ["navHeight", "Height", 0, 100], ["navPaddingX", "Padding X", 0, 50], ["navPaddingY", "Padding Y", 0, 50],
+      ["navGap", "Gap", 0, 100], ["navBorderRadius", "Radius", 0, 50], ["navFontSize", "Font Size", 10, 40], ["navLetterSpacing", "Letter Space", 0, 0.5, 0.01],
+      ["navBgOpacity", "Bg Opacity", 0, 100], ["navHoverColor", "Hover Color", 0, 0, 0, "color"], ["navActiveColor", "Active Color", 0, 0, 0, "color"],
+    ],
+    language: [
+      ["langWidth", "Button Width", 0, 140], ["langHeight", "Button Height", 0, 100],
+      ["langPaddingX", "Padding X", 0, 60], ["langPaddingY", "Padding Y", 0, 50], ["langGap", "Gap", 0, 50],
+      ["langFontSize", "Font Size", 8, 60], ["langLetterSpacing", "Letter Space", 0, 0.6, 0.01], ["langLineHeight", "Line Height", 0.5, 3, 0.05],
+      ["langBorderRadius", "Radius", 0, 60], ["langBgOpacity", "Bg Opacity", 0, 100], ["langActiveBgOpacity", "Active Bg", 0, 100],
+      ["langBorderOpacity", "Border Opacity", 0, 100], ["langPosX", "Position X", -300, 300], ["langPosY", "Position Y", -300, 300],
+      ["langScale", "Scale", 0.2, 3, 0.05], ["langActiveColor", "Active Color", 0, 0, 0, "color"], ["langInactiveColor", "Inactive Color", 0, 0, 0, "color"],
+    ],
+    ticket: [
+      ["ticketBtnWidth", "Width", 0, 300], ["ticketBtnHeight", "Height", 0, 100], ["ticketBtnPaddingX", "Padding X", 0, 100], ["ticketBtnPaddingY", "Padding Y", 0, 100],
+      ["ticketBtnFontSize", "Font Size", 10, 40], ["ticketBtnBorderRadius", "Radius", 0, 100], ["ticketBtnBgColor", "Bg Color", 0, 0, 0, "color"],
+      ["ticketBtnGlow", "Glow", 0, 100], ["ticketBtnPosX", "Position X", -100, 100], ["ticketBtnPosY", "Position Y", -100, 100],
+    ],
+    countdown: [
+      ["countdownWidth", "Width", 0, 1400], ["countdownHeight", "Height", 0, 500], ["countdownPadding", "Outer Padding", 0, 140], ["countdownBottom", "Bottom Pos", -300, 300],
+      ["countdownTop", "Top Override", -1, 900], ["countdownLeftPercent", "Left Anchor %", 0, 100], ["countdownTranslateX", "Anchor Shift %", -100, 100],
+      ["countdownPosX", "Fine X", -800, 800], ["countdownPosY", "Fine Y", -800, 800], ["countdownZIndex", "Layer", 0, 200],
+      ["countdownBorderRadius", "Radius", 0, 100], ["countdownBgOpacity", "Bg Opacity", 0, 100], ["countdownGlow", "Glow", 0, 100],
+      ["countdownGap", "Gap", 0, 160], ["countdownScale", "Scale", 0.1, 3, 0.05],
+      ["countdownItemWidth", "Item Width", 0, 220], ["countdownItemPaddingX", "Item Padding X", 0, 80], ["countdownItemPaddingY", "Item Padding Y", 0, 80],
+      ["countdownNumberSize", "Number Max Size", 20, 180], ["countdownNumberMinSize", "Number Min Size", 10, 80], ["countdownNumberLineHeight", "Number Line", 0.5, 2, 0.01],
+      ["countdownLabelSize", "Label Size", 8, 70], ["countdownLabelMarginTop", "Label Top Gap", 0, 50], ["countdownLabelLetterSpacing", "Label Spacing", 0, 0.5, 0.01],
+    ],
+    hero: [
+      ["heroTop", "Top Padding", 0, 600], ["heroTitleSize", "Title Size", 40, 200], ["heroTitleLineHeight", "Line Height", 0.5, 2, 0.01],
+      ["heroTitleLetterSpacing", "Letter Space", -0.1, 0.5, 0.01], ["heroTitlePosX", "Pos X", -200, 200], ["heroTitlePosY", "Pos Y", -200, 200],
+      ["heroSubtitleSize", "Subtitle Size", 10, 60], ["heroCtaBtnGap", "CTA Gap", 0, 100], ["heroOverlayOpacity", "Overlay Opacity", 0, 100],
+      ["heroContentPosX", "Content X", -800, 800], ["heroContentPosY", "Content Y", -800, 800], ["heroContentWidth", "Content Width", 240, 1400], ["heroContentHeight", "Content Height", 0, 900],
+      ["heroCtaPosX", "CTA X", -500, 500], ["heroCtaPosY", "CTA Y", -500, 500], ["heroCtaWidth", "CTA Width", 0, 1000], ["heroCtaHeight", "CTA Height", 0, 300],
+    ],
+    theme: [
+      ["accentCyanColor", "Accent Cyan", 0, 0, 0, "color"], ["accentOrangeColor", "Accent Orange", 0, 0, 0, "color"],
+      ["langActiveColor", "Lang Active", 0, 0, 0, "color"], ["langInactiveColor", "Lang Inactive", 0, 0, 0, "color"],
+      ["pageBgColor", "Page Bg", 0, 0, 0, "color"], ["overlayBgColor", "Overlay Bg", 0, 0, 0, "color"],
+      ["buttonTextColor", "Button Text", 0, 0, 0, "color"], ["glowCyanColor", "Cyan Glow", 0, 0, 0, "color"], ["glowOrangeColor", "Orange Glow", 0, 0, 0, "color"],
+      ["globalFontScale", "Font Scale", 0.7, 1.4, 0.01],
+    ],
+    globalBox: [
+      ["boxWidth", "Width", 0, 1000], ["boxHeight", "Height", 0, 1000], ["boxPadding", "Padding", 0, 100], ["boxMargin", "Margin", -50, 100],
+      ["boxBorderRadius", "Radius", 0, 100], ["boxBgOpacity", "Bg Opacity", 0, 100], ["boxBlur", "Blur", 0, 100], ["boxGlow", "Glow", 0, 100],
+      ["boxFontSize", "Font Size", 10, 40],
+    ],
+    sections: [
+      ["sectionMaxWidth", "Max Width", 0, 2000], ["sectionPaddingX", "Padding X", 0, 200], ["sectionPaddingY", "Padding Y", 0, 300],
+    ]
+  };

@@ -1,0 +1,44 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function hasAdminDoc() {
+      return signedIn()
+        && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function currentAdmin() {
+      return get(/databases/$(database)/documents/admins/$(request.auth.uid)).data;
+    }
+
+    function isActiveAdmin() {
+      return hasAdminDoc()
+        && currentAdmin().active == true
+        && currentAdmin().role in ['owner', 'admin', 'editor'];
+    }
+
+    function isOwner() {
+      return hasAdminDoc()
+        && currentAdmin().active == true
+        && currentAdmin().role == 'owner';
+    }
+
+    match /site/published {
+      allow read: if true;
+      allow write: if isActiveAdmin();
+    }
+
+    match /site/draft {
+      allow read, write: if isActiveAdmin();
+    }
+
+    match /admins/{uid} {
+      // Users may read only their own role document so the client can resolve access after login.
+      allow read: if signedIn() && (request.auth.uid == uid || isOwner());
+      allow write: if isOwner();
+    }
+  }
+}

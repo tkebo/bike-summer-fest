@@ -1,0 +1,73 @@
+import { memo } from "react";
+import { useCMS } from "../hooks/useCMS";
+import AdminFrame from "./AdminFrame";
+
+const Countdown = () => {
+  const { ev, timeLeft, countdownLabels } = useCMS();
+  return (
+<>
+              {/* COUNTDOWN */}
+              <AdminFrame
+                frameKey="countdown"
+                label="Countdown"
+                className="absolute backdrop-blur-2xl flex items-center justify-center"
+                style={{ 
+                  left: `${ev("countdownLeftPercent")}%`,
+                  top: ev("countdownTop") >= 0 ? `${ev("countdownTop")}px` : "auto",
+                  bottom: ev("countdownTop") >= 0 ? "auto" : `${ev("countdownBottom")}px`,
+                  zIndex: ev("countdownZIndex"),
+                  transform: `translate(${ev("countdownTranslateX")}%, 0) scale(${ev("countdownScale")})`,
+                  width: ev("countdownWidth") === 0 ? "auto" : `${ev("countdownWidth")}px`, 
+                  height: ev("countdownHeight") === 0 ? "auto" : `${ev("countdownHeight")}px`,
+                  padding: `${ev("countdownPadding")}px`,
+                  borderRadius: `${ev("countdownBorderRadius")}px`,
+                  backgroundColor: `rgba(0,0,0,${ev("countdownBgOpacity") / 100})`,
+                  boxShadow: `0 0 85px rgba(0,217,255,${ev("countdownGlow") / 100})`,
+                  border: "1px solid rgba(0,217,255,0.38)",
+                  borderTop: "none",
+                  transformOrigin: "center"
+                }}
+              >
+                <div className="flex justify-center" style={{ gap: `${ev("countdownGap")}px` }}>
+                  {[
+                    { value: timeLeft.days, label: countdownLabels.days },
+                    { value: timeLeft.hours, label: countdownLabels.hours },
+                    { value: timeLeft.minutes, label: countdownLabels.minutes },
+                    { value: timeLeft.seconds, label: countdownLabels.seconds }
+                  ].map((item) => (
+                    <div 
+                      key={item.label} 
+                      className="text-center"
+                      style={{
+                        width: ev("countdownItemWidth") === 0 ? "auto" : `${ev("countdownItemWidth")}px`,
+                        padding: `${ev("countdownItemPaddingY")}px ${ev("countdownItemPaddingX")}px`,
+                      }}
+                    >
+                      <div 
+                        className="font-black text-cyan-300 drop-shadow-[0_0_28px_rgba(0,217,255,.95)]" 
+                        style={{ 
+                          fontSize: `clamp(${ev("countdownNumberMinSize")}px, 4vw, ${ev("countdownNumberSize")}px)`,
+                          lineHeight: ev("countdownNumberLineHeight"),
+                        }}
+                      >
+                        {item.value}
+                      </div>
+                      <div 
+                        className="font-black countdown-label" 
+                        style={{ 
+                          fontSize: `${ev("countdownLabelSize")}px`,
+                          marginTop: `${ev("countdownLabelMarginTop")}px`,
+                          letterSpacing: `${ev("countdownLabelLetterSpacing")}em`,
+                        }}
+                      >
+                        {item.label}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </AdminFrame>
+</>
+  );
+};
+
+export default memo(Countdown);
