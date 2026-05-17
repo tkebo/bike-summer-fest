@@ -16,7 +16,7 @@ const ProtectedAdminRoute = ({ children }) => {
     );
   }
 
-  if (!hasPermission(session.role, "admin:write")) {
+  if (!hasPermission(session.role, "content:read")) {
     return (
       <div className="flex min-h-screen items-center justify-center bg-[#050814] p-4 text-white">
         <div className="w-full max-w-sm rounded-2xl border border-orange-400/30 bg-black/80 p-5">

@@ -10,7 +10,7 @@ import { setNestedValue, mergeWithDefaults } from "../utils/cmsHelpers";
 import { createEditorValueResolver } from "../utils/themeHelpers";
 import { downloadJson, readJsonFile } from "../utils/exportImport";
 import { sanitizeText, sanitizeDeep } from "../security/sanitize";
-import { canPublish, isAdminUser, isFirestoreAdmin, requireAdminAction } from "../security/authPolicy";
+import { canManageUsers, canPublish, isAdminUser, isFirestoreAdmin, requireAdminAction } from "../security/authPolicy";
 import { ROLES } from "../security/securityConfig";
 import { createVersionedBackup, validateImportedContent, validateImportedEditor } from "../security/schemaValidation";
 
@@ -58,12 +58,19 @@ export const CMSProvider = ({ children }) => {
     draftMeta,
     publishedMeta,
     versions,
+    adminUsers,
+    pendingInvites,
     loginWithGoogle,
     logout,
     loadCloudConfig,
     saveDraft,
     publish,
     refreshVersions,
+    refreshAdminUsers,
+    inviteAdminUser,
+    updateAdminUser,
+    removeAdminUser,
+    removePendingInvite,
   } = useFirebaseCMS();
   const firestoreAdmin = isFirestoreAdmin(user, adminProfile);
   const isAdmin = firestoreAdmin || (import.meta.env.DEV && isAdminUser(user));
@@ -413,6 +420,8 @@ export const CMSProvider = ({ children }) => {
     draftMeta,
     publishedMeta,
     versions,
+    adminUsers,
+    pendingInvites,
     cloudHydrated,
     ...mediaLibrary,
     isConfiguredImageActive,
@@ -444,9 +453,15 @@ export const CMSProvider = ({ children }) => {
     logout: logoutAdmin,
     publishSite,
     canPublish: canPublish(session.role),
+    canManageUsers: canManageUsers(session.role),
     restoreVersionToDraft,
     restoreVersionAndPublish,
     refreshVersions,
+    refreshAdminUsers,
+    inviteAdminUser,
+    updateAdminUser,
+    removeAdminUser,
+    removePendingInvite,
     exportFullBackup,
     exportContentData,
     importFullBackup,
@@ -462,8 +477,9 @@ export const CMSProvider = ({ children }) => {
     setPreviewMode, reorderSections, duplicateSection, saveEditor, exportEditorData, importEditorData,
     resetEditor, renderDesignSliders, closeMenu, handleChange, handleSubmit,
     session, user, isAdmin, firestoreAdmin, authReady, adminProfile, adminReady, cloudStatus, cloudSaveStatus, publishStatus,
-    draftMeta, publishedMeta, versions, cloudHydrated, loginWithGoogle, logoutAdmin, publishSite, restoreVersionToDraft,
+    draftMeta, publishedMeta, versions, adminUsers, pendingInvites, cloudHydrated, loginWithGoogle, logoutAdmin, publishSite, restoreVersionToDraft,
     restoreVersionAndPublish, refreshVersions, exportFullBackup, exportContentData, importFullBackup, mediaLibrary, isConfiguredImageActive,
+    refreshAdminUsers, inviteAdminUser, updateAdminUser, removeAdminUser, removePendingInvite,
   ]);
 
   return <CMSContext.Provider value={value}>{children}</CMSContext.Provider>;

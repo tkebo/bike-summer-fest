@@ -5,10 +5,12 @@ import {
   doc,
   getDoc,
   getDocs,
+  deleteDoc,
   orderBy,
   query,
   serverTimestamp,
   setDoc,
+  updateDoc,
 } from "firebase/firestore";
 import {
   onAuthStateChanged,
@@ -22,6 +24,9 @@ const DRAFT_REF = () => doc(db, "site", "draft");
 const PUBLISHED_REF = () => doc(db, "site", "published");
 const ADMIN_REF = (uid) => doc(db, "admins", uid);
 const VERSIONS_REF = () => collection(db, "site_versions");
+const ADMINS_COLLECTION = () => collection(db, "admins");
+const INVITES_COLLECTION = () => collection(db, "pending_invites");
+const INVITE_REF = (email) => doc(db, "pending_invites", email.toLowerCase());
 
 export async function loadPublishedConfig() {
   const snap = await getDoc(PUBLISHED_REF());
@@ -40,12 +45,46 @@ export async function loadAdminProfile(uid) {
 
 export async function createBootstrapOwnerProfile(user) {
   const profile = {
+    displayName: user.displayName || "",
     email: user.email.toLowerCase(),
     role: "owner",
     active: true,
+    provider: user.providerData?.[0]?.providerId || "google.com",
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
   };
   await setDoc(ADMIN_REF(user.uid), profile);
   return profile;
+}
+
+export async function loadPendingInvite(email) {
+  const snap = await getDoc(INVITE_REF(email));
+  return snap.exists() ? snap.data() : null;
+}
+
+export async function acceptPendingInvite(user, invite) {
+  const profile = {
+    displayName: user.displayName || "",
+    email: user.email.toLowerCase(),
+    role: invite.role,
+    active: true,
+    provider: user.providerData?.[0]?.providerId || "google.com",
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp(),
+  };
+  await setDoc(ADMIN_REF(user.uid), profile);
+  await deleteDoc(INVITE_REF(user.email));
+  return profile;
+}
+
+export async function loadAdminUsers() {
+  const snapshot = await getDocs(ADMINS_COLLECTION());
+  return snapshot.docs.map((item) => ({ uid: item.id, ...item.data() }));
+}
+
+export async function loadPendingInvites() {
+  const snapshot = await getDocs(INVITES_COLLECTION());
+  return snapshot.docs.map((item) => ({ email: item.id, ...item.data() }));
 }
 
 export async function saveDraftConfig(data, user) {
@@ -98,6 +137,8 @@ export const useFirebaseCMS = () => {
   const [draftMeta, setDraftMeta] = useState(null);
   const [publishedMeta, setPublishedMeta] = useState(null);
   const [versions, setVersions] = useState([]);
+  const [adminUsers, setAdminUsers] = useState([]);
+  const [pendingInvites, setPendingInvites] = useState([]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (nextUser) => {
@@ -119,7 +160,8 @@ export const useFirebaseCMS = () => {
           setAdminProfile(await createBootstrapOwnerProfile(nextUser));
           setVersions(await loadVersions());
         } else {
-          setAdminProfile(null);
+          const invite = await loadPendingInvite(nextUser.email.toLowerCase());
+          setAdminProfile(invite ? await acceptPendingInvite(nextUser, invite) : null);
         }
       } catch (error) {
         console.error(error);
@@ -200,6 +242,40 @@ export const useFirebaseCMS = () => {
     }
   }, []);
 
+  const refreshAdminUsers = useCallback(async () => {
+    setAdminUsers(await loadAdminUsers());
+    setPendingInvites(await loadPendingInvites());
+  }, []);
+
+  const inviteAdminUser = useCallback(async (email, role) => {
+    await setDoc(INVITE_REF(email), {
+      email: email.toLowerCase(),
+      role,
+      active: true,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+    await refreshAdminUsers();
+  }, [refreshAdminUsers]);
+
+  const updateAdminUser = useCallback(async (uid, patch) => {
+    await updateDoc(ADMIN_REF(uid), {
+      ...patch,
+      updatedAt: serverTimestamp(),
+    });
+    await refreshAdminUsers();
+  }, [refreshAdminUsers]);
+
+  const removeAdminUser = useCallback(async (uid) => {
+    await deleteDoc(ADMIN_REF(uid));
+    await refreshAdminUsers();
+  }, [refreshAdminUsers]);
+
+  const removePendingInvite = useCallback(async (email) => {
+    await deleteDoc(INVITE_REF(email));
+    await refreshAdminUsers();
+  }, [refreshAdminUsers]);
+
   return {
     user,
     authReady,
@@ -211,11 +287,18 @@ export const useFirebaseCMS = () => {
     draftMeta,
     publishedMeta,
     versions,
+    adminUsers,
+    pendingInvites,
     loginWithGoogle,
     logout,
     loadCloudConfig,
     saveDraft,
     publish,
     refreshVersions,
+    refreshAdminUsers,
+    inviteAdminUser,
+    updateAdminUser,
+    removeAdminUser,
+    removePendingInvite,
   };
 };

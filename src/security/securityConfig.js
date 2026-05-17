@@ -18,7 +18,18 @@ export const ROLE_PERMISSIONS = {
   [ROLES.VIEWER]: ["content:read"],
   [ROLES.EDITOR]: ["content:read", "content:write", "design:write"],
   [ROLES.ADMIN]: ["content:read", "content:write", "design:write", "admin:write", "publish:write"],
-  [ROLES.OWNER]: ["content:read", "content:write", "design:write", "admin:write", "publish:write"],
+  [ROLES.OWNER]: ["content:read", "content:write", "design:write", "admin:write", "publish:write", "users:manage", "versions:delete", "security:write"],
+};
+
+export const PERMISSION_LABELS = {
+  "content:read": "Read dashboard",
+  "content:write": "Edit draft",
+  "design:write": "Edit design",
+  "admin:write": "Admin modules",
+  "publish:write": "Publish",
+  "users:manage": "Manage users",
+  "versions:delete": "Delete versions",
+  "security:write": "Security settings",
 };
 
 export const SECURITY_LIMITS = {

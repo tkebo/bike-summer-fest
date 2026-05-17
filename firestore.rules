@@ -42,6 +42,14 @@ service cloud.firestore {
         && request.resource.data.active == true;
     }
 
+    function pendingInvite(email) {
+      return get(/databases/$(database)/documents/pending_invites/$(email)).data;
+    }
+
+    function hasPendingInvite(email) {
+      return exists(/databases/$(database)/documents/pending_invites/$(email));
+    }
+
     match /site/published {
       allow read: if true;
       allow write: if canPublish();
@@ -54,8 +62,23 @@ service cloud.firestore {
     match /admins/{uid} {
       // Users may read only their own role document so the client can resolve access after login.
       allow read: if signedIn() && (request.auth.uid == uid || isOwner());
-      allow create: if isBootstrapOwner(uid) || isOwner();
+      allow create: if isBootstrapOwner(uid)
+        || isOwner()
+        || (
+          signedIn()
+          && request.auth.uid == uid
+          && hasPendingInvite(request.auth.token.email)
+          && request.resource.data.email == request.auth.token.email
+          && request.resource.data.role == pendingInvite(request.auth.token.email).role
+          && request.resource.data.active == true
+        );
       allow update, delete: if isOwner();
+    }
+
+    match /pending_invites/{email} {
+      allow read: if isOwner() || (signedIn() && request.auth.token.email == email);
+      allow create, update: if isOwner();
+      allow delete: if isOwner() || (signedIn() && request.auth.token.email == email);
     }
 
     match /media/{assetId} {

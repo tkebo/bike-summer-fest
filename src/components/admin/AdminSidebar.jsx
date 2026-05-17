@@ -15,10 +15,10 @@ const adminModules = [
   ["publish", "Publish"],
 ];
 
-const AdminSidebar = ({ activeModule, onSelect }) => (
+const AdminSidebar = ({ activeModule, onSelect, canManageUsers }) => (
   <aside className="border-b border-white/10 bg-black/25 p-4 lg:min-h-[calc(100vh-73px)] lg:border-b-0 lg:border-r">
     <nav className="flex gap-2 overflow-x-auto lg:grid lg:overflow-visible">
-      {adminModules.map(([key, label]) => (
+      {adminModules.filter(([key]) => key !== "users" || canManageUsers).map(([key, label]) => (
         <button
           key={key}
           onClick={() => onSelect(key)}
