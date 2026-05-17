@@ -1,31 +1,13 @@
+import { lazy, Suspense } from "react";
 import { CMSProvider } from "./context/CMSContext";
 import AdminOverlay from "./components/AdminOverlay";
 import IntroPortal from "./components/IntroPortal";
-import Hero from "./components/Hero";
-import About from "./components/About";
-import Zones from "./components/Zones";
-import Schedule from "./components/Schedule";
-import Tickets from "./components/Tickets";
-import Sponsors from "./components/Sponsors";
-import FAQ from "./components/FAQ";
-import Gallery from "./components/Gallery";
-import Newsletter from "./components/Newsletter";
-import Footer from "./components/Footer";
-import VisualEditor from "./components/VisualEditor";
+import SEOHead from "./components/SEOHead";
 import { useCMS } from "./hooks/useCMS";
+import { allowedSectionIds, sectionRegistry } from "./data/sectionRegistry";
 
-const sectionComponents = {
-  hero: Hero,
-  about: About,
-  zones: Zones,
-  schedule: Schedule,
-  tickets: Tickets,
-  sponsors: Sponsors,
-  faq: FAQ,
-  gallery: Gallery,
-  newsletter: Newsletter,
-  footer: Footer,
-};
+const ProtectedAdminRoute = lazy(() => import("./components/ProtectedAdminRoute"));
+const AdminLayout = lazy(() => import("./components/admin/AdminLayout"));
 
 const previewWidths = {
   desktop: "100%",
@@ -34,26 +16,40 @@ const previewWidths = {
 };
 
 function Platform() {
-  const { editor } = useCMS();
-  const order = editor.sectionOrder || Object.keys(sectionComponents);
-  const visibility = editor.sectionVisibility || {};
+  const { editor, cmsData, isAdmin } = useCMS();
+  const isAdminRoute = window.location.pathname.startsWith("/admin");
+  const fallbackSections = (editor.sectionOrder || []).map((id, index) => ({ id, visible: editor.sectionVisibility?.[id] !== false, order: index + 1 }));
+  const sections = Array.isArray(cmsData.config.sections) && cmsData.config.sections.length
+    ? cmsData.config.sections.filter((section) => allowedSectionIds.includes(section.id)).sort((left, right) => left.order - right.order)
+    : fallbackSections;
   const previewMode = editor.previewMode || "desktop";
+
+  if (isAdminRoute) {
+    return (
+      <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-[#050814] text-sm font-black text-white/70">Loading admin shell...</div>}>
+        <ProtectedAdminRoute>
+          <AdminLayout />
+        </ProtectedAdminRoute>
+      </Suspense>
+    );
+  }
 
   return (
     <main className="min-h-screen bg-[#050814] text-white overflow-hidden">
+      <SEOHead />
+      {isAdmin && <div className="fixed left-1/2 top-4 z-[999] -translate-x-1/2 rounded-full border border-orange-400/30 bg-black/80 px-4 py-2 text-xs font-black text-orange-300 backdrop-blur-xl">Draft Preview — Not Published</div>}
       <AdminOverlay />
       <IntroPortal />
       <div
         className="mx-auto min-h-screen transition-all duration-300"
         style={{ maxWidth: previewWidths[previewMode], width: "100%" }}
       >
-        {order.map((key) => {
-          const Section = sectionComponents[key];
-          if (!Section || visibility[key] === false) return null;
-          return <Section key={key} />;
+        {sections.map((section, index) => {
+          const Section = sectionRegistry[section.id]?.component;
+          if (!Section || section.visible === false) return null;
+          return <Section key={`${section.id}-${index}`} />;
         })}
       </div>
-      <VisualEditor />
     </main>
   );
 }

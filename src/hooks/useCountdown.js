@@ -5,11 +5,17 @@ const emptyTimeLeft = { days: "00", hours: "00", minutes: "00", seconds: "00" };
 export const useCountdown = (festivalDateValue) => {
   const festivalDate = new Date(festivalDateValue).getTime();
   const [timeLeft, setTimeLeft] = useState(emptyTimeLeft);
+  const [isFinished, setIsFinished] = useState(false);
   useEffect(() => {
     const tick = () => {
       const now = new Date().getTime();
       const distance = festivalDate - now;
-      if (distance < 0 || Number.isNaN(distance)) { setTimeLeft(emptyTimeLeft); return; }
+      if (distance < 0 || Number.isNaN(distance)) {
+        setTimeLeft(emptyTimeLeft);
+        setIsFinished(true);
+        return;
+      }
+      setIsFinished(false);
       setTimeLeft({
         days: String(Math.floor(distance / (1000 * 60 * 60 * 24))).padStart(2, "0"),
         hours: String(Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))).padStart(2, "0"),
@@ -19,5 +25,5 @@ export const useCountdown = (festivalDateValue) => {
     };
     tick(); const interval = setInterval(tick, 1000); return () => clearInterval(interval);
   }, [festivalDate]);
-  return timeLeft;
+  return { timeLeft, isFinished };
 };

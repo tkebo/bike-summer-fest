@@ -3,7 +3,7 @@ import { useCMS } from "../hooks/useCMS";
 import Editable from "./Editable";
 
 const Footer = () => {
-  const { t, lang, formData, handleChange, handleSubmit, requestTypes } = useCMS();
+  const { t, lang, formData, handleChange, handleSubmit, requestTypes, eventSettings } = useCMS();
   return (
 <>
         {/* FOOTER */}
@@ -14,9 +14,9 @@ const Footer = () => {
               <Editable path="footerTitle" langContext={lang} as="h2" className="text-5xl md:text-7xl font-black uppercase leading-none" />
               <Editable path="footerText" langContext={lang} multiline as="p" className="text-white/60 max-w-2xl mt-6 leading-relaxed inline-block" />
               <div className="mt-8 border border-white/10 global-box">
-                <p className="text-white/70">info@bikesummerfest.ge</p>
-                <p className="text-white/70 mt-2">+995 555 123 456</p>
-                <p className="text-white/45 mt-4">Anaklia / Ganmukhuri, Georgia</p>
+                <p className="text-white/70">{eventSettings.contact.email}</p>
+                <p className="text-white/70 mt-2">{eventSettings.contact.phone}</p>
+                <p className="text-white/45 mt-4">{eventSettings.location[lang] || eventSettings.location.en}</p>
               </div>
             </div>
 

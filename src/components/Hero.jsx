@@ -4,19 +4,47 @@ import Header from "./Header";
 import { useCMS } from "../hooks/useCMS";
 import Editable from "./Editable";
 import AdminFrame from "./AdminFrame";
+import { getOptimizedImageUrl } from "../lib/cloudinary";
 
 const Hero = () => {
-  const { cmsData, lang, ev } = useCMS();
+  const { cmsData, lang, ev, isConfiguredImageActive } = useCMS();
+  const configuredHeroImage = isConfiguredImageActive(cmsData.config.heroImage) ? cmsData.config.heroImage : cmsData.config.images.hero;
+  const heroImage = getOptimizedImageUrl(configuredHeroImage, 1920);
+  const heroBackgrounds = cmsData.config.backgrounds?.hero || {};
+  const generatedHeroDate = lang === "ka"
+    ? cmsData.config.eventSettings?.dates?.displayKa
+    : cmsData.config.eventSettings?.dates?.displayEn;
+  const heroDate = cmsData[lang]?.heroDate?.trim() || generatedHeroDate;
   return (
 <>
         {/* HERO SECTION */}
         <section className="relative min-h-screen overflow-hidden">
           <div
-            className="absolute inset-0 bg-cover bg-center transition-all duration-1000"
+            className="hero-responsive-background absolute inset-0 bg-cover bg-center transition-all duration-1000"
             style={{
-              backgroundImage: `linear-gradient(90deg, rgba(5,8,20,.95), rgba(5,8,20,.52), rgba(5,8,20,.78)), url('${cmsData.config.images.hero}')`,
+              backgroundImage: `linear-gradient(90deg, rgba(5,8,20,.95), rgba(5,8,20,.52), rgba(5,8,20,.78)), url('${heroImage}')`,
+              filter: `blur(${ev("heroBgBlur")}px) brightness(${ev("heroBgBrightness")}%) contrast(${ev("heroBgContrast")}%)`,
+              backgroundPosition: `${ev("heroBgPositionX")}% ${ev("heroBgPositionY")}%`,
+              backgroundSize: `${ev("heroBgScale")}%`,
             }}
           />
+          <style>{`
+            @media (min-width: 1024px) {
+              .hero-responsive-background {
+                ${heroBackgrounds.desktop ? `background-image: linear-gradient(90deg, rgba(5,8,20,.95), rgba(5,8,20,.52), rgba(5,8,20,.78)), url('${heroBackgrounds.desktop}') !important;` : ""}
+              }
+            }
+            @media (min-width: 640px) and (max-width: 1023px) {
+              .hero-responsive-background {
+                ${heroBackgrounds.tablet ? `background-image: linear-gradient(90deg, rgba(5,8,20,.95), rgba(5,8,20,.52), rgba(5,8,20,.78)), url('${heroBackgrounds.tablet}') !important;` : ""}
+              }
+            }
+            @media (max-width: 639px) {
+              .hero-responsive-background {
+                ${heroBackgrounds.mobile ? `background-image: linear-gradient(90deg, rgba(5,8,20,.95), rgba(5,8,20,.52), rgba(5,8,20,.78)), url('${heroBackgrounds.mobile}') !important;` : ""}
+              }
+            }
+          `}</style>
           <div className="absolute inset-0" style={{ backgroundColor: `rgba(0,0,0,${ev("heroOverlayOpacity") / 100})` }} />
 
           <Header />
@@ -26,7 +54,11 @@ const Hero = () => {
             <AdminFrame frameKey="heroContent" label="Hero Content" className="max-w-[720px]">
             <motion.div initial={{ opacity: 0, y: 45 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9 }}>
               
-              <Editable path="heroDate" langContext={lang} as="div" className="font-black tracking-[0.28em] text-xl md:text-2xl mb-6 inline-block" style={{ color: ev("accentOrangeColor") }} />
+              {cmsData[lang]?.heroDate?.trim() ? (
+                <Editable path="heroDate" langContext={lang} as="div" className="font-black tracking-[0.28em] text-xl md:text-2xl mb-6 inline-block" style={{ color: ev("accentOrangeColor") }} />
+              ) : (
+                <div className="font-black tracking-[0.28em] text-xl md:text-2xl mb-6 inline-block" style={{ color: ev("accentOrangeColor") }}>{heroDate}</div>
+              )}
 
               <h1 
                 className="uppercase font-black inline-block" 

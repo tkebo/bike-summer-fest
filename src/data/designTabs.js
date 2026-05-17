@@ -59,5 +59,25 @@ export const designTabs = {
     ],
     sections: [
       ["sectionMaxWidth", "Max Width", 0, 2000], ["sectionPaddingX", "Padding X", 0, 200], ["sectionPaddingY", "Padding Y", 0, 300],
-    ]
+    ],
+    buttons: [
+      ["ticketBtnWidth", "Ticket Width", 0, 300], ["ticketBtnHeight", "Ticket Height", 0, 100],
+      ["ticketBtnPaddingX", "Ticket Padding X", 0, 100], ["ticketBtnPaddingY", "Ticket Padding Y", 0, 100],
+      ["ticketBtnFontSize", "Ticket Font Size", 10, 40], ["ticketBtnBorderRadius", "Ticket Radius", 0, 100],
+      ["ticketBtnBgColor", "Ticket Bg", 0, 0, 0, "color"], ["buttonTextColor", "Button Text", 0, 0, 0, "color"],
+    ],
+    backgrounds: [
+      ["heroOverlayOpacity", "Hero Overlay", 0, 100], ["heroBgBlur", "Hero Blur", 0, 30],
+      ["heroBgBrightness", "Hero Brightness", 0, 200], ["heroBgContrast", "Hero Contrast", 0, 200],
+      ["heroBgPositionX", "Hero Position X", 0, 100], ["heroBgPositionY", "Hero Position Y", 0, 100], ["heroBgScale", "Hero Scale", 50, 200],
+      ["sectionBgOverlayOpacity", "Section Overlay", 0, 100], ["sectionBgBlur", "Section Blur", 0, 30],
+      ["sectionBgBrightness", "Section Brightness", 0, 200], ["sectionBgContrast", "Section Contrast", 0, 200],
+      ["sectionBgPositionX", "Section Position X", 0, 100], ["sectionBgPositionY", "Section Position Y", 0, 100], ["sectionBgScale", "Section Scale", 50, 200],
+    ],
+    responsive: [
+      ["globalFontScale", "Font Scale", 0.7, 1.4, 0.01],
+      ["sectionMaxWidth", "Section Max Width", 0, 2000],
+      ["sectionPaddingX", "Section Padding X", 0, 200],
+      ["sectionPaddingY", "Section Padding Y", 0, 300],
+    ],
   };

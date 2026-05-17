@@ -45,6 +45,10 @@ export const defaultEditor = {
     heroOverlayOpacity: 25,
     heroContentPosX: 0, heroContentPosY: 0, heroContentWidth: 720, heroContentHeight: 0,
     heroCtaPosX: 0, heroCtaPosY: 0, heroCtaWidth: 0, heroCtaHeight: 0,
+    heroBgBlur: 0, heroBgBrightness: 100, heroBgContrast: 100,
+    heroBgPositionX: 50, heroBgPositionY: 50, heroBgScale: 100,
+    sectionBgOverlayOpacity: 0, sectionBgBlur: 0, sectionBgBrightness: 100,
+    sectionBgContrast: 100, sectionBgPositionX: 50, sectionBgPositionY: 50, sectionBgScale: 100,
 
     // Theme
     accentCyanColor: "#67e8f9", accentOrangeColor: "#f97316", globalFontScale: 1,

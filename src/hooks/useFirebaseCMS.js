@@ -1,7 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import {
+  addDoc,
+  collection,
   doc,
   getDoc,
+  getDocs,
+  orderBy,
+  query,
   serverTimestamp,
   setDoc,
 } from "firebase/firestore";
@@ -11,10 +16,12 @@ import {
   signOut,
 } from "firebase/auth";
 import { auth, db, googleProvider } from "../lib/firebase";
+import { isAdminUser } from "../security/authPolicy";
 
 const DRAFT_REF = () => doc(db, "site", "draft");
 const PUBLISHED_REF = () => doc(db, "site", "published");
 const ADMIN_REF = (uid) => doc(db, "admins", uid);
+const VERSIONS_REF = () => collection(db, "site_versions");
 
 export async function loadPublishedConfig() {
   const snap = await getDoc(PUBLISHED_REF());
@@ -31,22 +38,53 @@ export async function loadAdminProfile(uid) {
   return snap.exists() ? snap.data() : null;
 }
 
-export async function saveDraftConfig(data) {
+export async function createBootstrapOwnerProfile(user) {
+  const profile = {
+    email: user.email.toLowerCase(),
+    role: "owner",
+    active: true,
+  };
+  await setDoc(ADMIN_REF(user.uid), profile);
+  return profile;
+}
+
+export async function saveDraftConfig(data, user) {
   await setDoc(DRAFT_REF(), {
     ...data,
     status: "draft",
     updatedAt: serverTimestamp(),
+    updatedBy: user?.email || "",
   });
   return true;
 }
 
-export async function publishDraft(data) {
+export async function publishDraft(data, user) {
   await setDoc(PUBLISHED_REF(), {
     ...data,
     status: "published",
     publishedAt: serverTimestamp(),
+    publishedBy: user?.email || "",
   });
   return true;
+}
+
+export async function createVersion(data, note, user) {
+  const ref = await addDoc(VERSIONS_REF(), {
+    createdAt: serverTimestamp(),
+    createdBy: user?.email || "",
+    note,
+    contentSnapshot: data.content,
+    editorSnapshot: data.editor,
+    seoSnapshot: data.content?.config?.seo || null,
+    eventSettingsSnapshot: data.content?.config?.eventSettings || null,
+    sectionsSnapshot: data.content?.config?.sections || [],
+  });
+  return ref.id;
+}
+
+export async function loadVersions() {
+  const snapshot = await getDocs(query(VERSIONS_REF(), orderBy("createdAt", "desc")));
+  return snapshot.docs.map((item) => ({ id: item.id, ...item.data() }));
 }
 
 export const useFirebaseCMS = () => {
@@ -57,6 +95,9 @@ export const useFirebaseCMS = () => {
   const [cloudStatus, setCloudStatus] = useState("Connecting");
   const [cloudSaveStatus, setCloudSaveStatus] = useState("Idle");
   const [publishStatus, setPublishStatus] = useState("Not published");
+  const [draftMeta, setDraftMeta] = useState(null);
+  const [publishedMeta, setPublishedMeta] = useState(null);
+  const [versions, setVersions] = useState([]);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (nextUser) => {
@@ -70,7 +111,16 @@ export const useFirebaseCMS = () => {
 
       setAdminReady(false);
       try {
-        setAdminProfile(await loadAdminProfile(nextUser.uid));
+        const existingProfile = await loadAdminProfile(nextUser.uid);
+        if (existingProfile) {
+          setAdminProfile(existingProfile);
+          if (existingProfile.active) setVersions(await loadVersions());
+        } else if (isAdminUser(nextUser)) {
+          setAdminProfile(await createBootstrapOwnerProfile(nextUser));
+          setVersions(await loadVersions());
+        } else {
+          setAdminProfile(null);
+        }
       } catch (error) {
         console.error(error);
         setAdminProfile(null);
@@ -93,10 +143,14 @@ export const useFirebaseCMS = () => {
   const loadCloudConfig = useCallback(async (authenticated) => {
     try {
       setCloudStatus("Connected");
+      const published = await loadPublishedConfig();
+      setPublishedMeta(published);
       if (authenticated) {
-        return (await loadDraftConfig()) || (await loadPublishedConfig());
+        const draft = await loadDraftConfig();
+        setDraftMeta(draft);
+        return draft || published;
       }
-      return await loadPublishedConfig();
+      return published;
     } catch (error) {
       console.error(error);
       setCloudStatus("Offline");
@@ -107,7 +161,8 @@ export const useFirebaseCMS = () => {
   const saveDraft = useCallback(async (data) => {
     try {
       setCloudSaveStatus("Saving draft...");
-      await saveDraftConfig(data);
+      await saveDraftConfig(data, user);
+      setDraftMeta(await loadDraftConfig());
       setCloudStatus("Connected");
       setCloudSaveStatus("Draft Saved");
       return true;
@@ -117,12 +172,15 @@ export const useFirebaseCMS = () => {
       setCloudSaveStatus("Offline");
       return false;
     }
-  }, []);
+  }, [user]);
 
-  const publish = useCallback(async (data) => {
+  const publish = useCallback(async (data, note = "") => {
     try {
       setPublishStatus("Publishing...");
-      await publishDraft(data);
+      const versionId = await createVersion(data, note, user);
+      await publishDraft({ ...data, versionId }, user);
+      setPublishedMeta(await loadPublishedConfig());
+      setVersions(await loadVersions());
       setCloudStatus("Connected");
       setPublishStatus("Published");
       return true;
@@ -131,6 +189,14 @@ export const useFirebaseCMS = () => {
       setCloudStatus("Offline");
       setPublishStatus("Publish failed");
       return false;
+    }
+  }, [user]);
+
+  const refreshVersions = useCallback(async () => {
+    try {
+      setVersions(await loadVersions());
+    } catch (error) {
+      console.error(error);
     }
   }, []);
 
@@ -142,10 +208,14 @@ export const useFirebaseCMS = () => {
     cloudStatus,
     cloudSaveStatus,
     publishStatus,
+    draftMeta,
+    publishedMeta,
+    versions,
     loginWithGoogle,
     logout,
     loadCloudConfig,
     saveDraft,
     publish,
+    refreshVersions,
   };
 };

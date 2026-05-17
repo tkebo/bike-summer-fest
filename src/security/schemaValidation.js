@@ -1,7 +1,8 @@
 import { defaultContent } from "../data/defaultContent";
 import { defaultEditor } from "../data/defaultEditor";
+import { allowedSectionIds } from "../data/sectionRegistry";
 import { CONFIG_BACKUP_VERSION } from "./securityConfig";
-import { sanitizeDeep, sanitizeUrl } from "./sanitize";
+import { sanitizeDeep, sanitizeHttpUrl, sanitizeUrl } from "./sanitize";
 
 const BLOCKED_KEYS = new Set([
   "__proto__",
@@ -14,6 +15,34 @@ const BLOCKED_KEYS = new Set([
   "onclick",
   "dangerouslySetInnerHTML",
 ]);
+
+const SPONSOR_CATEGORIES = new Set([
+  "main",
+  "stage",
+  "media",
+  "beer",
+  "energy",
+  "moto",
+  "tourism",
+  "food",
+  "tech",
+  "general",
+]);
+const SCHEDULE_EVENT_TYPES = new Set([
+  "ride",
+  "concert",
+  "sport",
+  "competition",
+  "sponsor",
+  "food",
+  "beach",
+  "ceremony",
+  "general",
+]);
+const isValidDateString = (value) => typeof value === "string" && /^\d{4}-\d{2}-\d{2}$/.test(value);
+const isValidTimeString = (value) => typeof value === "string" && /^([01]\d|2[0-3]):[0-5]\d$/.test(value);
+const isValidEmail = (value) => typeof value === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+const sanitizePhone = (value) => sanitizeDeep(value || "").replace(/[^\d+()\-\s]/g, "");
 
 const isPlainObject = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
 
@@ -61,6 +90,243 @@ const validateContentShape = (payload) => {
     });
   }
 
+  if (sanitized.config?.heroImage) {
+    sanitized.config.heroImage = sanitizeUrl(sanitized.config.heroImage, "");
+  }
+  if (sanitized.config?.introImage) {
+    sanitized.config.introImage = sanitizeUrl(sanitized.config.introImage, "");
+  }
+  if (Array.isArray(sanitized.config?.galleryImages)) {
+    sanitized.config.galleryImages = sanitized.config.galleryImages
+      .map((url) => sanitizeUrl(url, ""))
+      .filter(Boolean);
+  }
+  if (Array.isArray(sanitized.config?.sponsorLogos)) {
+    sanitized.config.sponsorLogos = sanitized.config.sponsorLogos
+      .map((url) => sanitizeUrl(url, ""))
+      .filter(Boolean);
+  }
+  if (sanitized.config?.faqImage) {
+    sanitized.config.faqImage = sanitizeUrl(sanitized.config.faqImage, "");
+  }
+  if (sanitized.config?.zonesImage) {
+    sanitized.config.zonesImage = sanitizeUrl(sanitized.config.zonesImage, "");
+  }
+  if (Array.isArray(sanitized.config?.ticketPackages)) {
+    sanitized.config.ticketPackages = sanitized.config.ticketPackages
+      .filter((ticket) => isPlainObject(ticket))
+      .map((ticket, index) => ({
+        id: sanitizeDeep(ticket.id || `package-${index + 1}`),
+        order: Number.isFinite(Number(ticket.order)) ? Number(ticket.order) : index + 1,
+        active: ticket.active !== false,
+        highlighted: ticket.highlighted === true,
+        status: ["coming_soon", "available", "sold_out", "hidden"].includes(ticket.status) ? ticket.status : "coming_soon",
+        price: sanitizeDeep(ticket.price || ""),
+        currency: sanitizeDeep(ticket.currency || ""),
+        ctaLink: sanitizeUrl(ticket.ctaLink || "#contact", "#contact"),
+        ka: {
+          name: sanitizeDeep(ticket.ka?.name || ""),
+          desc: sanitizeDeep(ticket.ka?.desc || ""),
+          ctaText: sanitizeDeep(ticket.ka?.ctaText || ""),
+          features: Array.isArray(ticket.ka?.features) ? ticket.ka.features.map(sanitizeDeep) : [],
+        },
+        en: {
+          name: sanitizeDeep(ticket.en?.name || ""),
+          desc: sanitizeDeep(ticket.en?.desc || ""),
+          ctaText: sanitizeDeep(ticket.en?.ctaText || ""),
+          features: Array.isArray(ticket.en?.features) ? ticket.en.features.map(sanitizeDeep) : [],
+        },
+      }));
+  }
+  if (Array.isArray(sanitized.config?.sponsors)) {
+    sanitized.config.sponsors = sanitized.config.sponsors
+      .filter((sponsor) => isPlainObject(sponsor))
+      .map((sponsor, index) => ({
+        id: sanitizeDeep(sponsor.id || `sponsor-${index + 1}`),
+        name: sanitizeDeep(sponsor.name || ""),
+        logo: sanitizeUrl(sponsor.logo || "", ""),
+        website: sanitizeHttpUrl(sponsor.website || "", ""),
+        category: SPONSOR_CATEGORIES.has(sponsor.category) ? sponsor.category : "general",
+        order: Number.isFinite(Number(sponsor.order)) ? Number(sponsor.order) : index + 1,
+        active: sponsor.active !== false,
+        featured: sponsor.featured === true,
+        showInGrid: sponsor.showInGrid !== false,
+        showInMarquee: sponsor.showInMarquee !== false,
+        ka: {
+          description: sanitizeDeep(sponsor.ka?.description || ""),
+        },
+        en: {
+          description: sanitizeDeep(sponsor.en?.description || ""),
+        },
+      }));
+  }
+  if (Array.isArray(sanitized.config?.scheduleDays)) {
+    sanitized.config.scheduleDays = sanitized.config.scheduleDays
+      .filter((day) => isPlainObject(day))
+      .map((day, index) => ({
+        id: sanitizeDeep(day.id || `day-${index + 1}`),
+        order: Number.isFinite(Number(day.order)) ? Number(day.order) : index + 1,
+        active: day.active !== false,
+        date: isValidDateString(day.date) ? day.date : "",
+        label: sanitizeDeep(day.label || ""),
+        ka: {
+          title: sanitizeDeep(day.ka?.title || ""),
+          description: sanitizeDeep(day.ka?.description || ""),
+        },
+        en: {
+          title: sanitizeDeep(day.en?.title || ""),
+          description: sanitizeDeep(day.en?.description || ""),
+        },
+        events: Array.isArray(day.events)
+          ? day.events
+            .filter((event) => isPlainObject(event))
+            .map((event, eventIndex) => ({
+              id: sanitizeDeep(event.id || `event-${eventIndex + 1}`),
+              order: Number.isFinite(Number(event.order)) ? Number(event.order) : eventIndex + 1,
+              active: event.active !== false,
+              highlighted: event.highlighted === true,
+              time: isValidTimeString(event.time) ? event.time : "",
+              location: sanitizeDeep(event.location || ""),
+              zone: sanitizeDeep(event.zone || ""),
+              type: SCHEDULE_EVENT_TYPES.has(event.type) ? event.type : "general",
+              ka: {
+                title: sanitizeDeep(event.ka?.title || ""),
+                description: sanitizeDeep(event.ka?.description || ""),
+              },
+              en: {
+                title: sanitizeDeep(event.en?.title || ""),
+                description: sanitizeDeep(event.en?.description || ""),
+              },
+            }))
+          : [],
+      }));
+  }
+  if (isPlainObject(sanitized.config?.eventSettings)) {
+    const eventSettings = sanitized.config.eventSettings;
+    sanitized.config.eventSettings = {
+      name: sanitizeDeep(eventSettings.name || ""),
+      year: sanitizeDeep(eventSettings.year || ""),
+      dates: {
+        start: isValidDateString(eventSettings.dates?.start) ? eventSettings.dates.start : "",
+        end: isValidDateString(eventSettings.dates?.end) ? eventSettings.dates.end : "",
+        displayKa: sanitizeDeep(eventSettings.dates?.displayKa || ""),
+        displayEn: sanitizeDeep(eventSettings.dates?.displayEn || ""),
+      },
+      location: {
+        ka: sanitizeDeep(eventSettings.location?.ka || ""),
+        en: sanitizeDeep(eventSettings.location?.en || ""),
+        country: sanitizeDeep(eventSettings.location?.country || ""),
+        region: sanitizeDeep(eventSettings.location?.region || ""),
+        venue: sanitizeDeep(eventSettings.location?.venue || ""),
+        mapUrl: sanitizeHttpUrl(eventSettings.location?.mapUrl || "", ""),
+      },
+      contact: {
+        email: isValidEmail(eventSettings.contact?.email) ? eventSettings.contact.email : "",
+        phone: sanitizePhone(eventSettings.contact?.phone),
+      },
+      countdown: {
+        enabled: eventSettings.countdown?.enabled !== false,
+        targetDate: isValidDateString(eventSettings.countdown?.targetDate) ? eventSettings.countdown.targetDate : "",
+        targetTime: isValidTimeString(eventSettings.countdown?.targetTime) ? eventSettings.countdown.targetTime : "",
+        timezone: sanitizeDeep(eventSettings.countdown?.timezone || ""),
+        mode: ["start_date", "end_date", "custom_deadline"].includes(eventSettings.countdown?.mode)
+          ? eventSettings.countdown.mode
+          : "start_date",
+        labels: {
+          ka: {
+            days: sanitizeDeep(eventSettings.countdown?.labels?.ka?.days || ""),
+            hours: sanitizeDeep(eventSettings.countdown?.labels?.ka?.hours || ""),
+            minutes: sanitizeDeep(eventSettings.countdown?.labels?.ka?.minutes || ""),
+            seconds: sanitizeDeep(eventSettings.countdown?.labels?.ka?.seconds || ""),
+          },
+          en: {
+            days: sanitizeDeep(eventSettings.countdown?.labels?.en?.days || ""),
+            hours: sanitizeDeep(eventSettings.countdown?.labels?.en?.hours || ""),
+            minutes: sanitizeDeep(eventSettings.countdown?.labels?.en?.minutes || ""),
+            seconds: sanitizeDeep(eventSettings.countdown?.labels?.en?.seconds || ""),
+          },
+        },
+        finishedMessageKa: sanitizeDeep(eventSettings.countdown?.finishedMessageKa || ""),
+        finishedMessageEn: sanitizeDeep(eventSettings.countdown?.finishedMessageEn || ""),
+      },
+      socials: {
+        facebook: sanitizeHttpUrl(eventSettings.socials?.facebook || "", ""),
+        instagram: sanitizeHttpUrl(eventSettings.socials?.instagram || "", ""),
+        tiktok: sanitizeHttpUrl(eventSettings.socials?.tiktok || "", ""),
+        youtube: sanitizeHttpUrl(eventSettings.socials?.youtube || "", ""),
+        telegram: sanitizeHttpUrl(eventSettings.socials?.telegram || "", ""),
+        whatsapp: sanitizeHttpUrl(eventSettings.socials?.whatsapp || "", ""),
+      },
+    };
+  }
+  if (isPlainObject(sanitized.config?.seo)) {
+    const seo = sanitized.config.seo;
+    sanitized.config.seo = {
+      title: {
+        ka: sanitizeDeep(seo.title?.ka || ""),
+        en: sanitizeDeep(seo.title?.en || ""),
+      },
+      description: {
+        ka: sanitizeDeep(seo.description?.ka || ""),
+        en: sanitizeDeep(seo.description?.en || ""),
+      },
+      keywords: Array.isArray(seo.keywords) ? seo.keywords.map(sanitizeDeep) : [],
+      canonicalUrl: sanitizeHttpUrl(seo.canonicalUrl || "", ""),
+      robots: {
+        index: seo.robots?.index !== false,
+        follow: seo.robots?.follow !== false,
+      },
+      openGraph: {
+        title: {
+          ka: sanitizeDeep(seo.openGraph?.title?.ka || ""),
+          en: sanitizeDeep(seo.openGraph?.title?.en || ""),
+        },
+        description: {
+          ka: sanitizeDeep(seo.openGraph?.description?.ka || ""),
+          en: sanitizeDeep(seo.openGraph?.description?.en || ""),
+        },
+        image: sanitizeUrl(seo.openGraph?.image || "", ""),
+        type: seo.openGraph?.type === "website" ? "website" : "website",
+      },
+      twitter: {
+        title: {
+          ka: sanitizeDeep(seo.twitter?.title?.ka || ""),
+          en: sanitizeDeep(seo.twitter?.title?.en || ""),
+        },
+        description: {
+          ka: sanitizeDeep(seo.twitter?.description?.ka || ""),
+          en: sanitizeDeep(seo.twitter?.description?.en || ""),
+        },
+        image: sanitizeUrl(seo.twitter?.image || "", ""),
+        card: seo.twitter?.card === "summary_large_image" ? "summary_large_image" : "summary_large_image",
+      },
+      icons: {
+        favicon: sanitizeUrl(seo.icons?.favicon || "", ""),
+        appleTouchIcon: sanitizeUrl(seo.icons?.appleTouchIcon || "", ""),
+        themeColor: /^#[0-9a-fA-F]{6}$/.test(seo.icons?.themeColor || "") ? seo.icons.themeColor : "#050814",
+      },
+    };
+  }
+  if (Array.isArray(sanitized.config?.sections)) {
+    sanitized.config.sections = sanitized.config.sections
+      .filter((section) => isPlainObject(section) && allowedSectionIds.includes(section.id))
+      .map((section, index) => ({
+        id: section.id,
+        label: sanitizeDeep(section.label || section.id),
+        visible: section.visible !== false,
+        order: Number.isFinite(Number(section.order)) ? Number(section.order) : index + 1,
+        anchor: sanitizeDeep(section.anchor || section.id),
+        layout: ["grid", "split", "centered", "full-width", "cards"].includes(section.layout) ? section.layout : "centered",
+        backgroundImage: sanitizeUrl(section.backgroundImage || "", ""),
+        overlayOpacity: Number.isFinite(Number(section.overlayOpacity)) ? Number(section.overlayOpacity) : 0,
+        paddingX: Number.isFinite(Number(section.paddingX)) ? Number(section.paddingX) : 48,
+        paddingY: Number.isFinite(Number(section.paddingY)) ? Number(section.paddingY) : 112,
+        maxWidth: Number.isFinite(Number(section.maxWidth)) ? Number(section.maxWidth) : 1280,
+        gap: Number.isFinite(Number(section.gap)) ? Number(section.gap) : 24,
+        radius: Number.isFinite(Number(section.radius)) ? Number(section.radius) : 32,
+      }));
+  }
+
   return sanitized;
 };
 
@@ -83,6 +349,9 @@ const validateEditorShape = (payload) => {
     }
 
     if (typeof defaultValue === "string") {
+      if (key.toLowerCase().includes("color") && !/^#[0-9a-fA-F]{6}$/.test(String(value))) {
+        return;
+      }
       nextEditor[key] = sanitizeDeep(value);
       return;
     }

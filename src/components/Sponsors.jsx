@@ -2,9 +2,31 @@ import { memo } from "react";
 import { motion } from "framer-motion";
 import { useCMS } from "../hooks/useCMS";
 import Editable from "./Editable";
+import { getOptimizedImageUrl } from "../lib/cloudinary";
+import { isSafeHttpUrl } from "../security/sanitize";
 
 const Sponsors = () => {
-  const { t, lang } = useCMS();
+  const { t, lang, cmsData, isConfiguredImageActive } = useCMS();
+  const sponsorLogos = cmsData.config.sponsorLogos?.filter(isConfiguredImageActive) || [];
+  const configuredSponsors = [...(cmsData.config.sponsors || [])]
+    .filter((sponsor) => sponsor.active !== false)
+    .sort((left, right) => left.order - right.order);
+  const gridSponsors = configuredSponsors.filter((sponsor) => sponsor.showInGrid !== false);
+  const marqueeSponsors = configuredSponsors.filter((sponsor) => sponsor.showInMarquee !== false);
+  const hasConfiguredSponsors = configuredSponsors.length > 0;
+
+  const renderSponsorContent = (sponsor, imageClassName = "h-16 w-full object-contain") => {
+    const hasActiveLogo = sponsor.logo && isConfiguredImageActive(sponsor.logo);
+    const content = hasActiveLogo
+      ? <img src={getOptimizedImageUrl(sponsor.logo, 320)} alt={sponsor.name} className={imageClassName} />
+      : sponsor.name;
+
+    return sponsor.website && isSafeHttpUrl(sponsor.website) ? (
+      <a href={sponsor.website} target="_blank" rel="noreferrer" className="flex h-full w-full items-center justify-center">
+        {content}
+      </a>
+    ) : content;
+  };
   return (
 <>
         {/* SPONSORS SECTION */}
@@ -24,9 +46,15 @@ const Sponsors = () => {
             </div>
 
             <div className="grid grid-cols-2 gap-5">
-              {t.sponsorCards.map((item, index) => (
-                <Editable key={index} path={`sponsorCards.${index}`} langContext={lang} as="div" className="border border-white/10 flex items-center justify-center text-center font-black tracking-widest hover:border-cyan-300/50 hover:-translate-y-2 transition duration-300 global-box" />
-              ))}
+              {hasConfiguredSponsors
+                ? gridSponsors.map((sponsor) => (
+                  <div key={sponsor.id} className="border border-white/10 flex items-center justify-center text-center font-black tracking-widest hover:border-cyan-300/50 hover:-translate-y-2 transition duration-300 global-box">
+                    {renderSponsorContent(sponsor)}
+                  </div>
+                ))
+                : t.sponsorCards.map((item, index) => (
+                  <Editable key={index} path={`sponsorCards.${index}`} langContext={lang} as="div" className="border border-white/10 flex items-center justify-center text-center font-black tracking-widest hover:border-cyan-300/50 hover:-translate-y-2 transition duration-300 global-box" />
+                ))}
             </div>
           </div>
         </section>
@@ -41,11 +69,17 @@ const Sponsors = () => {
             <div className="pointer-events-none absolute left-0 top-0 z-10 h-full w-32 bg-gradient-to-r from-[#030713] to-transparent" />
             <div className="pointer-events-none absolute right-0 top-0 z-10 h-full w-32 bg-gradient-to-l from-[#030713] to-transparent" />
             <div className="marquee-track flex gap-5 w-max animate-marquee">
-              {[...t.sponsorMarqueeItems, ...t.sponsorMarqueeItems].map((item, index) => (
-                <div key={`${item}-${index}`} className="min-w-[240px] border border-white/10 flex items-center justify-center px-6 text-center font-black tracking-[0.18em] global-box">
-                  {item}
-                </div>
-              ))}
+              {hasConfiguredSponsors
+                ? [...marqueeSponsors, ...marqueeSponsors].map((sponsor, index) => (
+                  <div key={`${sponsor.id}-${index}`} className="min-w-[240px] border border-white/10 flex items-center justify-center px-6 text-center font-black tracking-[0.18em] global-box">
+                    {renderSponsorContent(sponsor)}
+                  </div>
+                ))
+                : [...(sponsorLogos.length ? sponsorLogos : t.sponsorMarqueeItems), ...(sponsorLogos.length ? sponsorLogos : t.sponsorMarqueeItems)].map((item, index) => (
+                  <div key={`${item}-${index}`} className="min-w-[240px] border border-white/10 flex items-center justify-center px-6 text-center font-black tracking-[0.18em] global-box">
+                    {sponsorLogos.length ? <img src={getOptimizedImageUrl(item, 320)} alt="Sponsor" className="h-16 w-full object-contain" /> : item}
+                  </div>
+                ))}
             </div>
           </div>
         </section>

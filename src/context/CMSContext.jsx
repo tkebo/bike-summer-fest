@@ -5,11 +5,12 @@ import { defaultEditor } from "../data/defaultEditor";
 import { designTabs } from "../data/designTabs";
 import { useCountdown } from "../hooks/useCountdown";
 import { useFirebaseCMS } from "../hooks/useFirebaseCMS";
+import { useMediaLibrary } from "../hooks/useMediaLibrary";
 import { setNestedValue, mergeWithDefaults } from "../utils/cmsHelpers";
 import { createEditorValueResolver } from "../utils/themeHelpers";
 import { downloadJson, readJsonFile } from "../utils/exportImport";
 import { sanitizeText, sanitizeDeep } from "../security/sanitize";
-import { isAdminUser, isFirestoreAdmin, requireAdminAction } from "../security/authPolicy";
+import { canPublish, isAdminUser, isFirestoreAdmin, requireAdminAction } from "../security/authPolicy";
 import { ROLES } from "../security/securityConfig";
 import { createVersionedBackup, validateImportedContent, validateImportedEditor } from "../security/schemaValidation";
 
@@ -54,25 +55,45 @@ export const CMSProvider = ({ children }) => {
     cloudStatus,
     cloudSaveStatus,
     publishStatus,
+    draftMeta,
+    publishedMeta,
+    versions,
     loginWithGoogle,
     logout,
     loadCloudConfig,
     saveDraft,
     publish,
+    refreshVersions,
   } = useFirebaseCMS();
-  const isAdmin = isFirestoreAdmin(user, adminProfile) || (import.meta.env.DEV && isAdminUser(user));
+  const firestoreAdmin = isFirestoreAdmin(user, adminProfile);
+  const isAdmin = firestoreAdmin || (import.meta.env.DEV && isAdminUser(user));
+  const mediaLibrary = useMediaLibrary(user, isAdmin);
   const session = useMemo(() => ({
     isAuthenticated: Boolean(user),
-    role: isAdmin ? ROLES.ADMIN : ROLES.VIEWER,
+    role: isAdmin ? (adminProfile?.role || ROLES.ADMIN) : ROLES.VIEWER,
     token: null,
     email: user?.email ?? null,
     uid: user?.uid ?? null,
-  }), [isAdmin, user]);
+  }), [adminProfile?.role, isAdmin, user]);
 
   const ev = useMemo(() => createEditorValueResolver(editor, defaultEditor), [editor]);
   const t = cmsData[lang] || defaultContent[lang];
-  const countdownLabels = defaultContent[lang].countdownLabels;
-  const timeLeft = useCountdown(cmsData.config.festivalDate);
+  const eventSettings = cmsData.config.eventSettings || defaultContent.config.eventSettings;
+  const countdownTargetDate = eventSettings.countdown.mode === "end_date"
+    ? eventSettings.dates.end
+    : eventSettings.countdown.mode === "custom_deadline"
+      ? eventSettings.countdown.targetDate
+      : eventSettings.dates.start;
+  const countdownTargetValue = countdownTargetDate && eventSettings.countdown.targetTime
+    ? `${countdownTargetDate}T${eventSettings.countdown.targetTime}:00`
+    : cmsData.config.festivalDate;
+  const countdownLabels = eventSettings.countdown.labels?.[lang] || t.countdownLabels || defaultContent[lang].countdownLabels;
+  const { timeLeft, isFinished: countdownFinished } = useCountdown(countdownTargetValue);
+  const isConfiguredImageActive = useCallback((url) => {
+    if (!url) return false;
+    if (url.startsWith("/")) return true;
+    return mediaLibrary.activeMediaAssets.some((asset) => asset.url === url);
+  }, [mediaLibrary.activeMediaAssets]);
 
   useEffect(() => {
     localStorage.setItem("bsf_cms_data", JSON.stringify(cmsData));
@@ -200,6 +221,19 @@ export const CMSProvider = ({ children }) => {
     patchEditor({ sectionOrder: order });
   }, [editor.sectionOrder, patchEditor]);
 
+  const duplicateSection = useCallback((sectionKey) => {
+    const baseKey = sectionKey.split("__copy_")[0];
+    const copyCount = (editor.sectionOrder || []).filter((item) => item.startsWith(`${baseKey}__copy_`)).length + 1;
+    const duplicateKey = `${baseKey}__copy_${copyCount}`;
+    patchEditor({
+      sectionOrder: [...(editor.sectionOrder || defaultEditor.sectionOrder), duplicateKey],
+      sectionVisibility: {
+        ...editor.sectionVisibility,
+        [duplicateKey]: true,
+      },
+    });
+  }, [editor.sectionOrder, editor.sectionVisibility, patchEditor]);
+
   const saveEditor = useCallback(() => {
     requireAdminAction(session, "design:write");
     localStorage.setItem("bsf_editor", JSON.stringify(editor));
@@ -212,10 +246,46 @@ export const CMSProvider = ({ children }) => {
     await logout();
   }, [logout]);
 
-  const publishSite = useCallback(async () => {
-    requireAdminAction(session, "admin:write");
-    await publish({ content: cmsData, editor });
+  const publishSite = useCallback(async (note = "") => {
+    requireAdminAction(session, "publish:write");
+    if (!note && !window.confirm("Publish current draft live?")) return;
+    await publish({ content: cmsData, editor }, note);
   }, [cmsData, editor, publish, session]);
+
+  const restoreVersionToDraft = useCallback((version) => {
+    requireAdminAction(session, "content:write");
+    if (!version?.contentSnapshot) return;
+    setCmsData(mergeWithDefaults(defaultContent, validateImportedContent(version.contentSnapshot)));
+    if (version.editorSnapshot) {
+      setEditor({ ...defaultEditor, ...validateImportedEditor(version.editorSnapshot) });
+    }
+  }, [session]);
+
+  const restoreVersionAndPublish = useCallback(async (version) => {
+    requireAdminAction(session, "publish:write");
+    restoreVersionToDraft(version);
+    await publish({
+      content: mergeWithDefaults(defaultContent, validateImportedContent(version.contentSnapshot)),
+      editor: { ...defaultEditor, ...validateImportedEditor(version.editorSnapshot || {}) },
+    }, `Restored version ${version.id}`);
+  }, [publish, restoreVersionToDraft, session]);
+
+  const exportFullBackup = useCallback(() => {
+    downloadJson("festival_full_backup.json", createVersionedBackup("full", { content: cmsData, editor }));
+  }, [cmsData, editor]);
+
+  const exportContentData = useCallback(() => {
+    downloadJson("festival_content_backup.json", createVersionedBackup("cms", cmsData));
+  }, [cmsData]);
+
+  const importFullBackup = useCallback(async (file) => {
+    requireAdminAction(session, "content:write");
+    const json = await readJsonFile(file);
+    const payload = json?.data || json;
+    if (!payload?.content) throw new Error("Full backup must include content");
+    setCmsData(mergeWithDefaults(defaultContent, validateImportedContent(payload.content)));
+    if (payload.editor) setEditor({ ...defaultEditor, ...validateImportedEditor(payload.editor) });
+  }, [session]);
 
   const exportEditorData = useCallback(() => {
     localStorage.setItem("bsf_editor", JSON.stringify(editor));
@@ -333,16 +403,24 @@ export const CMSProvider = ({ children }) => {
     session,
     user,
     isAdmin,
+    firestoreAdmin,
     authReady,
     adminProfile,
     adminReady,
     cloudStatus,
     cloudSaveStatus,
     publishStatus,
+    draftMeta,
+    publishedMeta,
+    versions,
     cloudHydrated,
+    ...mediaLibrary,
+    isConfiguredImageActive,
     ev,
     t,
     countdownLabels,
+    countdownFinished,
+    eventSettings,
     timeLeft,
     designTabs,
     navItems,
@@ -357,6 +435,7 @@ export const CMSProvider = ({ children }) => {
     toggleSectionVisibility,
     setPreviewMode,
     reorderSections,
+    duplicateSection,
     saveEditor,
     exportEditorData,
     importEditorData,
@@ -364,6 +443,13 @@ export const CMSProvider = ({ children }) => {
     loginWithGoogle,
     logout: logoutAdmin,
     publishSite,
+    canPublish: canPublish(session.role),
+    restoreVersionToDraft,
+    restoreVersionAndPublish,
+    refreshVersions,
+    exportFullBackup,
+    exportContentData,
+    importFullBackup,
     renderDesignSliders,
     closeMenu,
     handleChange,
@@ -371,12 +457,13 @@ export const CMSProvider = ({ children }) => {
   }), [
     cmsData, editor, adminMode, lang, menuOpen, openFaq, editorOpen, editorTab,
     activeDesignCategory, editorSaveStatus, formData, ev, t, countdownLabels,
-    timeLeft, navItems, requestTypes, updateContent, resetCms, exportData,
+    timeLeft, countdownFinished, eventSettings, navItems, requestTypes, updateContent, resetCms, exportData,
     importData, updateEditor, patchEditor, updateFrame, toggleSectionVisibility,
-    setPreviewMode, reorderSections, saveEditor, exportEditorData, importEditorData,
+    setPreviewMode, reorderSections, duplicateSection, saveEditor, exportEditorData, importEditorData,
     resetEditor, renderDesignSliders, closeMenu, handleChange, handleSubmit,
-    session, user, isAdmin, authReady, adminProfile, adminReady, cloudStatus, cloudSaveStatus, publishStatus,
-    cloudHydrated, loginWithGoogle, logoutAdmin, publishSite,
+    session, user, isAdmin, firestoreAdmin, authReady, adminProfile, adminReady, cloudStatus, cloudSaveStatus, publishStatus,
+    draftMeta, publishedMeta, versions, cloudHydrated, loginWithGoogle, logoutAdmin, publishSite, restoreVersionToDraft,
+    restoreVersionAndPublish, refreshVersions, exportFullBackup, exportContentData, importFullBackup, mediaLibrary, isConfiguredImageActive,
   ]);
 
   return <CMSContext.Provider value={value}>{children}</CMSContext.Provider>;

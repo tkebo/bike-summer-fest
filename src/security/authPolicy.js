@@ -33,6 +33,8 @@ export const isFirestoreAdmin = (user, adminProfile) => {
   return ["owner", "admin", "editor"].includes(adminProfile.role);
 };
 
+export const canPublish = (role) => hasPermission(role, "publish:write");
+
 export const requireAdminAction = (session, permission) => {
   if (!session?.isAuthenticated) {
     throw new Error("Admin authentication is required");

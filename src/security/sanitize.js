@@ -43,6 +43,21 @@ export const sanitizeUrl = (url, fallback = "") => {
   return isSafeUrl(clean) ? clean : fallback;
 };
 
+export const isSafeHttpUrl = (url) => {
+  if (typeof url !== "string" || SCRIPT_LIKE_PROTOCOL.test(url)) return false;
+  try {
+    const parsed = new URL(url);
+    return ["http:", "https:"].includes(parsed.protocol);
+  } catch {
+    return false;
+  }
+};
+
+export const sanitizeHttpUrl = (url, fallback = "") => {
+  const clean = sanitizeText(url, 2048);
+  return isSafeHttpUrl(clean) ? clean : fallback;
+};
+
 export const sanitizeDeep = (value) => {
   if (Array.isArray(value)) return value.map(sanitizeDeep);
   if (value && typeof value === "object") {

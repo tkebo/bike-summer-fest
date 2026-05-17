@@ -2,9 +2,15 @@ import { memo } from "react";
 import { motion } from "framer-motion";
 import { useCMS } from "../hooks/useCMS";
 import Editable from "./Editable";
+import { getOptimizedImageUrl } from "../lib/cloudinary";
 
 const FAQ = () => {
-  const { cmsData, t, lang, openFaq, setOpenFaq } = useCMS();
+  const { cmsData, t, lang, openFaq, setOpenFaq, isConfiguredImageActive, eventSettings } = useCMS();
+  const faqImage = isConfiguredImageActive(cmsData.config.faqImage)
+    ? cmsData.config.faqImage
+    : isConfiguredImageActive(cmsData.config.galleryImages?.[1])
+      ? cmsData.config.galleryImages[1]
+      : cmsData.config.images.gallery2;
   return (
 <>
         {/* FAQ SECTION */}
@@ -15,12 +21,12 @@ const FAQ = () => {
               <Editable path="faqTitle" langContext={lang} as="h2" className="text-5xl md:text-7xl font-black uppercase leading-none" />
 
               <div className="mt-10 border border-white/10 global-box" style={{ padding: '16px' }}>
-                <img src={cmsData.config.images.gallery2} alt="Anaklia Ganmukhuri" className="w-full h-[320px] object-cover rounded-[28px]" />
+                <img src={getOptimizedImageUrl(faqImage, 960)} alt="Anaklia Ganmukhuri" className="w-full h-[320px] object-cover rounded-[28px]" />
                 <div className="p-4">
                   <Editable path="locationTitle" langContext={lang} as="h3" className="text-3xl font-black mt-4" />
-                  <Editable path="locationText" langContext={lang} multiline as="p" className="text-white/60 mt-4 leading-relaxed inline-block" />
+                  <p className="text-white/60 mt-4 leading-relaxed inline-block">{eventSettings.location[lang] || t.locationText}</p>
                   <br />
-                  <a href="https://www.google.com/maps/search/Anaklia+Ganmukhuri+Georgia" target="_blank" rel="noreferrer" className="inline-flex mt-6 px-7 py-4 rounded-2xl bg-cyan-300 text-black font-black hover:scale-105 transition shadow-[0_0_35px_rgba(0,217,255,.35)]">
+                  <a href={eventSettings.location.mapUrl || "https://www.google.com/maps/search/Anaklia+Ganmukhuri+Georgia"} target="_blank" rel="noreferrer" className="inline-flex mt-6 px-7 py-4 rounded-2xl bg-cyan-300 text-black font-black hover:scale-105 transition shadow-[0_0_35px_rgba(0,217,255,.35)]">
                     <Editable path="openMap" langContext={lang} as="span" />
                   </a>
                 </div>

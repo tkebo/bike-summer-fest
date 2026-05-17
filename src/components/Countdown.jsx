@@ -3,7 +3,9 @@ import { useCMS } from "../hooks/useCMS";
 import AdminFrame from "./AdminFrame";
 
 const Countdown = () => {
-  const { ev, timeLeft, countdownLabels } = useCMS();
+  const { ev, timeLeft, countdownLabels, countdownFinished, eventSettings, lang } = useCMS();
+  if (eventSettings.countdown.enabled === false) return null;
+  const finishedMessage = lang === "ka" ? eventSettings.countdown.finishedMessageKa : eventSettings.countdown.finishedMessageEn;
   return (
 <>
               {/* COUNTDOWN */}
@@ -28,6 +30,9 @@ const Countdown = () => {
                   transformOrigin: "center"
                 }}
               >
+                {countdownFinished ? (
+                  <div className="px-6 py-4 text-center font-black text-cyan-300">{finishedMessage}</div>
+                ) : (
                 <div className="flex justify-center" style={{ gap: `${ev("countdownGap")}px` }}>
                   {[
                     { value: timeLeft.days, label: countdownLabels.days },
@@ -65,6 +70,7 @@ const Countdown = () => {
                     </div>
                   ))}
                 </div>
+                )}
               </AdminFrame>
 </>
   );

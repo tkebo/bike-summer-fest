@@ -26,9 +26,25 @@ service cloud.firestore {
         && currentAdmin().role == 'owner';
     }
 
+    function canPublish() {
+      return hasAdminDoc()
+        && currentAdmin().active == true
+        && currentAdmin().role in ['owner', 'admin'];
+    }
+
+    function isBootstrapOwner(uid) {
+      return signedIn()
+        && request.auth.uid == uid
+        && request.auth.token.email == 'iraklitkebuchava@gmail.com'
+        && request.resource.data.keys().hasOnly(['email', 'role', 'active'])
+        && request.resource.data.email == 'iraklitkebuchava@gmail.com'
+        && request.resource.data.role == 'owner'
+        && request.resource.data.active == true;
+    }
+
     match /site/published {
       allow read: if true;
-      allow write: if isActiveAdmin();
+      allow write: if canPublish();
     }
 
     match /site/draft {
@@ -38,7 +54,17 @@ service cloud.firestore {
     match /admins/{uid} {
       // Users may read only their own role document so the client can resolve access after login.
       allow read: if signedIn() && (request.auth.uid == uid || isOwner());
-      allow write: if isOwner();
+      allow create: if isBootstrapOwner(uid) || isOwner();
+      allow update, delete: if isOwner();
+    }
+
+    match /media/{assetId} {
+      allow read: if true;
+      allow write: if isActiveAdmin();
+    }
+
+    match /site_versions/{versionId} {
+      allow read, write: if isActiveAdmin();
     }
   }
 }

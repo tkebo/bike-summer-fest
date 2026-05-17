@@ -11,12 +11,14 @@ export const ROLES = {
   VIEWER: "viewer",
   EDITOR: "editor",
   ADMIN: "admin",
+  OWNER: "owner",
 };
 
 export const ROLE_PERMISSIONS = {
   [ROLES.VIEWER]: ["content:read"],
   [ROLES.EDITOR]: ["content:read", "content:write", "design:write"],
-  [ROLES.ADMIN]: ["content:read", "content:write", "design:write", "admin:write"],
+  [ROLES.ADMIN]: ["content:read", "content:write", "design:write", "admin:write", "publish:write"],
+  [ROLES.OWNER]: ["content:read", "content:write", "design:write", "admin:write", "publish:write"],
 };
 
 export const SECURITY_LIMITS = {
