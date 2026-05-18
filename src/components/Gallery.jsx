@@ -10,6 +10,7 @@ const Gallery = () => {
   const galleryImages = activeGalleryImages?.length
     ? activeGalleryImages
     : [cmsData.config.images.gallery1, cmsData.config.images.gallery2, cmsData.config.images.gallery3];
+  const imageStyles = cmsData.config.imageStyles || {};
   return (
 <>
         {/* GALLERY SECTION */}
@@ -21,7 +22,7 @@ const Gallery = () => {
             <div className="grid md:grid-cols-3 gap-6">
               {galleryImages.map((img, index) => (
                 <AdminFrame key={index} frameKey={`galleryBlock${index}`} label={`Gallery ${index + 1}`} className="overflow-hidden border border-white/10 global-box" style={{ padding: 0 }}>
-                  <img src={getOptimizedImageUrl(img, 720)} alt="Gallery" loading="lazy" decoding="async" className="h-96 w-full object-cover hover:scale-110 transition duration-500" />
+                  <img src={getOptimizedImageUrl(img, 720)} alt="Gallery" loading="lazy" decoding="async" className="w-full object-cover hover:scale-110 transition duration-500" style={{ height: `${imageStyles.galleryHeight || 384}px` }} />
                 </AdminFrame>
               ))}
             </div>

@@ -10,6 +10,7 @@ const Zones = () => {
     : isConfiguredImageActive(cmsData.config.galleryImages?.[2])
       ? cmsData.config.galleryImages[2]
       : cmsData.config.images.gallery3;
+  const imageStyles = cmsData.config.imageStyles || {};
   return (
 <>
         {/* ZONES SECTION */}
@@ -19,7 +20,16 @@ const Zones = () => {
             <Editable path="zonesTitle" langContext={lang} as="h2" className="text-5xl md:text-7xl font-black uppercase mb-12" />
 
             <div className="mx-auto mb-12 max-w-7xl border border-white/10 p-3 global-box">
-              <img src={getOptimizedImageUrl(zonesImage, 1600)} alt="Festival panorama" loading="lazy" decoding="async" className="mx-auto w-full h-[340px] md:h-[560px] object-cover object-center rounded-[28px]" />
+              <img
+                src={getOptimizedImageUrl(zonesImage, 1600)}
+                alt="Festival panorama"
+                loading="lazy"
+                decoding="async"
+                className="mx-auto w-full object-cover object-center rounded-[28px]"
+                style={{
+                  height: `clamp(${imageStyles.zonesMobileHeight || 340}px, 45vw, ${imageStyles.zonesDesktopHeight || 560}px)`,
+                }}
+              />
             </div>
 
             <div className="grid md:grid-cols-2 xl:grid-cols-4 gap-6 text-left">

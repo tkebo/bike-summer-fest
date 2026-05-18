@@ -3,26 +3,15 @@ import { CMSProvider } from "./context/CMSContext";
 import AdminOverlay from "./components/AdminOverlay";
 import SEOHead from "./components/SEOHead";
 import { useCMS } from "./hooks/useCMS";
-import { allowedSectionIds, sectionRegistry } from "./data/sectionRegistry";
+import SiteCanvas from "./components/SiteCanvas";
 
 const ProtectedAdminRoute = lazy(() => import("./components/ProtectedAdminRoute"));
 const AdminLayout = lazy(() => import("./components/admin/AdminLayout"));
 const IntroPortal = lazy(() => import("./components/IntroPortal"));
 
-const previewWidths = {
-  desktop: "100%",
-  tablet: "820px",
-  mobile: "390px",
-};
-
 function Platform() {
   const { editor, cmsData, isAdmin, lang } = useCMS();
   const isAdminRoute = window.location.pathname.startsWith("/admin");
-  const fallbackSections = (editor.sectionOrder || []).map((id, index) => ({ id, visible: editor.sectionVisibility?.[id] !== false, order: index + 1 }));
-  const sections = Array.isArray(cmsData.config.sections) && cmsData.config.sections.length
-    ? cmsData.config.sections.filter((section) => allowedSectionIds.includes(section.id)).sort((left, right) => left.order - right.order)
-    : fallbackSections;
-  const previewMode = editor.previewMode || "desktop";
 
   if (isAdminRoute) {
     return (
@@ -42,16 +31,7 @@ function Platform() {
       <Suspense fallback={null}>
         <IntroPortal settings={cmsData.config.introSettings} audioSettings={cmsData.config.introAudio} lang={lang} />
       </Suspense>
-      <div
-        className="mx-auto min-h-screen transition-all duration-300"
-        style={{ maxWidth: previewWidths[previewMode], width: "100%" }}
-      >
-        {sections.map((section, index) => {
-          const Section = sectionRegistry[section.id]?.component;
-          if (!Section || section.visible === false) return null;
-          return <Section key={`${section.id}-${index}`} />;
-        })}
-      </div>
+      <SiteCanvas cmsData={cmsData} editor={editor} />
     </main>
   );
 }

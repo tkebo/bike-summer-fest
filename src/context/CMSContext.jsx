@@ -96,7 +96,17 @@ export const CMSProvider = ({ children }) => {
   const countdownTargetValue = countdownTargetDate && eventSettings.countdown.targetTime
     ? `${countdownTargetDate}T${eventSettings.countdown.targetTime}:00`
     : cmsData.config.festivalDate;
-  const countdownLabels = eventSettings.countdown.labels?.[lang] || t.countdownLabels || defaultContent[lang].countdownLabels;
+  const countdownLabels = useMemo(() => {
+    const configuredCountdownLabels = eventSettings.countdown.labels?.[lang] || {};
+    const legacyCountdownLabels = t.countdownLabels || {};
+    const defaultCountdownLabels = defaultContent[lang].countdownLabels;
+    return {
+      days: configuredCountdownLabels.days || legacyCountdownLabels.days || defaultCountdownLabels.days,
+      hours: configuredCountdownLabels.hours || legacyCountdownLabels.hours || defaultCountdownLabels.hours,
+      minutes: configuredCountdownLabels.minutes || legacyCountdownLabels.minutes || defaultCountdownLabels.minutes,
+      seconds: configuredCountdownLabels.seconds || legacyCountdownLabels.seconds || defaultCountdownLabels.seconds,
+    };
+  }, [eventSettings.countdown.labels, lang, t.countdownLabels]);
   const { timeLeft, isFinished: countdownFinished } = useCountdown(countdownTargetValue);
   const isConfiguredImageActive = useCallback((url) => {
     if (!url) return false;

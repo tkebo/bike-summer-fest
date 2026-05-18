@@ -2,13 +2,13 @@ import { sectionRegistry } from "../../data/sectionRegistry";
 
 const layoutOptions = ["grid", "split", "centered", "full-width", "cards"];
 
-const SectionCard = ({ section, index, total, onPatch, onMove, onDuplicate, onReset }) => (
+const SectionCard = ({ section, index, total, onPatch, onMove, onDuplicate, onRemove, onReset, duplicate }) => (
   <article
     draggable
     onDragStart={(event) => event.dataTransfer.setData("text/plain", String(index))}
     onDragOver={(event) => event.preventDefault()}
     onDrop={(event) => onMove(Number(event.dataTransfer.getData("text/plain")), index)}
-    className={`rounded-2xl border bg-white/[0.045] p-5 ${section.visible ? "border-white/10" : "border-orange-400/30"}`}
+    className={`rounded-2xl border bg-white/[0.045] p-5 ${duplicate ? "border-red-400/60 bg-red-400/[0.08]" : section.visible ? "border-white/10" : "border-orange-400/30"}`}
   >
     <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
       <div className="flex items-center gap-3">
@@ -16,6 +16,7 @@ const SectionCard = ({ section, index, total, onPatch, onMove, onDuplicate, onRe
         <div>
           <h3 className="font-black">{section.label}</h3>
           <p className="text-xs text-white/45">{section.id}</p>
+          {duplicate && <p className="mt-1 text-xs font-black uppercase text-red-300">Duplicated section</p>}
         </div>
       </div>
       <div className="flex flex-wrap gap-2">
@@ -25,6 +26,7 @@ const SectionCard = ({ section, index, total, onPatch, onMove, onDuplicate, onRe
         <button disabled={index === 0} onClick={() => onMove(index, index - 1)} className="rounded-xl border border-white/15 px-3 py-2 text-xs font-black disabled:opacity-30">Up</button>
         <button disabled={index === total - 1} onClick={() => onMove(index, index + 1)} className="rounded-xl border border-white/15 px-3 py-2 text-xs font-black disabled:opacity-30">Down</button>
         <button onClick={onDuplicate} className="rounded-xl border border-white/15 px-3 py-2 text-xs font-black">Duplicate</button>
+        {duplicate && <button onClick={onRemove} className="rounded-xl border border-red-400/35 px-3 py-2 text-xs font-black text-red-200">Remove duplicate</button>}
         <button onClick={onReset} className="rounded-xl border border-orange-400/30 px-3 py-2 text-xs font-black text-orange-300">Reset</button>
       </div>
     </div>

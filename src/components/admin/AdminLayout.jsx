@@ -4,6 +4,7 @@ import AdminDashboard from "./AdminDashboard";
 import AdminSidebar from "./AdminSidebar";
 import AdminTopbar from "./AdminTopbar";
 import AdminModuleLoader from "./AdminModuleLoader";
+import SiteCanvas from "../SiteCanvas";
 
 const VisualEditor = lazy(() => import("../VisualEditor"));
 const ContentManager = lazy(() => import("./ContentManager"));
@@ -30,6 +31,7 @@ const PlaceholderModule = ({ title }) => (
 const AdminLayout = () => {
   const cms = useCMS();
   const [activeModule, setActiveModule] = useState("dashboard");
+  const [previewOpen, setPreviewOpen] = useState(true);
 
   const renderModule = () => {
     if (activeModule === "dashboard") return <AdminDashboard {...cms} />;
@@ -68,14 +70,30 @@ const AdminLayout = () => {
         canPublish={cms.canPublish}
         onPublish={cms.publishSite}
         onLogout={cms.logout}
+        previewOpen={previewOpen}
+        onTogglePreview={() => setPreviewOpen((current) => !current)}
       />
       <div className="grid lg:grid-cols-[260px_1fr]">
         <AdminSidebar activeModule={activeModule} onSelect={setActiveModule} canManageUsers={cms.canManageUsers} canReadAuditLogs={cms.canReadAuditLogs} />
         <main className="p-4 md:p-6">
-          <div className="mx-auto max-w-7xl">
+          <div className={`mx-auto grid max-w-[1800px] gap-4 ${previewOpen ? "2xl:grid-cols-[minmax(520px,760px)_minmax(520px,1fr)]" : ""}`}>
             <Suspense fallback={<AdminModuleLoader label="Loading admin module..." />}>
               {renderModule()}
             </Suspense>
+            {previewOpen && (
+              <section className="overflow-hidden rounded-2xl border border-cyan-300/20 bg-black/40">
+                <div className="flex items-center justify-between border-b border-white/10 px-4 py-3">
+                  <div>
+                    <div className="text-xs font-black uppercase text-cyan-200">Live Preview</div>
+                    <div className="text-xs text-white/45">Draft state updates immediately</div>
+                  </div>
+                  <span className="rounded-full bg-white/5 px-3 py-1 text-xs font-black">{cms.editor.previewMode}</span>
+                </div>
+                <div className="max-h-[calc(100vh-150px)] overflow-auto bg-[#050814]">
+                  <SiteCanvas cmsData={cms.cmsData} editor={cms.editor} />
+                </div>
+              </section>
+            )}
           </div>
         </main>
       </div>

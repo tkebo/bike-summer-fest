@@ -60,6 +60,7 @@ const Countdown = () => {
                       <div 
                         className="font-black countdown-label" 
                         style={{ 
+                          color: ev("countdownLabelColor"),
                           fontSize: `${ev("countdownLabelSize")}px`,
                           marginTop: `${ev("countdownLabelMarginTop")}px`,
                           letterSpacing: `${ev("countdownLabelLetterSpacing")}em`,

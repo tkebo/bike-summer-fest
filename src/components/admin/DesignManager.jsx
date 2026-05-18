@@ -1,5 +1,6 @@
 import { useMemo, useState } from "react";
 import { defaultEditor } from "../../data/defaultEditor";
+import { defaultContent } from "../../data/defaultContent";
 import DesignControl from "./DesignControl";
 import BackgroundControl from "./BackgroundControl";
 
@@ -87,6 +88,34 @@ const DesignManager = ({
       </div>
 
       <BackgroundControl backgrounds={cmsData.config.backgrounds} updateContent={updateContent} />
+      <section className="rounded-2xl border border-white/10 bg-white/[0.045] p-5">
+        <div className="mb-5 flex items-center justify-between">
+          <h3 className="font-black">Image Size Controls</h3>
+          <span className="text-xs font-black uppercase text-cyan-200">Live preview</span>
+        </div>
+        <div className="grid gap-5 md:grid-cols-2">
+          {[
+            ["galleryHeight", "Gallery image height", 120, 900],
+            ["zonesMobileHeight", "Zones image mobile height", 120, 900],
+            ["zonesDesktopHeight", "Zones image desktop height", 180, 1200],
+            ["faqHeight", "FAQ image height", 120, 900],
+            ["sponsorLogoHeight", "Sponsor logo height", 24, 240],
+            ["heroBackgroundScale", "Hero background scale", 50, 200],
+          ].map(([key, label, min, max]) => (
+            <label key={key} className="grid gap-2">
+              <span className="text-sm text-white/70">{label}</span>
+              <input
+                type="range"
+                min={min}
+                max={max}
+                value={cmsData.config.imageStyles?.[key] ?? defaultContent.config.imageStyles[key]}
+                onChange={(event) => updateContent(`config.imageStyles.${key}`, Number(event.target.value))}
+              />
+              <span className="text-xs text-cyan-200">{cmsData.config.imageStyles?.[key] ?? defaultContent.config.imageStyles[key]} px</span>
+            </label>
+          ))}
+        </div>
+      </section>
     </div>
   );
 };

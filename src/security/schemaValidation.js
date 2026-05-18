@@ -143,6 +143,17 @@ const validateContentShape = (payload) => {
       uiVolume: Math.min(Math.max(Number(introAudio.uiVolume) || 0, 0), 1),
     };
   }
+  if (isPlainObject(sanitized.config?.imageStyles)) {
+    const imageStyles = sanitized.config.imageStyles;
+    sanitized.config.imageStyles = {
+      galleryHeight: Math.min(Math.max(Number(imageStyles.galleryHeight) || 384, 120), 900),
+      zonesMobileHeight: Math.min(Math.max(Number(imageStyles.zonesMobileHeight) || 340, 120), 900),
+      zonesDesktopHeight: Math.min(Math.max(Number(imageStyles.zonesDesktopHeight) || 560, 180), 1200),
+      faqHeight: Math.min(Math.max(Number(imageStyles.faqHeight) || 320, 120), 900),
+      sponsorLogoHeight: Math.min(Math.max(Number(imageStyles.sponsorLogoHeight) || 64, 24), 240),
+      heroBackgroundScale: Math.min(Math.max(Number(imageStyles.heroBackgroundScale) || 100, 50), 200),
+    };
+  }
   if (Array.isArray(sanitized.config?.ticketPackages)) {
     sanitized.config.ticketPackages = sanitized.config.ticketPackages
       .filter((ticket) => isPlainObject(ticket))

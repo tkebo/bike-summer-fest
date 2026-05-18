@@ -443,6 +443,14 @@ export const defaultContent = {
       ambienceVolume: 0.5,
       uiVolume: 0.6,
     },
+    imageStyles: {
+      galleryHeight: 384,
+      zonesMobileHeight: 340,
+      zonesDesktopHeight: 560,
+      faqHeight: 320,
+      sponsorLogoHeight: 64,
+      heroBackgroundScale: 100,
+    },
     faqImage: "",
     zonesImage: "",
     backgrounds: {

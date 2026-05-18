@@ -10,6 +10,7 @@ const Hero = () => {
   const { cmsData, lang, ev, isConfiguredImageActive, introArrivalActive } = useCMS();
   const configuredHeroImage = isConfiguredImageActive(cmsData.config.heroImage) ? cmsData.config.heroImage : cmsData.config.images.hero;
   const heroImage = getOptimizedImageUrl(configuredHeroImage, 1920);
+  const imageStyles = cmsData.config.imageStyles || {};
   const heroBackgrounds = cmsData.config.backgrounds?.hero || {};
   const generatedHeroDate = lang === "ka"
     ? cmsData.config.eventSettings?.dates?.displayKa
@@ -25,7 +26,7 @@ const Hero = () => {
               backgroundImage: `linear-gradient(90deg, rgba(5,8,20,.95), rgba(5,8,20,.52), rgba(5,8,20,.78)), url('${heroImage}')`,
               filter: `blur(${ev("heroBgBlur")}px) brightness(${ev("heroBgBrightness")}%) contrast(${ev("heroBgContrast")}%)`,
               backgroundPosition: `${ev("heroBgPositionX")}% ${ev("heroBgPositionY")}%`,
-              backgroundSize: `${ev("heroBgScale")}%`,
+              backgroundSize: `${imageStyles.heroBackgroundScale || ev("heroBgScale")}%`,
             }}
           />
           <style>{`
