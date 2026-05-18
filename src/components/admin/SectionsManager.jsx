@@ -12,11 +12,11 @@ const SectionsManager = ({ cmsData, updateContent }) => {
   const sectionCounts = sections.reduce((counts, section) => ({ ...counts, [section.id]: (counts[section.id] || 0) + 1 }), {});
   const duplicateIds = Object.entries(sectionCounts).filter(([, count]) => count > 1).map(([id]) => id);
   const rendererCounts = sections.reduce((counts, section) => {
-    const renderer = sectionRegistry[section.id]?.component?.name || section.id;
+    const renderer = sectionRegistry[section.id]?.renderKey || section.id;
     return { ...counts, [renderer]: (counts[renderer] || 0) + 1 };
   }, {});
   const duplicateRendererIds = sections
-    .filter((section) => rendererCounts[sectionRegistry[section.id]?.component?.name || section.id] > 1)
+    .filter((section) => rendererCounts[sectionRegistry[section.id]?.renderKey || section.id] > 1)
     .map((section) => section.id);
 
   const commit = (nextSections) => updateContent("config.sections", nextSections.map((section, index) => ({ ...section, order: index + 1 })));
@@ -45,7 +45,7 @@ const SectionsManager = ({ cmsData, updateContent }) => {
   const removeDuplicateRenderers = () => {
     const seenRenderers = new Set();
     commit(sections.filter((section) => {
-      const renderer = sectionRegistry[section.id]?.component?.name || section.id;
+      const renderer = sectionRegistry[section.id]?.renderKey || section.id;
       if (seenRenderers.has(renderer)) return false;
       seenRenderers.add(renderer);
       return true;
@@ -85,7 +85,7 @@ const SectionsManager = ({ cmsData, updateContent }) => {
           onDuplicate={() => duplicateSection(index)}
           onRemove={() => removeSection(index)}
           onReset={() => resetSection(index)}
-          duplicate={sectionCounts[section.id] > 1 || rendererCounts[sectionRegistry[section.id]?.component?.name || section.id] > 1}
+          duplicate={sectionCounts[section.id] > 1 || rendererCounts[sectionRegistry[section.id]?.renderKey || section.id] > 1}
         />
       ))}
     </div>

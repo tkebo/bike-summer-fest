@@ -10,21 +10,21 @@ import Newsletter from "../components/Newsletter";
 import Footer from "../components/Footer";
 
 export const sectionRegistry = {
-  hero: { label: "Hero", component: Hero },
-  highlights: { label: "Highlights", component: About },
-  about: { label: "About", component: About },
-  zones: { label: "Zones", component: Zones },
-  panorama: { label: "Panorama", component: Zones },
-  schedule: { label: "Schedule", component: Schedule },
-  tickets: { label: "Tickets", component: Tickets },
-  sponsors: { label: "Sponsors", component: Sponsors },
-  "sponsor-marquee": { label: "Sponsor Marquee", component: Sponsors },
-  social: { label: "Social", component: Sponsors },
-  faq: { label: "FAQ", component: FAQ },
-  gallery: { label: "Gallery", component: Gallery },
-  newsletter: { label: "Newsletter", component: Newsletter },
-  footer: { label: "Footer", component: Footer },
-  "intro-portal": { label: "Intro Portal", component: null },
+  hero: { label: "Hero", component: Hero, renderKey: "hero" },
+  highlights: { label: "Highlights", component: About, renderKey: "about" },
+  about: { label: "About", component: About, renderKey: "about" },
+  zones: { label: "Zones", component: Zones, renderKey: "zones" },
+  panorama: { label: "Panorama", component: Zones, renderKey: "zones" },
+  schedule: { label: "Schedule", component: Schedule, renderKey: "schedule" },
+  tickets: { label: "Tickets", component: Tickets, renderKey: "tickets" },
+  sponsors: { label: "Sponsors", component: Sponsors, renderKey: "sponsors" },
+  "sponsor-marquee": { label: "Sponsor Marquee", component: Sponsors, renderKey: "sponsors" },
+  social: { label: "Social", component: Sponsors, renderKey: "sponsors" },
+  faq: { label: "FAQ", component: FAQ, renderKey: "faq" },
+  gallery: { label: "Gallery", component: Gallery, renderKey: "gallery" },
+  newsletter: { label: "Newsletter", component: Newsletter, renderKey: "newsletter" },
+  footer: { label: "Footer", component: Footer, renderKey: "footer" },
+  "intro-portal": { label: "Intro Portal", component: null, renderKey: "intro-portal" },
 };
 
 export const allowedSectionIds = Object.keys(sectionRegistry);
