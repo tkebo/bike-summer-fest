@@ -100,6 +100,8 @@ const DesignManager = ({
             ["zonesDesktopHeight", "Zones image desktop height", 180, 1200],
             ["faqHeight", "FAQ image height", 120, 900],
             ["sponsorLogoHeight", "Sponsor logo height", 24, 240],
+            ["sponsorLogoMaxWidth", "Sponsor logo max width", 80, 480],
+            ["sponsorLogoPadding", "Sponsor logo padding", 0, 64],
             ["heroBackgroundScale", "Hero background scale", 50, 200],
           ].map(([key, label, min, max]) => (
             <label key={key} className="grid gap-2">
@@ -113,6 +115,44 @@ const DesignManager = ({
               />
               <span className="text-xs text-cyan-200">{cmsData.config.imageStyles?.[key] ?? defaultContent.config.imageStyles[key]} px</span>
             </label>
+          ))}
+        </div>
+        <div className="mt-6 grid gap-5 xl:grid-cols-3">
+          {[
+            ["gallery", "Gallery images"],
+            ["zones", "Zones panorama"],
+            ["faq", "FAQ / location image"],
+          ].map(([prefix, label]) => (
+            <div key={prefix} className="rounded-2xl border border-white/10 bg-black/20 p-4">
+              <h4 className="font-black">{label}</h4>
+              <label className="mt-4 grid gap-2">
+                <span className="text-sm text-white/70">Fit inside section</span>
+                <select
+                  value={cmsData.config.imageStyles?.[`${prefix}Fit`] ?? defaultContent.config.imageStyles[`${prefix}Fit`]}
+                  onChange={(event) => updateContent(`config.imageStyles.${prefix}Fit`, event.target.value)}
+                  className="rounded-xl border border-white/10 bg-black/35 px-3 py-2 text-sm"
+                >
+                  <option value="cover">Cover</option>
+                  <option value="contain">Contain</option>
+                </select>
+              </label>
+              {[
+                [`${prefix}PositionX`, "Horizontal position"],
+                [`${prefix}PositionY`, "Vertical position"],
+              ].map(([key, positionLabel]) => (
+                <label key={key} className="mt-4 grid gap-2">
+                  <span className="text-sm text-white/70">{positionLabel}</span>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={cmsData.config.imageStyles?.[key] ?? defaultContent.config.imageStyles[key]}
+                    onChange={(event) => updateContent(`config.imageStyles.${key}`, Number(event.target.value))}
+                  />
+                  <span className="text-xs text-cyan-200">{cmsData.config.imageStyles?.[key] ?? defaultContent.config.imageStyles[key]}%</span>
+                </label>
+              ))}
+            </div>
           ))}
         </div>
       </section>

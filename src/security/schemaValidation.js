@@ -147,10 +147,21 @@ const validateContentShape = (payload) => {
     const imageStyles = sanitized.config.imageStyles;
     sanitized.config.imageStyles = {
       galleryHeight: Math.min(Math.max(Number(imageStyles.galleryHeight) || 384, 120), 900),
+      galleryFit: ["cover", "contain"].includes(imageStyles.galleryFit) ? imageStyles.galleryFit : "cover",
+      galleryPositionX: Math.min(Math.max(Number(imageStyles.galleryPositionX) || 50, 0), 100),
+      galleryPositionY: Math.min(Math.max(Number(imageStyles.galleryPositionY) || 50, 0), 100),
       zonesMobileHeight: Math.min(Math.max(Number(imageStyles.zonesMobileHeight) || 340, 120), 900),
       zonesDesktopHeight: Math.min(Math.max(Number(imageStyles.zonesDesktopHeight) || 560, 180), 1200),
+      zonesFit: ["cover", "contain"].includes(imageStyles.zonesFit) ? imageStyles.zonesFit : "cover",
+      zonesPositionX: Math.min(Math.max(Number(imageStyles.zonesPositionX) || 50, 0), 100),
+      zonesPositionY: Math.min(Math.max(Number(imageStyles.zonesPositionY) || 50, 0), 100),
       faqHeight: Math.min(Math.max(Number(imageStyles.faqHeight) || 320, 120), 900),
+      faqFit: ["cover", "contain"].includes(imageStyles.faqFit) ? imageStyles.faqFit : "cover",
+      faqPositionX: Math.min(Math.max(Number(imageStyles.faqPositionX) || 50, 0), 100),
+      faqPositionY: Math.min(Math.max(Number(imageStyles.faqPositionY) || 50, 0), 100),
       sponsorLogoHeight: Math.min(Math.max(Number(imageStyles.sponsorLogoHeight) || 64, 24), 240),
+      sponsorLogoMaxWidth: Math.min(Math.max(Number(imageStyles.sponsorLogoMaxWidth) || 220, 80), 480),
+      sponsorLogoPadding: Math.min(Math.max(Number(imageStyles.sponsorLogoPadding) || 20, 0), 64),
       heroBackgroundScale: Math.min(Math.max(Number(imageStyles.heroBackgroundScale) || 100, 50), 200),
     };
   }

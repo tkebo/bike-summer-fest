@@ -6,7 +6,7 @@ import { getOptimizedImageUrl } from "../lib/cloudinary";
 import { isSafeHttpUrl } from "../security/sanitize";
 
 const Sponsors = () => {
-  const { t, lang, cmsData, isConfiguredImageActive } = useCMS();
+  const { t, lang, cmsData, isConfiguredImageActive, eventSettings } = useCMS();
   const sponsorLogos = cmsData.config.sponsorLogos?.filter(isConfiguredImageActive) || [];
   const configuredSponsors = [...(cmsData.config.sponsors || [])]
     .filter((sponsor) => sponsor.active !== false)
@@ -15,11 +15,30 @@ const Sponsors = () => {
   const marqueeSponsors = configuredSponsors.filter((sponsor) => sponsor.showInMarquee !== false);
   const hasConfiguredSponsors = configuredSponsors.length > 0;
   const imageStyles = cmsData.config.imageStyles || {};
+  const socialLinkKeys = ["facebook", "instagram", "tiktok", "youtube", "telegram", "whatsapp"];
+  const socialLinks = eventSettings.socials || {};
+  const firstActiveSocialLink = socialLinkKeys
+    .map((key) => socialLinks[key])
+    .find((url) => isSafeHttpUrl(url));
 
-  const renderSponsorContent = (sponsor, imageClassName = "w-full object-contain") => {
+  const renderSponsorContent = (sponsor, imageClassName = "max-w-full object-contain") => {
     const hasActiveLogo = sponsor.logo && isConfiguredImageActive(sponsor.logo);
     const content = hasActiveLogo
-      ? <img src={getOptimizedImageUrl(sponsor.logo, 320)} alt={sponsor.name} loading="lazy" decoding="async" className={imageClassName} style={{ height: `${imageStyles.sponsorLogoHeight || 64}px` }} />
+      ? (
+        <img
+          src={getOptimizedImageUrl(sponsor.logo, 480)}
+          alt={sponsor.name}
+          loading="lazy"
+          decoding="async"
+          className={imageClassName}
+          style={{
+            width: "100%",
+            height: `${imageStyles.sponsorLogoHeight || 64}px`,
+            maxWidth: `${imageStyles.sponsorLogoMaxWidth || 220}px`,
+            objectFit: "contain",
+          }}
+        />
+      )
       : sponsor.name;
 
     return sponsor.website && isSafeHttpUrl(sponsor.website) ? (
@@ -49,7 +68,11 @@ const Sponsors = () => {
             <div className="grid grid-cols-2 gap-5">
               {hasConfiguredSponsors
                 ? gridSponsors.map((sponsor) => (
-                  <div key={sponsor.id} className="border border-white/10 flex items-center justify-center text-center font-black tracking-widest hover:border-cyan-300/50 hover:-translate-y-2 transition duration-300 global-box">
+                  <div
+                    key={sponsor.id}
+                    className="border border-white/10 flex min-h-[132px] items-center justify-center text-center font-black tracking-widest hover:border-cyan-300/50 hover:-translate-y-2 transition duration-300 global-box"
+                    style={{ padding: `${imageStyles.sponsorLogoPadding || 20}px` }}
+                  >
                     {renderSponsorContent(sponsor)}
                   </div>
                 ))
@@ -72,13 +95,34 @@ const Sponsors = () => {
             <div className="marquee-track flex gap-5 w-max animate-marquee">
               {hasConfiguredSponsors
                 ? [...marqueeSponsors, ...marqueeSponsors].map((sponsor, index) => (
-                  <div key={`${sponsor.id}-${index}`} className="min-w-[240px] border border-white/10 flex items-center justify-center px-6 text-center font-black tracking-[0.18em] global-box">
+                  <div
+                    key={`${sponsor.id}-${index}`}
+                    className="min-w-[240px] border border-white/10 flex min-h-[116px] items-center justify-center text-center font-black tracking-[0.18em] global-box"
+                    style={{ padding: `${imageStyles.sponsorLogoPadding || 20}px` }}
+                  >
                     {renderSponsorContent(sponsor)}
                   </div>
                 ))
                 : [...(sponsorLogos.length ? sponsorLogos : t.sponsorMarqueeItems), ...(sponsorLogos.length ? sponsorLogos : t.sponsorMarqueeItems)].map((item, index) => (
-                  <div key={`${item}-${index}`} className="min-w-[240px] border border-white/10 flex items-center justify-center px-6 text-center font-black tracking-[0.18em] global-box">
-                    {sponsorLogos.length ? <img src={getOptimizedImageUrl(item, 320)} alt="Sponsor" loading="lazy" decoding="async" className="w-full object-contain" style={{ height: `${imageStyles.sponsorLogoHeight || 64}px` }} /> : item}
+                  <div
+                    key={`${item}-${index}`}
+                    className="min-w-[240px] border border-white/10 flex min-h-[116px] items-center justify-center text-center font-black tracking-[0.18em] global-box"
+                    style={{ padding: `${imageStyles.sponsorLogoPadding || 20}px` }}
+                  >
+                    {sponsorLogos.length ? (
+                      <img
+                        src={getOptimizedImageUrl(item, 480)}
+                        alt="Sponsor"
+                        loading="lazy"
+                        decoding="async"
+                        className="max-w-full object-contain"
+                        style={{
+                          width: "100%",
+                          height: `${imageStyles.sponsorLogoHeight || 64}px`,
+                          maxWidth: `${imageStyles.sponsorLogoMaxWidth || 220}px`,
+                        }}
+                      />
+                    ) : item}
                   </div>
                 ))}
             </div>
@@ -93,14 +137,32 @@ const Sponsors = () => {
               <Editable path="socialTitle" langContext={lang} as="h2" className="text-5xl md:text-7xl font-black uppercase leading-none" />
               <Editable path="socialText" langContext={lang} multiline as="p" className="text-white/65 leading-relaxed mt-8 inline-block" />
               <br/>
-              <a href="#contact" className="inline-flex mt-8 px-8 py-4 rounded-2xl bg-cyan-300 text-black font-black hover:scale-105 transition shadow-[0_0_40px_rgba(0,217,255,.35)]">
+              <a
+                href={firstActiveSocialLink || "#contact"}
+                target={firstActiveSocialLink ? "_blank" : undefined}
+                rel={firstActiveSocialLink ? "noreferrer" : undefined}
+                className="inline-flex mt-8 px-8 py-4 rounded-2xl bg-cyan-300 text-black font-black hover:scale-105 transition shadow-[0_0_40px_rgba(0,217,255,.35)]"
+              >
                 <Editable path="socialButton" langContext={lang} as="span" />
               </a>
             </div>
 
             <div className="grid sm:grid-cols-2 gap-5">
-              {t.socialCards.map((item, index) => (
-                <motion.a key={index} href="#contact" initial={{ opacity: 0, y: 24 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: index * 0.05 }} className="group border border-white/10 hover:border-cyan-300/50 hover:-translate-y-2 transition duration-300 global-box">
+              {t.socialCards.map((item, index) => {
+                const socialUrl = socialLinks[socialLinkKeys[index]];
+                const hasSocialUrl = isSafeHttpUrl(socialUrl);
+                return (
+                <motion.a
+                  key={index}
+                  href={hasSocialUrl ? socialUrl : "#contact"}
+                  target={hasSocialUrl ? "_blank" : undefined}
+                  rel={hasSocialUrl ? "noreferrer" : undefined}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: index * 0.05 }}
+                  className="group border border-white/10 hover:border-cyan-300/50 hover:-translate-y-2 transition duration-300 global-box"
+                >
                   <div className="flex items-center gap-4">
                     <div className="w-14 h-14 rounded-2xl bg-cyan-300/10 border border-cyan-300/25 flex items-center justify-center text-2xl font-black text-cyan-300 group-hover:bg-cyan-300 group-hover:text-black transition">{item.icon}</div>
                     <div>
@@ -109,7 +171,7 @@ const Sponsors = () => {
                     </div>
                   </div>
                 </motion.a>
-              ))}
+              )})}
             </div>
           </div>
         </section>

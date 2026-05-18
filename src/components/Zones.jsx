@@ -25,9 +25,11 @@ const Zones = () => {
                 alt="Festival panorama"
                 loading="lazy"
                 decoding="async"
-                className="mx-auto w-full object-cover object-center rounded-[28px]"
+                className="mx-auto w-full rounded-[28px]"
                 style={{
                   height: `clamp(${imageStyles.zonesMobileHeight || 340}px, 45vw, ${imageStyles.zonesDesktopHeight || 560}px)`,
+                  objectFit: imageStyles.zonesFit || "cover",
+                  objectPosition: `${imageStyles.zonesPositionX || 50}% ${imageStyles.zonesPositionY || 50}%`,
                 }}
               />
             </div>
