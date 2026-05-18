@@ -14,6 +14,7 @@ const TicketsManager = lazy(() => import("./TicketsManager"));
 const SponsorsManager = lazy(() => import("./SponsorsManager"));
 const ScheduleManager = lazy(() => import("./ScheduleManager"));
 const EventSettingsManager = lazy(() => import("./EventSettingsManager"));
+const IntroSettingsManager = lazy(() => import("./IntroSettingsManager"));
 const SEOManager = lazy(() => import("./SEOManager"));
 const PublishManager = lazy(() => import("./PublishManager"));
 const UsersManager = lazy(() => import("./UsersManager"));
@@ -40,6 +41,7 @@ const AdminLayout = () => {
     if (activeModule === "sponsors") return <SponsorsManager {...cms} />;
     if (activeModule === "schedule") return <ScheduleManager {...cms} />;
     if (activeModule === "event-settings") return <EventSettingsManager {...cms} />;
+    if (activeModule === "intro-settings") return <IntroSettingsManager {...cms} />;
     if (activeModule === "seo") return <SEOManager {...cms} />;
     if (activeModule === "users" && cms.canManageUsers) return <UsersManager {...cms} />;
     if (activeModule === "security" && cms.canReadAuditLogs) return <SecurityManager {...cms} />;

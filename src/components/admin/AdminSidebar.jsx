@@ -8,6 +8,7 @@ const adminModules = [
   ["sponsors", "Sponsors"],
   ["schedule", "Schedule"],
   ["event-settings", "Event Settings"],
+  ["intro-settings", "Intro Settings"],
   ["seo", "SEO"],
   ["users", "Users"],
   ["visual-builder", "Visual Builder"],

@@ -7,7 +7,7 @@ import AdminFrame from "./AdminFrame";
 import { getOptimizedImageUrl } from "../lib/cloudinary";
 
 const Hero = () => {
-  const { cmsData, lang, ev, isConfiguredImageActive } = useCMS();
+  const { cmsData, lang, ev, isConfiguredImageActive, introArrivalActive } = useCMS();
   const configuredHeroImage = isConfiguredImageActive(cmsData.config.heroImage) ? cmsData.config.heroImage : cmsData.config.images.hero;
   const heroImage = getOptimizedImageUrl(configuredHeroImage, 1920);
   const heroBackgrounds = cmsData.config.backgrounds?.hero || {};
@@ -85,7 +85,7 @@ const Hero = () => {
               />
 
               <AdminFrame frameKey="heroCta" label="CTA Buttons" className="inline-flex">
-              <div className="flex flex-wrap mt-10" style={{ gap: `${ev("heroCtaBtnGap")}px` }}>
+              <div className={`flex flex-wrap mt-10 ${introArrivalActive ? "intro-arrival-cta" : ""}`} style={{ gap: `${ev("heroCtaBtnGap")}px` }}>
                 <Editable path="heroGetTicketsBtn" langContext={lang} as="a" href="#tickets" className="px-9 py-4 rounded-xl text-white font-black transition shadow-[0_0_40px_rgba(255,77,0,.45)] inline-block" style={{ backgroundColor: ev("accentOrangeColor"), boxShadow: `0 0 40px ${ev("accentOrangeColor")}55` }} />
                 <Editable path="heroExploreBtn" langContext={lang} as="a" href="#zones" className="px-9 py-4 rounded-xl border bg-black/30 backdrop-blur-xl font-black hover:text-black transition inline-block" style={{ borderColor: `${ev("accentCyanColor")}b3`, color: ev("accentCyanColor"), backgroundColor: "rgba(0,0,0,0.18)" }} />
               </div>
@@ -94,6 +94,15 @@ const Hero = () => {
             </AdminFrame>
           </div>
         </section>
+        <style>{`
+          .intro-arrival-logo { animation: introArrivalLogo 2.2s ease both; }
+          .intro-arrival-countdown { animation: introArrivalCountdown 1.4s .25s cubic-bezier(.2,.8,.2,1) both; }
+          .intro-arrival-cta > *:first-child { animation: introArrivalButton .9s .45s cubic-bezier(.2,.8,.2,1) both; }
+          .intro-arrival-cta > *:last-child { animation: introArrivalButton .9s .62s cubic-bezier(.2,.8,.2,1) both; }
+          @keyframes introArrivalLogo { 0% { filter: brightness(.7); text-shadow: 0 0 0 rgba(0,217,255,0); } 35% { filter: brightness(1.5); text-shadow: 0 0 48px rgba(0,217,255,.8); } 100% { filter: brightness(1); } }
+          @keyframes introArrivalCountdown { from { opacity: 0; transform: translate(${ev("countdownTranslateX")}%, 22px) scale(.92); } to { opacity: 1; transform: translate(${ev("countdownTranslateX")}%, 0) scale(${ev("countdownScale")}); } }
+          @keyframes introArrivalButton { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: translateY(0); } }
+        `}</style>
 </>
   );
 };

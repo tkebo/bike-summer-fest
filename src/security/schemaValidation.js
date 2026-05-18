@@ -112,6 +112,37 @@ const validateContentShape = (payload) => {
   if (sanitized.config?.zonesImage) {
     sanitized.config.zonesImage = sanitizeUrl(sanitized.config.zonesImage, "");
   }
+  if (isPlainObject(sanitized.config?.introSettings)) {
+    const introSettings = sanitized.config.introSettings;
+    sanitized.config.introSettings = {
+      enabled: introSettings.enabled !== false,
+      skipEnabled: introSettings.skipEnabled !== false,
+      replayEnabled: introSettings.replayEnabled !== false,
+      mobileLiteMode: introSettings.mobileLiteMode !== false,
+      autoSkipAfterMs: Math.min(Math.max(Number(introSettings.autoSkipAfterMs) || 12000, 2000), 30000),
+      volume: Math.min(Math.max(Number(introSettings.volume) || 0, 0), 1),
+      visorTextKa: sanitizeDeep(introSettings.visorTextKa || "ENTER THE RIDE"),
+      visorTextEn: sanitizeDeep(introSettings.visorTextEn || "ENTER THE RIDE"),
+      introMode: ["cinematic", "lite"].includes(introSettings.introMode) ? introSettings.introMode : "cinematic",
+      cinematicIntensity: Math.min(Math.max(Number(introSettings.cinematicIntensity) || 0, 0), 1),
+      particleDensity: Math.min(Math.max(Number(introSettings.particleDensity) || 0, 0), 1),
+      fogDensity: Math.min(Math.max(Number(introSettings.fogDensity) || 0, 0), 1),
+      glowStrength: Math.min(Math.max(Number(introSettings.glowStrength) || 0, 0), 1),
+      cameraMotionAmount: Math.min(Math.max(Number(introSettings.cameraMotionAmount) || 0, 0), 1),
+      transitionSpeed: Math.min(Math.max(Number(introSettings.transitionSpeed) || 1, 0.5), 2),
+      durationPreset: ["short", "cinematic", "ultra"].includes(introSettings.durationPreset) ? introSettings.durationPreset : "cinematic",
+    };
+  }
+  if (isPlainObject(sanitized.config?.introAudio)) {
+    const introAudio = sanitized.config.introAudio;
+    sanitized.config.introAudio = {
+      enabled: introAudio.enabled !== false,
+      masterVolume: Math.min(Math.max(Number(introAudio.masterVolume) || 0, 0), 1),
+      engineVolume: Math.min(Math.max(Number(introAudio.engineVolume) || 0, 0), 1),
+      ambienceVolume: Math.min(Math.max(Number(introAudio.ambienceVolume) || 0, 0), 1),
+      uiVolume: Math.min(Math.max(Number(introAudio.uiVolume) || 0, 0), 1),
+    };
+  }
   if (Array.isArray(sanitized.config?.ticketPackages)) {
     sanitized.config.ticketPackages = sanitized.config.ticketPackages
       .filter((ticket) => isPlainObject(ticket))

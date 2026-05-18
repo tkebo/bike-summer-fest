@@ -48,6 +48,7 @@ export const CMSProvider = ({ children }) => {
   const [editorSaveStatus, setEditorSaveStatus] = useState("Saved");
   const [formData, setFormData] = useState({ name: "", contact: "", type: "ticket", message: "" });
   const [cloudHydrated, setCloudHydrated] = useState(false);
+  const [introArrivalActive, setIntroArrivalActive] = useState(false);
   const {
     user,
     authReady,
@@ -112,6 +113,15 @@ export const CMSProvider = ({ children }) => {
     const timeout = window.setTimeout(() => setEditorSaveStatus("Saved"), 450);
     return () => window.clearTimeout(timeout);
   }, [editor]);
+
+  useEffect(() => {
+    const handleArrival = () => {
+      setIntroArrivalActive(true);
+      window.setTimeout(() => setIntroArrivalActive(false), 3200);
+    };
+    window.addEventListener("bikefest:intro-arrival", handleArrival);
+    return () => window.removeEventListener("bikefest:intro-arrival", handleArrival);
+  }, []);
 
   useEffect(() => {
     if (!authReady || !adminReady) return undefined;
@@ -480,6 +490,7 @@ export const CMSProvider = ({ children }) => {
     t,
     countdownLabels,
     countdownFinished,
+    introArrivalActive,
     eventSettings,
     timeLeft,
     designTabs,
@@ -525,7 +536,7 @@ export const CMSProvider = ({ children }) => {
   }), [
     cmsData, editor, adminMode, lang, menuOpen, openFaq, editorOpen, editorTab,
     activeDesignCategory, editorSaveStatus, formData, ev, t, countdownLabels,
-    timeLeft, countdownFinished, eventSettings, navItems, requestTypes, updateContent, resetCms, exportData,
+    timeLeft, countdownFinished, introArrivalActive, eventSettings, navItems, requestTypes, updateContent, resetCms, exportData,
     importData, updateEditor, patchEditor, updateFrame, toggleSectionVisibility,
     setPreviewMode, reorderSections, duplicateSection, saveEditor, exportEditorData, importEditorData,
     resetEditor, renderDesignSliders, closeMenu, handleChange, handleSubmit,

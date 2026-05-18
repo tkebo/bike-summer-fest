@@ -1,9 +1,10 @@
 import { memo } from "react";
 import { useCMS } from "../hooks/useCMS";
 import Editable from "./Editable";
+import { INTRO_REPLAY_EVENT } from "./intro/introEvents";
 
 const Footer = () => {
-  const { t, lang, formData, handleChange, handleSubmit, requestTypes, eventSettings } = useCMS();
+  const { t, lang, formData, handleChange, handleSubmit, requestTypes, eventSettings, cmsData } = useCMS();
   return (
 <>
         {/* FOOTER */}
@@ -17,6 +18,15 @@ const Footer = () => {
                 <p className="text-white/70">{eventSettings.contact.email}</p>
                 <p className="text-white/70 mt-2">{eventSettings.contact.phone}</p>
                 <p className="text-white/45 mt-4">{eventSettings.location[lang] || eventSettings.location.en}</p>
+                {cmsData.config.introSettings?.replayEnabled !== false && (
+                  <button
+                    type="button"
+                    onClick={() => window.dispatchEvent(new Event(INTRO_REPLAY_EVENT))}
+                    className="mt-5 text-sm font-black uppercase tracking-widest text-cyan-200 transition hover:text-white"
+                  >
+                    Replay intro
+                  </button>
+                )}
               </div>
             </div>
 

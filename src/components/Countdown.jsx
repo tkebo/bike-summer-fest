@@ -3,7 +3,7 @@ import { useCMS } from "../hooks/useCMS";
 import AdminFrame from "./AdminFrame";
 
 const Countdown = () => {
-  const { ev, timeLeft, countdownLabels, countdownFinished, eventSettings, lang } = useCMS();
+  const { ev, timeLeft, countdownLabels, countdownFinished, eventSettings, lang, introArrivalActive } = useCMS();
   if (eventSettings.countdown.enabled === false) return null;
   const finishedMessage = lang === "ka" ? eventSettings.countdown.finishedMessageKa : eventSettings.countdown.finishedMessageEn;
   return (
@@ -12,7 +12,7 @@ const Countdown = () => {
               <AdminFrame
                 frameKey="countdown"
                 label="Countdown"
-                className="absolute backdrop-blur-2xl flex items-center justify-center"
+                className={`absolute backdrop-blur-2xl flex items-center justify-center ${introArrivalActive ? "intro-arrival-countdown" : ""}`}
                 style={{ 
                   left: `${ev("countdownLeftPercent")}%`,
                   top: ev("countdownTop") >= 0 ? `${ev("countdownTop")}px` : "auto",

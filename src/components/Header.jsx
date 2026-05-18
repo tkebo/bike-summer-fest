@@ -6,7 +6,7 @@ import Countdown from "./Countdown";
 import AdminFrame from "./AdminFrame";
 
 const Header = () => {
-  const { ev, lang, setLang, navItems, menuOpen, setMenuOpen, closeMenu } = useCMS();
+  const { ev, lang, setLang, navItems, menuOpen, setMenuOpen, closeMenu, introArrivalActive } = useCMS();
   return (
 <>
           {/* HEADER */}
@@ -39,7 +39,7 @@ const Header = () => {
                 <div className="flex-1 min-w-0">
                   <AdminFrame frameKey="logo" label="Logo" className="inline-block" resize={false}>
                   <div 
-                    className="font-black whitespace-nowrap inline-block" 
+                    className={`font-black whitespace-nowrap inline-block ${introArrivalActive ? "intro-arrival-logo" : ""}`}
                     style={{ 
                       fontSize: `clamp(34px, 5vw, ${ev("logoFontSize")}px)`,
                       letterSpacing: `${ev("logoLetterSpacing")}em`, 
