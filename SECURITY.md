@@ -1,47 +1,51 @@
-# Security Roadmap
+# Security
 
-This project currently supports MVP local editing with `localStorage`. Production admin usage must move admin state and CMS writes behind authentication, authorization, and server-side validation.
+## Access Model
 
-## Admin Access
-- MVP: editor state is local-only.
-- Production: add `/admin` route behind auth.
-- Roles: `viewer`, `editor`, `admin`.
-- Admin mutations must require a token and server-side role checks.
+- `/admin` requires Firebase Authentication.
+- Runtime roles are resolved from `admins/{uid}`.
+- Supported roles: `owner`, `admin`, `editor`, `viewer`.
+- `owner/admin` can publish.
+- `editor` can edit draft content only.
+- `viewer` can access readonly admin surfaces.
+- The client allowlist is only a development fallback. Firestore role documents are the production source of truth.
 
-## Input Safety
-- Editable input is sanitized before persistence.
-- React renders plain text; no `dangerouslySetInnerHTML` is used.
-- URLs must pass an allowlist before being stored as config image URLs.
+## Firestore Collections
 
-## Import Safety
-- JSON imports are validated against known schema shape.
-- Blocked fields include script-like and prototype pollution keys.
-- Backups are versioned with `{ meta, data }`.
+- `site/published`: public read, owner/admin write
+- `site/draft`: active admin read/write
+- `site_versions`: active admin read/write
+- `media`: public read, active admin write
+- `admins`: owner-managed role documents
+- `pending_invites`: owner-managed invite queue
+- `audit_logs`: owner/admin read, active admin create, update/delete denied
 
-## Storage Safety
-- `localStorage` is only for development/MVP.
-- Future Supabase/Firebase storage must separate public content from private admin data.
-- Database rules/RLS must enforce per-role access.
+Deploy [firestore.rules](./firestore.rules) before using production admin flows.
 
-## Upload Safety
-- Only image MIME types should be accepted.
-- Enforce file size limits.
-- Sanitize filenames.
-- Prefer signed Cloudinary upload or Supabase Storage policies.
+## Input and Import Safety
 
-## API Security
-- All future mutating calls require authenticated headers.
-- Server-side validation is mandatory.
-- Rate limiting is required for admin, upload, and import endpoints.
+- User-editable text is sanitized before persistence.
+- React renders plain text only; no `dangerouslySetInnerHTML` is used.
+- JSON imports pass schema validation and reject blocked keys such as script handlers and prototype pollution fields.
+- URL fields are validated before storage.
+- Image uploads validate MIME type and size before Cloudinary transfer.
 
 ## Secrets
-- Browser env vars may contain public keys only.
-- Service role keys must never be included in frontend code or Vite env.
+
+- Browser env vars may contain public Firebase config only.
+- Do not commit `.env`.
+- Do not ship service account credentials, service role keys, or private tokens to the browser.
 
 ## Deployment Headers
-Configure these at hosting/CDN level:
+
+Recommended Vercel/CDN headers:
+
 - `Content-Security-Policy`
 - `X-Frame-Options: DENY`
 - `X-Content-Type-Options: nosniff`
 - `Referrer-Policy: strict-origin-when-cross-origin`
 - HTTPS only
+
+## Audit Trail
+
+Audit logs are written for authentication, draft save, publish, restore, import/export, media changes, user changes, sponsor changes, ticket changes, and schedule structure changes. Logs are append-only from the client perspective.

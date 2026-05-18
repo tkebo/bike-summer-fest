@@ -21,7 +21,7 @@ const Gallery = () => {
             <div className="grid md:grid-cols-3 gap-6">
               {galleryImages.map((img, index) => (
                 <AdminFrame key={index} frameKey={`galleryBlock${index}`} label={`Gallery ${index + 1}`} className="overflow-hidden border border-white/10 global-box" style={{ padding: 0 }}>
-                  <img src={getOptimizedImageUrl(img, 720)} alt="Gallery" className="h-96 w-full object-cover hover:scale-110 transition duration-500" />
+                  <img src={getOptimizedImageUrl(img, 720)} alt="Gallery" loading="lazy" decoding="async" className="h-96 w-full object-cover hover:scale-110 transition duration-500" />
                 </AdminFrame>
               ))}
             </div>

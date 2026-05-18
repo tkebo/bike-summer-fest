@@ -42,6 +42,11 @@ const AuditLogTable = ({ logs }) => (
           </tr>
         </thead>
         <tbody>
+          {!logs.length && (
+            <tr className="border-t border-white/10">
+              <td colSpan="6" className="px-4 py-8 text-center text-white/45">No audit logs match the current filters.</td>
+            </tr>
+          )}
           {logs.map((log) => {
             const severity = severityMap[log.action] || "low";
             return (

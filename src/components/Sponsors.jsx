@@ -18,7 +18,7 @@ const Sponsors = () => {
   const renderSponsorContent = (sponsor, imageClassName = "h-16 w-full object-contain") => {
     const hasActiveLogo = sponsor.logo && isConfiguredImageActive(sponsor.logo);
     const content = hasActiveLogo
-      ? <img src={getOptimizedImageUrl(sponsor.logo, 320)} alt={sponsor.name} className={imageClassName} />
+      ? <img src={getOptimizedImageUrl(sponsor.logo, 320)} alt={sponsor.name} loading="lazy" decoding="async" className={imageClassName} />
       : sponsor.name;
 
     return sponsor.website && isSafeHttpUrl(sponsor.website) ? (
@@ -77,7 +77,7 @@ const Sponsors = () => {
                 ))
                 : [...(sponsorLogos.length ? sponsorLogos : t.sponsorMarqueeItems), ...(sponsorLogos.length ? sponsorLogos : t.sponsorMarqueeItems)].map((item, index) => (
                   <div key={`${item}-${index}`} className="min-w-[240px] border border-white/10 flex items-center justify-center px-6 text-center font-black tracking-[0.18em] global-box">
-                    {sponsorLogos.length ? <img src={getOptimizedImageUrl(item, 320)} alt="Sponsor" className="h-16 w-full object-contain" /> : item}
+                    {sponsorLogos.length ? <img src={getOptimizedImageUrl(item, 320)} alt="Sponsor" loading="lazy" decoding="async" className="h-16 w-full object-contain" /> : item}
                   </div>
                 ))}
             </div>

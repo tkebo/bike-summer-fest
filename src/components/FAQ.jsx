@@ -21,7 +21,7 @@ const FAQ = () => {
               <Editable path="faqTitle" langContext={lang} as="h2" className="text-5xl md:text-7xl font-black uppercase leading-none" />
 
               <div className="mt-10 border border-white/10 global-box" style={{ padding: '16px' }}>
-                <img src={getOptimizedImageUrl(faqImage, 960)} alt="Anaklia Ganmukhuri" className="w-full h-[320px] object-cover rounded-[28px]" />
+                <img src={getOptimizedImageUrl(faqImage, 960)} alt="Anaklia Ganmukhuri" loading="lazy" decoding="async" className="w-full h-[320px] object-cover rounded-[28px]" />
                 <div className="p-4">
                   <Editable path="locationTitle" langContext={lang} as="h3" className="text-3xl font-black mt-4" />
                   <p className="text-white/60 mt-4 leading-relaxed inline-block">{eventSettings.location[lang] || t.locationText}</p>
