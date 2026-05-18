@@ -35,6 +35,8 @@ export const isFirestoreAdmin = (user, adminProfile) => {
 
 export const canPublish = (role) => hasPermission(role, "publish:write");
 export const canManageUsers = (role) => hasPermission(role, "users:manage");
+export const canReadAuditLogs = (role) => hasPermission(role, "audit:read");
+export const canManageSecurity = (role) => hasPermission(role, "security:write");
 
 export const requireAdminAction = (session, permission) => {
   if (!session?.isAuthenticated) {

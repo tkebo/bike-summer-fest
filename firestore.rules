@@ -32,6 +32,12 @@ service cloud.firestore {
         && currentAdmin().role in ['owner', 'admin'];
     }
 
+    function canReadAuditLogs() {
+      return hasAdminDoc()
+        && currentAdmin().active == true
+        && currentAdmin().role in ['owner', 'admin'];
+    }
+
     function isBootstrapOwner(uid) {
       return signedIn()
         && request.auth.uid == uid
@@ -88,6 +94,12 @@ service cloud.firestore {
 
     match /site_versions/{versionId} {
       allow read, write: if isActiveAdmin();
+    }
+
+    match /audit_logs/{logId} {
+      allow read: if canReadAuditLogs();
+      allow create: if isActiveAdmin();
+      allow update, delete: if false;
     }
   }
 }

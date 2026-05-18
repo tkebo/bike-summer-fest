@@ -1,5 +1,6 @@
 import { lazy, Suspense, useState } from "react";
 import { defaultContent } from "../../data/defaultContent";
+import { AUDIT_ACTIONS, logAudit } from "../../security/securityAudit";
 
 const TicketPackageEditor = lazy(() => import("./TicketPackageEditor"));
 
@@ -16,10 +17,18 @@ const createPackage = (index) => ({
   en: { name: "", desc: "", ctaText: "Send Request", features: [] },
 });
 
-const TicketsManager = ({ cmsData, updateContent }) => {
+const TicketsManager = ({ cmsData, updateContent, user, adminProfile }) => {
   const [language, setLanguage] = useState("ka");
   const packages = [...(cmsData.config.ticketPackages || [])].sort((left, right) => left.order - right.order);
   const commit = (nextPackages) => updateContent("config.ticketPackages", nextPackages.map((ticket, index) => ({ ...ticket, order: index + 1 })));
+  const audit = (action, ticket, summary) => logAudit(action, {
+    actorUid: user?.uid || "",
+    actorEmail: user?.email || "",
+    actorRole: adminProfile?.role || "",
+    targetType: "ticket",
+    targetId: ticket?.id || "",
+    summary,
+  });
   const patch = (index, nextPatch) => commit(packages.map((ticket, ticketIndex) => (ticketIndex === index ? { ...ticket, ...nextPatch } : ticket)));
   const patchLocale = (index, nextPatch) => patch(index, { [language]: { ...packages[index][language], ...nextPatch } });
   const move = (fromIndex, toIndex) => {
@@ -41,7 +50,11 @@ const TicketsManager = ({ cmsData, updateContent }) => {
           <div className="flex flex-wrap gap-2">
             <button onClick={() => setLanguage("ka")} className={`rounded-xl px-4 py-2 font-black ${language === "ka" ? "bg-cyan-300 text-black" : "bg-white/5 text-white/70"}`}>ქართული</button>
             <button onClick={() => setLanguage("en")} className={`rounded-xl px-4 py-2 font-black ${language === "en" ? "bg-cyan-300 text-black" : "bg-white/5 text-white/70"}`}>English</button>
-            <button onClick={() => commit([...packages, createPackage(packages.length)])} className="rounded-xl bg-cyan-300 px-4 py-2 font-black text-black">Add package</button>
+            <button onClick={() => {
+              const ticket = createPackage(packages.length);
+              commit([...packages, ticket]);
+              audit(AUDIT_ACTIONS.TICKET_ADD, ticket, "Ticket package added");
+            }} className="rounded-xl bg-cyan-300 px-4 py-2 font-black text-black">Add package</button>
           </div>
         </div>
       </section>
@@ -54,9 +67,19 @@ const TicketsManager = ({ cmsData, updateContent }) => {
             total={packages.length}
             onPatch={(nextPatch) => patch(index, nextPatch)}
             onPatchLocale={(nextPatch) => patchLocale(index, nextPatch)}
-            onDuplicate={() => commit([...packages.slice(0, index + 1), { ...ticket, id: `${ticket.id}-copy-${Date.now()}` }, ...packages.slice(index + 1)])}
-            onDisable={() => patch(index, { active: !ticket.active })}
-          onDelete={() => commit(packages.filter((_, ticketIndex) => ticketIndex !== index))}
+            onDuplicate={() => {
+              const duplicate = { ...ticket, id: `${ticket.id}-copy-${Date.now()}` };
+              commit([...packages.slice(0, index + 1), duplicate, ...packages.slice(index + 1)]);
+              audit(AUDIT_ACTIONS.TICKET_ADD, duplicate, "Ticket package duplicated");
+            }}
+            onDisable={() => {
+              patch(index, { active: !ticket.active });
+              audit(AUDIT_ACTIONS.TICKET_EDIT, ticket, `Ticket package ${ticket.active ? "disabled" : "enabled"}`);
+            }}
+          onDelete={() => {
+            commit(packages.filter((_, ticketIndex) => ticketIndex !== index));
+            audit(AUDIT_ACTIONS.TICKET_DELETE, ticket, "Ticket package deleted");
+          }}
           onMove={move}
           onReset={() => reset(index)}
           />

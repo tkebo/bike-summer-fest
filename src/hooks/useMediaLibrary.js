@@ -10,6 +10,7 @@ import {
 import { db } from "../lib/firebase";
 import { uploadImage } from "../lib/cloudinary";
 import { validateFutureImageUpload } from "../security/uploadPolicy";
+import { AUDIT_ACTIONS, logAudit } from "../security/securityAudit";
 
 const MEDIA_COLLECTION = collection(db, "media");
 
@@ -62,6 +63,14 @@ export const useMediaLibrary = (user, isAdmin) => {
       createdBy: user.uid,
       active: true,
     });
+    await logAudit(AUDIT_ACTIONS.MEDIA_UPLOAD, {
+      actorUid: user.uid,
+      actorEmail: user.email || "",
+      targetType: "media",
+      targetId: ref.id,
+      summary: `Uploaded ${title}`,
+      metadata: { type, publicId: upload.public_id },
+    });
     setMediaUploadProgress(0);
     return { id: ref.id, url: upload.secure_url, publicId: upload.public_id, type, alt: "", title, tags: [], active: true };
   }, [isAdmin, user]);
@@ -74,8 +83,26 @@ export const useMediaLibrary = (user, isAdmin) => {
     });
   }, [isAdmin]);
 
-  const softDeleteMediaAsset = useCallback((assetId) => updateMediaAsset(assetId, { active: false }), [updateMediaAsset]);
-  const restoreMediaAsset = useCallback((assetId) => updateMediaAsset(assetId, { active: true }), [updateMediaAsset]);
+  const softDeleteMediaAsset = useCallback(async (assetId) => {
+    await updateMediaAsset(assetId, { active: false });
+    await logAudit(AUDIT_ACTIONS.MEDIA_DEACTIVATE, {
+      actorUid: user.uid,
+      actorEmail: user.email || "",
+      targetType: "media",
+      targetId: assetId,
+      summary: "Media asset deactivated",
+    });
+  }, [updateMediaAsset, user]);
+  const restoreMediaAsset = useCallback(async (assetId) => {
+    await updateMediaAsset(assetId, { active: true });
+    await logAudit(AUDIT_ACTIONS.MEDIA_RESTORE, {
+      actorUid: user.uid,
+      actorEmail: user.email || "",
+      targetType: "media",
+      targetId: assetId,
+      summary: "Media asset restored",
+    });
+  }, [updateMediaAsset, user]);
 
   return {
     mediaAssets,

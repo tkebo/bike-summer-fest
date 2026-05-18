@@ -17,6 +17,7 @@ const EventSettingsManager = lazy(() => import("./EventSettingsManager"));
 const SEOManager = lazy(() => import("./SEOManager"));
 const PublishManager = lazy(() => import("./PublishManager"));
 const UsersManager = lazy(() => import("./UsersManager"));
+const SecurityManager = lazy(() => import("./SecurityManager"));
 
 const PlaceholderModule = ({ title }) => (
   <section className="rounded-2xl border border-white/10 bg-white/[0.045] p-6">
@@ -41,6 +42,7 @@ const AdminLayout = () => {
     if (activeModule === "event-settings") return <EventSettingsManager {...cms} />;
     if (activeModule === "seo") return <SEOManager {...cms} />;
     if (activeModule === "users" && cms.canManageUsers) return <UsersManager {...cms} />;
+    if (activeModule === "security" && cms.canReadAuditLogs) return <SecurityManager {...cms} />;
     if (activeModule === "publish") return <PublishManager {...cms} />;
     if (activeModule === "visual-builder") {
       return (
@@ -66,7 +68,7 @@ const AdminLayout = () => {
         onLogout={cms.logout}
       />
       <div className="grid lg:grid-cols-[260px_1fr]">
-        <AdminSidebar activeModule={activeModule} onSelect={setActiveModule} canManageUsers={cms.canManageUsers} />
+        <AdminSidebar activeModule={activeModule} onSelect={setActiveModule} canManageUsers={cms.canManageUsers} canReadAuditLogs={cms.canReadAuditLogs} />
         <main className="p-4 md:p-6">
           <div className="mx-auto max-w-7xl">
             <Suspense fallback={<AdminModuleLoader label="Loading admin module..." />}>

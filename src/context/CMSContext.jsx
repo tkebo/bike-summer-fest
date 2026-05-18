@@ -10,7 +10,8 @@ import { setNestedValue, mergeWithDefaults } from "../utils/cmsHelpers";
 import { createEditorValueResolver } from "../utils/themeHelpers";
 import { downloadJson, readJsonFile } from "../utils/exportImport";
 import { sanitizeText, sanitizeDeep } from "../security/sanitize";
-import { canManageUsers, canPublish, isAdminUser, isFirestoreAdmin, requireAdminAction } from "../security/authPolicy";
+import { canManageSecurity, canManageUsers, canPublish, canReadAuditLogs, isAdminUser, isFirestoreAdmin, requireAdminAction } from "../security/authPolicy";
+import { AUDIT_ACTIONS, logAudit } from "../security/securityAudit";
 import { ROLES } from "../security/securityConfig";
 import { createVersionedBackup, validateImportedContent, validateImportedEditor } from "../security/schemaValidation";
 
@@ -167,8 +168,16 @@ export const CMSProvider = ({ children }) => {
   const exportData = useCallback(() => {
     if (window.confirm("Export a versioned CMS backup JSON file?")) {
       downloadJson("festival_cms_backup.json", createVersionedBackup("cms", cmsData));
+      logAudit(AUDIT_ACTIONS.EXPORT_CONFIG, {
+        actorUid: session.uid || "",
+        actorEmail: session.email || "",
+        actorRole: session.role,
+        targetType: "backup",
+        targetId: "cms",
+        summary: "Exported CMS backup",
+      });
     }
-  }, [cmsData]);
+  }, [cmsData, session]);
 
   const importData = useCallback((event) => {
     const file = event.target.files[0];
@@ -179,7 +188,17 @@ export const CMSProvider = ({ children }) => {
     }
     requireAdminAction(session, "content:write");
     readJsonFile(file)
-      .then((json) => setCmsData(mergeWithDefaults(defaultContent, validateImportedContent(json))))
+      .then((json) => {
+        setCmsData(mergeWithDefaults(defaultContent, validateImportedContent(json)));
+        return logAudit(AUDIT_ACTIONS.IMPORT_CONFIG, {
+          actorUid: session.uid || "",
+          actorEmail: session.email || "",
+          actorRole: session.role,
+          targetType: "backup",
+          targetId: "cms",
+          summary: "Imported CMS backup to draft",
+        });
+      })
       .catch(() => alert("Invalid JSON file"));
     event.target.value = "";
   }, [session]);
@@ -266,6 +285,14 @@ export const CMSProvider = ({ children }) => {
     if (version.editorSnapshot) {
       setEditor({ ...defaultEditor, ...validateImportedEditor(version.editorSnapshot) });
     }
+    logAudit(AUDIT_ACTIONS.RESTORE_VERSION, {
+      actorUid: session.uid || "",
+      actorEmail: session.email || "",
+      actorRole: session.role,
+      targetType: "version",
+      targetId: version.id,
+      summary: "Restored version to draft",
+    });
   }, [session]);
 
   const restoreVersionAndPublish = useCallback(async (version) => {
@@ -279,11 +306,27 @@ export const CMSProvider = ({ children }) => {
 
   const exportFullBackup = useCallback(() => {
     downloadJson("festival_full_backup.json", createVersionedBackup("full", { content: cmsData, editor }));
-  }, [cmsData, editor]);
+    logAudit(AUDIT_ACTIONS.EXPORT_CONFIG, {
+      actorUid: session.uid || "",
+      actorEmail: session.email || "",
+      actorRole: session.role,
+      targetType: "backup",
+      targetId: "full",
+      summary: "Exported full backup",
+    });
+  }, [cmsData, editor, session]);
 
   const exportContentData = useCallback(() => {
     downloadJson("festival_content_backup.json", createVersionedBackup("cms", cmsData));
-  }, [cmsData]);
+    logAudit(AUDIT_ACTIONS.EXPORT_CONFIG, {
+      actorUid: session.uid || "",
+      actorEmail: session.email || "",
+      actorRole: session.role,
+      targetType: "backup",
+      targetId: "content",
+      summary: "Exported content backup",
+    });
+  }, [cmsData, session]);
 
   const importFullBackup = useCallback(async (file) => {
     requireAdminAction(session, "content:write");
@@ -292,6 +335,14 @@ export const CMSProvider = ({ children }) => {
     if (!payload?.content) throw new Error("Full backup must include content");
     setCmsData(mergeWithDefaults(defaultContent, validateImportedContent(payload.content)));
     if (payload.editor) setEditor({ ...defaultEditor, ...validateImportedEditor(payload.editor) });
+    await logAudit(AUDIT_ACTIONS.IMPORT_CONFIG, {
+      actorUid: session.uid || "",
+      actorEmail: session.email || "",
+      actorRole: session.role,
+      targetType: "backup",
+      targetId: "full",
+      summary: "Imported full backup to draft",
+    });
   }, [session]);
 
   const exportEditorData = useCallback(() => {
@@ -454,6 +505,8 @@ export const CMSProvider = ({ children }) => {
     publishSite,
     canPublish: canPublish(session.role),
     canManageUsers: canManageUsers(session.role),
+    canReadAuditLogs: canReadAuditLogs(session.role),
+    canManageSecurity: canManageSecurity(session.role),
     restoreVersionToDraft,
     restoreVersionAndPublish,
     refreshVersions,

@@ -19,6 +19,7 @@ import {
 } from "firebase/auth";
 import { auth, db, googleProvider } from "../lib/firebase";
 import { isAdminUser } from "../security/authPolicy";
+import { AUDIT_ACTIONS, logAudit } from "../security/securityAudit";
 
 const DRAFT_REF = () => doc(db, "site", "draft");
 const PUBLISHED_REF = () => doc(db, "site", "published");
@@ -163,6 +164,14 @@ export const useFirebaseCMS = () => {
           const invite = await loadPendingInvite(nextUser.email.toLowerCase());
           setAdminProfile(invite ? await acceptPendingInvite(nextUser, invite) : null);
         }
+        await logAudit(AUDIT_ACTIONS.LOGIN, {
+          actorUid: nextUser.uid,
+          actorEmail: nextUser.email || "",
+          actorRole: existingProfile?.role || "pending",
+          targetType: "auth",
+          targetId: nextUser.uid,
+          summary: "User logged in",
+        });
       } catch (error) {
         console.error(error);
         setAdminProfile(null);
@@ -179,8 +188,18 @@ export const useFirebaseCMS = () => {
   }, []);
 
   const logout = useCallback(async () => {
+    if (user) {
+      await logAudit(AUDIT_ACTIONS.LOGOUT, {
+        actorUid: user.uid,
+        actorEmail: user.email || "",
+        actorRole: adminProfile?.role || "",
+        targetType: "auth",
+        targetId: user.uid,
+        summary: "User logged out",
+      });
+    }
     await signOut(auth);
-  }, []);
+  }, [adminProfile, user]);
 
   const loadCloudConfig = useCallback(async (authenticated) => {
     try {
@@ -205,6 +224,14 @@ export const useFirebaseCMS = () => {
       setCloudSaveStatus("Saving draft...");
       await saveDraftConfig(data, user);
       setDraftMeta(await loadDraftConfig());
+      await logAudit(AUDIT_ACTIONS.DRAFT_SAVE, {
+        actorUid: user?.uid || "",
+        actorEmail: user?.email || "",
+        actorRole: adminProfile?.role || "",
+        targetType: "site",
+        targetId: "draft",
+        summary: "Draft autosaved",
+      });
       setCloudStatus("Connected");
       setCloudSaveStatus("Draft Saved");
       return true;
@@ -214,7 +241,7 @@ export const useFirebaseCMS = () => {
       setCloudSaveStatus("Offline");
       return false;
     }
-  }, [user]);
+  }, [adminProfile, user]);
 
   const publish = useCallback(async (data, note = "") => {
     try {
@@ -225,6 +252,15 @@ export const useFirebaseCMS = () => {
       setVersions(await loadVersions());
       setCloudStatus("Connected");
       setPublishStatus("Published");
+      await logAudit(AUDIT_ACTIONS.PUBLISH, {
+        actorUid: user?.uid || "",
+        actorEmail: user?.email || "",
+        actorRole: adminProfile?.role || "",
+        targetType: "site",
+        targetId: "published",
+        summary: note || "Draft published",
+        metadata: { versionId },
+      });
       return true;
     } catch (error) {
       console.error(error);
@@ -232,7 +268,7 @@ export const useFirebaseCMS = () => {
       setPublishStatus("Publish failed");
       return false;
     }
-  }, [user]);
+  }, [adminProfile, user]);
 
   const refreshVersions = useCallback(async () => {
     try {
@@ -256,7 +292,15 @@ export const useFirebaseCMS = () => {
       updatedAt: serverTimestamp(),
     });
     await refreshAdminUsers();
-  }, [refreshAdminUsers]);
+    await logAudit(AUDIT_ACTIONS.USER_INVITE, {
+      actorUid: user?.uid || "",
+      actorEmail: user?.email || "",
+      actorRole: adminProfile?.role || "",
+      targetType: "pending_invite",
+      targetId: email,
+      summary: `Invited ${email} as ${role}`,
+    });
+  }, [adminProfile?.role, refreshAdminUsers, user]);
 
   const updateAdminUser = useCallback(async (uid, patch) => {
     await updateDoc(ADMIN_REF(uid), {
@@ -264,12 +308,32 @@ export const useFirebaseCMS = () => {
       updatedAt: serverTimestamp(),
     });
     await refreshAdminUsers();
-  }, [refreshAdminUsers]);
+    await logAudit(
+      patch.role ? AUDIT_ACTIONS.USER_ROLE_CHANGE : AUDIT_ACTIONS.USER_DEACTIVATE,
+      {
+        actorUid: user?.uid || "",
+        actorEmail: user?.email || "",
+        actorRole: adminProfile?.role || "",
+        targetType: "admin_user",
+        targetId: uid,
+        summary: patch.role ? `Changed role to ${patch.role}` : `Changed active state to ${patch.active}`,
+        metadata: patch,
+      }
+    );
+  }, [adminProfile?.role, refreshAdminUsers, user]);
 
   const removeAdminUser = useCallback(async (uid) => {
     await deleteDoc(ADMIN_REF(uid));
     await refreshAdminUsers();
-  }, [refreshAdminUsers]);
+    await logAudit(AUDIT_ACTIONS.USER_REMOVE, {
+      actorUid: user?.uid || "",
+      actorEmail: user?.email || "",
+      actorRole: adminProfile?.role || "",
+      targetType: "admin_user",
+      targetId: uid,
+      summary: "Removed admin access",
+    });
+  }, [adminProfile?.role, refreshAdminUsers, user]);
 
   const removePendingInvite = useCallback(async (email) => {
     await deleteDoc(INVITE_REF(email));
