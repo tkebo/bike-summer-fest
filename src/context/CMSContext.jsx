@@ -302,6 +302,12 @@ export const CMSProvider = ({ children }) => {
     await publish({ content: cmsData, editor }, note);
   }, [cmsData, editor, publish, session]);
 
+  const quickPublishSite = useCallback(async () => {
+    requireAdminAction(session, "publish:write");
+    await saveDraft({ content: cmsData, editor });
+    await publish({ content: cmsData, editor }, "Quick publish from admin topbar");
+  }, [cmsData, editor, publish, saveDraft, session]);
+
   const restoreVersionToDraft = useCallback((version) => {
     requireAdminAction(session, "content:write");
     if (!version?.contentSnapshot) return;
@@ -528,6 +534,7 @@ export const CMSProvider = ({ children }) => {
     loginWithGoogle,
     logout: logoutAdmin,
     publishSite,
+    quickPublishSite,
     canPublish: canPublish(session.role),
     canManageUsers: canManageUsers(session.role),
     canReadAuditLogs: canReadAuditLogs(session.role),
@@ -557,7 +564,7 @@ export const CMSProvider = ({ children }) => {
     setPreviewMode, reorderSections, duplicateSection, saveEditor, exportEditorData, importEditorData,
     resetEditor, renderDesignSliders, closeMenu, handleChange, handleSubmit,
     session, user, isAdmin, firestoreAdmin, authReady, adminProfile, adminReady, cloudStatus, cloudSaveStatus, publishStatus,
-    draftMeta, publishedMeta, versions, adminUsers, pendingInvites, cloudHydrated, loginWithGoogle, logoutAdmin, publishSite, restoreVersionToDraft,
+    draftMeta, publishedMeta, versions, adminUsers, pendingInvites, cloudHydrated, loginWithGoogle, logoutAdmin, publishSite, quickPublishSite, restoreVersionToDraft,
     restoreVersionAndPublish, refreshVersions, exportFullBackup, exportContentData, importFullBackup, mediaLibrary, isConfiguredImageActive,
     refreshAdminUsers, inviteAdminUser, updateAdminUser, removeAdminUser, removePendingInvite, subscribeToDraft, setLivePreviewSnapshot,
   ]);

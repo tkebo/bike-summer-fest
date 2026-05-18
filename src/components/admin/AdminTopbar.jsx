@@ -11,7 +11,7 @@ const AdminTopbar = ({ user, role, cloudStatus, cloudSaveStatus, publishStatus, 
       <span className="rounded-full bg-white/5 px-3 py-2">{user?.email} / {role}</span>
       <button onClick={onTogglePreview} className="rounded-xl border border-cyan-300/25 px-4 py-2 font-black text-cyan-100">{previewOpen ? "Hide preview" : "Show preview"}</button>
       <button onClick={() => window.open("/admin/preview", "_blank", "noopener,noreferrer")} className="rounded-xl border border-cyan-300/25 px-4 py-2 font-black text-cyan-100">Open full preview</button>
-      {canPublish && <button onClick={onPublish} className="rounded-xl bg-orange-500 px-4 py-2 font-black text-black">Publish</button>}
+      {canPublish && <button onClick={onPublish} className="rounded-xl bg-orange-500 px-4 py-2 font-black text-black">Publish now</button>}
       <button onClick={onLogout} className="rounded-xl border border-white/15 px-4 py-2 font-black text-white/80">Logout</button>
     </div>
   </header>

@@ -68,7 +68,7 @@ const AdminLayout = () => {
         cloudSaveStatus={cms.cloudSaveStatus}
         publishStatus={cms.publishStatus}
         canPublish={cms.canPublish}
-        onPublish={cms.publishSite}
+        onPublish={cms.quickPublishSite}
         onLogout={cms.logout}
         previewOpen={previewOpen}
         onTogglePreview={() => setPreviewOpen((current) => !current)}
