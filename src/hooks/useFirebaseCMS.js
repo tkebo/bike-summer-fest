@@ -6,6 +6,7 @@ import {
   getDoc,
   getDocs,
   deleteDoc,
+  onSnapshot,
   orderBy,
   query,
   serverTimestamp,
@@ -340,6 +341,12 @@ export const useFirebaseCMS = () => {
     await refreshAdminUsers();
   }, [refreshAdminUsers]);
 
+  const subscribeToDraft = useCallback((onChange) => {
+    return onSnapshot(DRAFT_REF(), (snapshot) => {
+      onChange(snapshot.exists() ? snapshot.data() : null);
+    });
+  }, []);
+
   return {
     user,
     authReady,
@@ -364,5 +371,6 @@ export const useFirebaseCMS = () => {
     updateAdminUser,
     removeAdminUser,
     removePendingInvite,
+    subscribeToDraft,
   };
 };

@@ -49,6 +49,7 @@ export const CMSProvider = ({ children }) => {
   const [formData, setFormData] = useState({ name: "", contact: "", type: "ticket", message: "" });
   const [cloudHydrated, setCloudHydrated] = useState(false);
   const [introArrivalActive, setIntroArrivalActive] = useState(false);
+  const [livePreviewSnapshot, setLivePreviewSnapshot] = useState(null);
   const {
     user,
     authReady,
@@ -73,6 +74,7 @@ export const CMSProvider = ({ children }) => {
     updateAdminUser,
     removeAdminUser,
     removePendingInvite,
+    subscribeToDraft,
   } = useFirebaseCMS();
   const firestoreAdmin = isFirestoreAdmin(user, adminProfile);
   const isAdmin = firestoreAdmin || (import.meta.env.DEV && isAdminUser(user));
@@ -85,9 +87,11 @@ export const CMSProvider = ({ children }) => {
     uid: user?.uid ?? null,
   }), [adminProfile?.role, isAdmin, user]);
 
-  const ev = useMemo(() => createEditorValueResolver(editor, defaultEditor), [editor]);
-  const t = cmsData[lang] || defaultContent[lang];
-  const eventSettings = cmsData.config.eventSettings || defaultContent.config.eventSettings;
+  const activeCmsData = livePreviewSnapshot?.content || cmsData;
+  const activeEditor = livePreviewSnapshot?.editor || editor;
+  const ev = useMemo(() => createEditorValueResolver(activeEditor, defaultEditor), [activeEditor]);
+  const t = activeCmsData[lang] || defaultContent[lang];
+  const eventSettings = activeCmsData.config.eventSettings || defaultContent.config.eventSettings;
   const countdownTargetDate = eventSettings.countdown.mode === "end_date"
     ? eventSettings.dates.end
     : eventSettings.countdown.mode === "custom_deadline"
@@ -95,7 +99,7 @@ export const CMSProvider = ({ children }) => {
       : eventSettings.dates.start;
   const countdownTargetValue = countdownTargetDate && eventSettings.countdown.targetTime
     ? `${countdownTargetDate}T${eventSettings.countdown.targetTime}:00`
-    : cmsData.config.festivalDate;
+    : activeCmsData.config.festivalDate;
   const countdownLabels = useMemo(() => {
     const configuredCountdownLabels = eventSettings.countdown.labels?.[lang] || {};
     const legacyCountdownLabels = t.countdownLabels || {};
@@ -456,9 +460,9 @@ export const CMSProvider = ({ children }) => {
   }, [formData, lang]);
 
   const value = useMemo(() => ({
-    cmsData,
+    cmsData: activeCmsData,
     setCmsData,
-    editor,
+    editor: activeEditor,
     setEditor,
     adminMode: isAdmin ? adminMode : false,
     setAdminMode,
@@ -536,6 +540,8 @@ export const CMSProvider = ({ children }) => {
     updateAdminUser,
     removeAdminUser,
     removePendingInvite,
+    subscribeToDraft,
+    setLivePreviewSnapshot,
     exportFullBackup,
     exportContentData,
     importFullBackup,
@@ -544,7 +550,7 @@ export const CMSProvider = ({ children }) => {
     handleChange,
     handleSubmit,
   }), [
-    cmsData, editor, adminMode, lang, menuOpen, openFaq, editorOpen, editorTab,
+    activeCmsData, activeEditor, adminMode, lang, menuOpen, openFaq, editorOpen, editorTab,
     activeDesignCategory, editorSaveStatus, formData, ev, t, countdownLabels,
     timeLeft, countdownFinished, introArrivalActive, eventSettings, navItems, requestTypes, updateContent, resetCms, exportData,
     importData, updateEditor, patchEditor, updateFrame, toggleSectionVisibility,
@@ -553,7 +559,7 @@ export const CMSProvider = ({ children }) => {
     session, user, isAdmin, firestoreAdmin, authReady, adminProfile, adminReady, cloudStatus, cloudSaveStatus, publishStatus,
     draftMeta, publishedMeta, versions, adminUsers, pendingInvites, cloudHydrated, loginWithGoogle, logoutAdmin, publishSite, restoreVersionToDraft,
     restoreVersionAndPublish, refreshVersions, exportFullBackup, exportContentData, importFullBackup, mediaLibrary, isConfiguredImageActive,
-    refreshAdminUsers, inviteAdminUser, updateAdminUser, removeAdminUser, removePendingInvite,
+    refreshAdminUsers, inviteAdminUser, updateAdminUser, removeAdminUser, removePendingInvite, subscribeToDraft, setLivePreviewSnapshot,
   ]);
 
   return <CMSContext.Provider value={value}>{children}</CMSContext.Provider>;

@@ -7,11 +7,23 @@ import SiteCanvas from "./components/SiteCanvas";
 
 const ProtectedAdminRoute = lazy(() => import("./components/ProtectedAdminRoute"));
 const AdminLayout = lazy(() => import("./components/admin/AdminLayout"));
+const AdminPreviewPage = lazy(() => import("./components/admin/AdminPreviewPage"));
 const IntroPortal = lazy(() => import("./components/IntroPortal"));
 
 function Platform() {
   const { editor, cmsData, isAdmin, lang } = useCMS();
+  const isAdminPreviewRoute = window.location.pathname.startsWith("/admin/preview");
   const isAdminRoute = window.location.pathname.startsWith("/admin");
+
+  if (isAdminPreviewRoute) {
+    return (
+      <Suspense fallback={<div className="flex min-h-screen items-center justify-center bg-[#050814] text-sm font-black text-white/70">Loading live preview...</div>}>
+        <ProtectedAdminRoute>
+          <AdminPreviewPage />
+        </ProtectedAdminRoute>
+      </Suspense>
+    );
+  }
 
   if (isAdminRoute) {
     return (
