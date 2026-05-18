@@ -347,6 +347,12 @@ export const useFirebaseCMS = () => {
     });
   }, []);
 
+  const subscribeToPublished = useCallback((onChange) => {
+    return onSnapshot(PUBLISHED_REF(), (snapshot) => {
+      onChange(snapshot.exists() ? snapshot.data() : null);
+    });
+  }, []);
+
   return {
     user,
     authReady,
@@ -372,5 +378,6 @@ export const useFirebaseCMS = () => {
     removeAdminUser,
     removePendingInvite,
     subscribeToDraft,
+    subscribeToPublished,
   };
 };

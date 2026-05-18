@@ -75,6 +75,7 @@ export const CMSProvider = ({ children }) => {
     removeAdminUser,
     removePendingInvite,
     subscribeToDraft,
+    subscribeToPublished,
   } = useFirebaseCMS();
   const firestoreAdmin = isFirestoreAdmin(user, adminProfile);
   const isAdmin = firestoreAdmin || (import.meta.env.DEV && isAdminUser(user));
@@ -141,7 +142,8 @@ export const CMSProvider = ({ children }) => {
     if (!authReady || !adminReady) return undefined;
 
     let active = true;
-    loadCloudConfig(isAdmin).then((snapshot) => {
+    const isAdminWorkspaceRoute = window.location.pathname.startsWith("/admin");
+    loadCloudConfig(isAdmin && isAdminWorkspaceRoute).then((snapshot) => {
       if (!active) return;
       if (snapshot?.content) {
         setCmsData(mergeWithDefaults(defaultContent, validateImportedContent(snapshot.content)));
@@ -163,7 +165,27 @@ export const CMSProvider = ({ children }) => {
   }, [adminReady, authReady, isAdmin, loadCloudConfig]);
 
   useEffect(() => {
-    if (!isAdmin || !cloudHydrated) return undefined;
+    const isAdminWorkspaceRoute = window.location.pathname.startsWith("/admin");
+    if (isAdminWorkspaceRoute) return undefined;
+
+    return subscribeToPublished((snapshot) => {
+      if (!snapshot) return;
+
+      if (snapshot.content) {
+        setCmsData(mergeWithDefaults(defaultContent, validateImportedContent(snapshot.content)));
+      } else if (snapshot.ka || snapshot.en || snapshot.config) {
+        setCmsData(mergeWithDefaults(defaultContent, validateImportedContent(snapshot)));
+      }
+
+      if (snapshot.editor) {
+        setEditor({ ...defaultEditor, ...validateImportedEditor(snapshot.editor) });
+      }
+    });
+  }, [subscribeToPublished]);
+
+  useEffect(() => {
+    const isAdminWorkspaceRoute = window.location.pathname.startsWith("/admin");
+    if (!isAdmin || !cloudHydrated || !isAdminWorkspaceRoute) return undefined;
 
     const timeout = window.setTimeout(() => {
       saveDraft({ content: cmsData, editor });
@@ -548,6 +570,7 @@ export const CMSProvider = ({ children }) => {
     removeAdminUser,
     removePendingInvite,
     subscribeToDraft,
+    subscribeToPublished,
     setLivePreviewSnapshot,
     exportFullBackup,
     exportContentData,
@@ -566,7 +589,7 @@ export const CMSProvider = ({ children }) => {
     session, user, isAdmin, firestoreAdmin, authReady, adminProfile, adminReady, cloudStatus, cloudSaveStatus, publishStatus,
     draftMeta, publishedMeta, versions, adminUsers, pendingInvites, cloudHydrated, loginWithGoogle, logoutAdmin, publishSite, quickPublishSite, restoreVersionToDraft,
     restoreVersionAndPublish, refreshVersions, exportFullBackup, exportContentData, importFullBackup, mediaLibrary, isConfiguredImageActive,
-    refreshAdminUsers, inviteAdminUser, updateAdminUser, removeAdminUser, removePendingInvite, subscribeToDraft, setLivePreviewSnapshot,
+    refreshAdminUsers, inviteAdminUser, updateAdminUser, removeAdminUser, removePendingInvite, subscribeToDraft, subscribeToPublished, setLivePreviewSnapshot,
   ]);
 
   return <CMSContext.Provider value={value}>{children}</CMSContext.Provider>;
