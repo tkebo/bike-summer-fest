@@ -38,3 +38,8 @@ export const getOptimizedImageUrl = (url, width = "auto") => {
   if (!url?.includes("/upload/")) return url;
   return url.replace("/upload/", `/upload/f_auto,q_auto,w_${width}/`);
 };
+
+export const getResponsiveImageSrcSet = (url, widths = [480, 720, 960, 1400]) => {
+  if (!url?.includes("/upload/")) return undefined;
+  return widths.map((width) => `${getOptimizedImageUrl(url, width)} ${width}w`).join(", ");
+};

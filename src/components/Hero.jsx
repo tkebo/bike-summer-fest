@@ -1,4 +1,4 @@
-import { memo } from "react";
+import { memo, useEffect } from "react";
 import { motion } from "framer-motion";
 import Header from "./Header";
 import { useCMS } from "../hooks/useCMS";
@@ -26,6 +26,18 @@ const Hero = () => {
     "--accent-cyan": ev("accentCyanColor"),
     "--accent-orange": ev("accentOrangeColor"),
   };
+  useEffect(() => {
+    if (!heroImage) return undefined;
+    const link = document.createElement("link");
+    link.rel = "preload";
+    link.as = "image";
+    link.href = heroImage;
+    link.fetchPriority = "high";
+    document.head.appendChild(link);
+    return () => {
+      document.head.removeChild(link);
+    };
+  }, [heroImage]);
   return (
 <>
         {/* HERO SECTION */}

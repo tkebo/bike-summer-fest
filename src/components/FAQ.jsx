@@ -2,7 +2,7 @@ import { memo } from "react";
 import { motion } from "framer-motion";
 import { useCMS } from "../hooks/useCMS";
 import Editable from "./Editable";
-import { getOptimizedImageUrl } from "../lib/cloudinary";
+import { getOptimizedImageUrl, getResponsiveImageSrcSet } from "../lib/cloudinary";
 
 const FAQ = () => {
   const { cmsData, t, lang, openFaq, setOpenFaq, isConfiguredImageActive, eventSettings } = useCMS();
@@ -24,6 +24,8 @@ const FAQ = () => {
               <div className="mt-10 border border-white/10 global-box" style={{ padding: '16px' }}>
                 <img
                   src={getOptimizedImageUrl(faqImage, 960)}
+                  srcSet={getResponsiveImageSrcSet(faqImage, [480, 720, 960])}
+                  sizes="(min-width: 1024px) 50vw, 100vw"
                   alt="Anaklia Ganmukhuri"
                   loading="lazy"
                   decoding="async"

@@ -479,7 +479,7 @@ export const defaultContent = {
         en: "Premium motorcycle beach festival in Georgia.",
       },
       keywords: ["bike festival", "motorcycle", "Georgia", "Anaklia"],
-      canonicalUrl: "",
+      canonicalUrl: "https://summerfest.ge",
       robots: {
         index: true,
         follow: true,

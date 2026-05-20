@@ -19,7 +19,7 @@ const Countdown = () => {
                   bottom: ev("countdownTop") >= 0 ? "auto" : `${ev("countdownBottom")}px`,
                   zIndex: ev("countdownZIndex"),
                   transform: `translate(${ev("countdownTranslateX")}%, 0) scale(${ev("countdownScale")})`,
-                  width: ev("countdownWidth") === 0 ? "auto" : `${ev("countdownWidth")}px`, 
+                  width: ev("countdownWidth") === 0 ? "auto" : `min(100%, ${ev("countdownWidth")}px)`, 
                   height: ev("countdownHeight") === 0 ? "auto" : `${ev("countdownHeight")}px`,
                   padding: `${ev("countdownPadding")}px`,
                   borderRadius: `${ev("countdownBorderRadius")}px`,
@@ -32,7 +32,7 @@ const Countdown = () => {
                 {countdownFinished ? (
                   <div className="px-6 py-4 text-center font-black text-cyan-300">{finishedMessage}</div>
                 ) : (
-                <div className="flex justify-center" style={{ gap: `${ev("countdownGap")}px` }}>
+                <div className="cinematic-countdown-grid flex justify-center" style={{ gap: `${ev("countdownGap")}px` }}>
                   {[
                     { value: timeLeft.days, label: countdownLabels.days },
                     { value: timeLeft.hours, label: countdownLabels.hours },

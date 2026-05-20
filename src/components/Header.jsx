@@ -7,6 +7,10 @@ import AdminFrame from "./AdminFrame";
 
 const Header = () => {
   const { ev, lang, setLang, navItems, menuOpen, setMenuOpen, closeMenu, introArrivalActive } = useCMS();
+  const languageOptions = [
+    ["ka", "KA"],
+    ["en", "EN"],
+  ];
   return (
 <>
           {/* HEADER */}
@@ -19,16 +23,16 @@ const Header = () => {
             }}
           >
             <div
-              className="relative mx-auto bg-black/72 backdrop-blur-2xl transition-all"
+              className="site-header-shell relative mx-auto bg-black/72 backdrop-blur-2xl transition-all"
               style={{
-                width: ev("headerWidth") === 0 ? "auto" : `${ev("headerWidth")}px`,
+                width: ev("headerWidth") === 0 ? "auto" : `min(100%, ${ev("headerWidth")}px)`,
                 height: ev("headerHeight") === 0 ? "auto" : `${ev("headerHeight")}px`,
-                maxWidth: ev("headerMaxWidth") === 0 ? "none" : `${ev("headerMaxWidth")}px`,
-                paddingLeft: `${ev("headerPaddingX")}px`,
-                paddingRight: `${ev("headerPaddingX")}px`,
-                paddingTop: `${ev("headerPaddingY")}px`,
-                paddingBottom: `${ev("headerPaddingY")}px`,
-                borderRadius: `${ev("headerBorderRadius")}px`,
+                maxWidth: ev("headerMaxWidth") === 0 ? "100%" : `min(100%, ${ev("headerMaxWidth")}px)`,
+                paddingLeft: `clamp(14px, 3vw, ${ev("headerPaddingX")}px)`,
+                paddingRight: `clamp(14px, 3vw, ${ev("headerPaddingX")}px)`,
+                paddingTop: `clamp(12px, 2vw, ${ev("headerPaddingY")}px)`,
+                paddingBottom: `clamp(12px, 2vw, ${ev("headerPaddingY")}px)`,
+                borderRadius: `clamp(18px, 4vw, ${ev("headerBorderRadius")}px)`,
                 backgroundColor: `rgba(0,0,0,${ev("headerBgOpacity") / 100})`,
                 backdropFilter: `blur(${ev("headerBlur")}px)`,
                 border: `1px solid rgba(0,217,255,${ev("headerBorderOpacity") / 100})`,
@@ -41,8 +45,8 @@ const Header = () => {
                   <div 
                     className={`font-black whitespace-nowrap inline-block ${introArrivalActive ? "intro-arrival-logo" : ""}`}
                     style={{ 
-                      fontSize: `clamp(34px, 5vw, ${ev("logoFontSize")}px)`,
-                      letterSpacing: `${ev("logoLetterSpacing")}em`, 
+                      fontSize: `clamp(24px, 5vw, ${ev("logoFontSize")}px)`,
+                      letterSpacing: `clamp(0.02em, 0.8vw, ${ev("logoLetterSpacing")}em)`, 
                       lineHeight: ev("logoLineHeight"),
                       transform: `translate(${ev("logoPosX")}px, ${ev("logoPosY")}px)`
                     }}
@@ -101,10 +105,7 @@ const Header = () => {
                       transformOrigin: "center",
                     }}
                   >
-                    {[
-                      ["ka", "KA"],
-                      ["en", "EN"],
-                    ].map(([code, label]) => (
+                    {languageOptions.map(([code, label]) => (
                       <button
                         key={code}
                         onClick={() => setLang(code)}
@@ -151,7 +152,7 @@ const Header = () => {
                   />
                 </div>
 
-                <button onClick={() => setMenuOpen(!menuOpen)} className="xl:hidden w-12 h-12 rounded-2xl border border-white/10 bg-white/10 text-white font-black text-xl">
+                <button onClick={() => setMenuOpen(!menuOpen)} aria-label={menuOpen ? "Close menu" : "Open menu"} className="xl:hidden min-h-12 min-w-12 rounded-2xl border border-white/10 bg-white/10 text-white font-black text-xl">
                   {menuOpen ? "✕" : "☰"}
                 </button>
               </div>
@@ -161,6 +162,18 @@ const Header = () => {
 
             {menuOpen && (
               <motion.div initial={{ opacity: 0, y: -15 }} animate={{ opacity: 1, y: 0 }} className="xl:hidden max-w-[1680px] mx-auto mt-3 rounded-3xl border border-white/10 bg-black/85 backdrop-blur-2xl p-5 z-50 relative">
+                <div className="mb-4 grid grid-cols-2 gap-3 lg:hidden">
+                  {languageOptions.map(([code, label]) => (
+                    <button
+                      key={code}
+                      onClick={() => setLang(code)}
+                      className={`min-h-11 rounded-2xl border px-4 py-3 text-sm font-black ${lang === code ? "border-cyan-300 bg-cyan-300 text-black" : "border-white/10 bg-white/5 text-white"}`}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                  <Editable path="nav.tickets" langContext={lang} as="a" href="#tickets" onClick={closeMenu} className="col-span-2 flex min-h-11 items-center justify-center rounded-2xl bg-orange-500 px-4 py-3 text-sm font-black text-white" />
+                </div>
                 <div className="grid gap-3">
                   {navItems.map((item) => (
                     <Editable key={item.href} path={item.path} langContext={lang} as="a" href={item.href} onClick={closeMenu} className="block rounded-2xl border border-white/10 bg-white/5 px-5 py-4 font-black uppercase tracking-widest hover:bg-white/10" />

@@ -1,7 +1,7 @@
 import { memo } from "react";
 import { useCMS } from "../hooks/useCMS";
 import Editable from "./Editable";
-import { getOptimizedImageUrl } from "../lib/cloudinary";
+import { getOptimizedImageUrl, getResponsiveImageSrcSet } from "../lib/cloudinary";
 
 const Zones = () => {
   const { cmsData, t, lang, isConfiguredImageActive } = useCMS();
@@ -22,6 +22,8 @@ const Zones = () => {
             <div className="mx-auto mb-12 max-w-7xl border border-white/10 p-3 global-box">
               <img
                 src={getOptimizedImageUrl(zonesImage, 1600)}
+                srcSet={getResponsiveImageSrcSet(zonesImage, [720, 960, 1400, 1600])}
+                sizes="(min-width: 1024px) 1200px, 100vw"
                 alt="Festival panorama"
                 loading="lazy"
                 decoding="async"

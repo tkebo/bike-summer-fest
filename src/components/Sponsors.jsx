@@ -2,7 +2,7 @@ import { memo } from "react";
 import { motion } from "framer-motion";
 import { useCMS } from "../hooks/useCMS";
 import Editable from "./Editable";
-import { getOptimizedImageUrl } from "../lib/cloudinary";
+import { getOptimizedImageUrl, getResponsiveImageSrcSet } from "../lib/cloudinary";
 import { isSafeHttpUrl } from "../security/sanitize";
 
 const Sponsors = () => {
@@ -27,6 +27,8 @@ const Sponsors = () => {
       ? (
         <img
           src={getOptimizedImageUrl(sponsor.logo, 480)}
+          srcSet={getResponsiveImageSrcSet(sponsor.logo, [240, 320, 480])}
+          sizes="(min-width: 1024px) 220px, 45vw"
           alt={sponsor.name}
           loading="lazy"
           decoding="async"
@@ -112,6 +114,8 @@ const Sponsors = () => {
                     {sponsorLogos.length ? (
                       <img
                         src={getOptimizedImageUrl(item, 480)}
+                        srcSet={getResponsiveImageSrcSet(item, [240, 320, 480])}
+                        sizes="240px"
                         alt="Sponsor"
                         loading="lazy"
                         decoding="async"

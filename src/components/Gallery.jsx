@@ -2,7 +2,7 @@ import { memo } from "react";
 import { useCMS } from "../hooks/useCMS";
 import Editable from "./Editable";
 import AdminFrame from "./AdminFrame";
-import { getOptimizedImageUrl } from "../lib/cloudinary";
+import { getOptimizedImageUrl, getResponsiveImageSrcSet } from "../lib/cloudinary";
 
 const Gallery = () => {
   const { cmsData, lang, isConfiguredImageActive } = useCMS();
@@ -24,6 +24,8 @@ const Gallery = () => {
                 <AdminFrame key={index} frameKey={`galleryBlock${index}`} label={`Gallery ${index + 1}`} className="overflow-hidden border border-white/10 global-box" style={{ padding: 0 }}>
                   <img
                     src={getOptimizedImageUrl(img, 720)}
+                    srcSet={getResponsiveImageSrcSet(img, [360, 540, 720, 960])}
+                    sizes="(min-width: 768px) 33vw, 100vw"
                     alt="Gallery"
                     loading="lazy"
                     decoding="async"
