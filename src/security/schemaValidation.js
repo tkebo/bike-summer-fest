@@ -402,6 +402,10 @@ const validateEditorShape = (payload) => {
     }
 
     if (typeof defaultValue === "string") {
+      if (key === "atmosphereMode") {
+        nextEditor[key] = ["subtle", "balanced", "ultra"].includes(value) ? value : defaultEditor.atmosphereMode;
+        return;
+      }
       if (key.toLowerCase().includes("color") && !/^#[0-9a-fA-F]{6}$/.test(String(value))) {
         return;
       }

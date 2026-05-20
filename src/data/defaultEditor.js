@@ -50,6 +50,11 @@ export const defaultEditor = {
     heroFogIntensity: 55, heroParticleDensity: 55, heroVignetteStrength: 72,
     heroCenterLogoScale: 1, heroGlowStrength: 70, heroCtaGlowStrength: 70,
     heroBackgroundAnimationSpeed: 1,
+
+    // Atmosphere
+    atmosphereParticleDensity: 42, atmosphereLaserIntensity: 36, atmosphereOpacity: 62,
+    atmosphereGlobalGlow: 55, atmosphereGrainStrength: 18, atmosphereFogIntensity: 45,
+    atmosphereTransitionSpeed: 1, atmosphereParallaxAmount: 38, atmosphereMode: "balanced",
     sectionBgOverlayOpacity: 0, sectionBgBlur: 0, sectionBgBrightness: 100,
     sectionBgContrast: 100, sectionBgPositionX: 50, sectionBgPositionY: 50, sectionBgScale: 100,
 

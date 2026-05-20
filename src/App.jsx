@@ -4,6 +4,7 @@ import AdminOverlay from "./components/AdminOverlay";
 import SEOHead from "./components/SEOHead";
 import { useCMS } from "./hooks/useCMS";
 import SiteCanvas from "./components/SiteCanvas";
+import AtmosphereLayer from "./components/AtmosphereLayer";
 
 const ProtectedAdminRoute = lazy(() => import("./components/ProtectedAdminRoute"));
 const AdminLayout = lazy(() => import("./components/admin/AdminLayout"));
@@ -38,6 +39,7 @@ function Platform() {
   return (
     <main className="min-h-screen bg-[#050814] text-white overflow-hidden">
       <SEOHead />
+      <AtmosphereLayer editor={editor} />
       <AdminOverlay />
       <Suspense fallback={null}>
         <IntroPortal settings={cmsData.config.introSettings} audioSettings={cmsData.config.introAudio} lang={lang} />

@@ -77,6 +77,16 @@ export const designTabs = {
       ["sectionBgBrightness", "Section Brightness", 0, 200], ["sectionBgContrast", "Section Contrast", 0, 200],
       ["sectionBgPositionX", "Section Position X", 0, 100], ["sectionBgPositionY", "Section Position Y", 0, 100], ["sectionBgScale", "Section Scale", 50, 200],
     ],
+    atmosphere: [
+      ["atmosphereParticleDensity", "Particle Density", 0, 100],
+      ["atmosphereLaserIntensity", "Laser Intensity", 0, 100],
+      ["atmosphereOpacity", "Atmosphere Opacity", 0, 100],
+      ["atmosphereGlobalGlow", "Global Glow", 0, 100],
+      ["atmosphereGrainStrength", "Grain Strength", 0, 100],
+      ["atmosphereFogIntensity", "Fog Intensity", 0, 100],
+      ["atmosphereTransitionSpeed", "Transition Speed", 0.2, 3, 0.05],
+      ["atmosphereParallaxAmount", "Parallax Amount", 0, 100],
+    ],
     responsive: [
       ["globalFontScale", "Font Scale", 0.7, 1.4, 0.01],
       ["sectionMaxWidth", "Section Max Width", 0, 2000],

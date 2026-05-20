@@ -16,6 +16,8 @@ const SiteCanvas = ({ cmsData, editor, className = "" }) => {
     ? cmsData.config.sections.filter((section) => allowedSectionIds.includes(section.id)).sort((left, right) => left.order - right.order)
     : fallbackSections;
   const previewMode = editor.previewMode || "desktop";
+  const transitionSpeed = editor.atmosphereTransitionSpeed || 1;
+  const parallaxAmount = editor.atmosphereParallaxAmount || 40;
 
   return (
     <div
@@ -25,7 +27,19 @@ const SiteCanvas = ({ cmsData, editor, className = "" }) => {
       {sections.map((section, index) => {
         const Section = sectionRegistry[section.id]?.component;
         if (!Section || section.visible === false) return null;
-        return <Section key={`${section.id}-${section.instanceId || index}`} />;
+        return (
+          <div
+            key={`${section.id}-${section.instanceId || index}`}
+            className="atmosphere-section"
+            style={{
+              "--section-index": index,
+              "--section-transition-speed": transitionSpeed,
+              "--section-parallax": `${parallaxAmount}px`,
+            }}
+          >
+            <Section />
+          </div>
+        );
       })}
     </div>
   );

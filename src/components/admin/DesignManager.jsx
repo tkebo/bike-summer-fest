@@ -17,6 +17,7 @@ const categories = [
   ["globalBox", "Cards / Boxes"],
   ["sections", "Sections"],
   ["backgrounds", "Backgrounds"],
+  ["atmosphere", "Atmosphere"],
   ["responsive", "Responsive"],
 ];
 
@@ -84,6 +85,20 @@ const DesignManager = ({
               <DesignControl key={control[0]} control={control} value={editor[control[0]] ?? defaultEditor[control[0]]} onChange={updateEditor} />
             ))}
           </div>
+          {activeCategory === "atmosphere" && (
+            <label className="mt-5 block max-w-sm">
+              <span className="mb-2 block text-xs font-black uppercase text-white/45">Cinematic mode</span>
+              <select
+                value={editor.atmosphereMode || defaultEditor.atmosphereMode}
+                onChange={(event) => patchEditor({ atmosphereMode: event.target.value })}
+                className="w-full rounded-xl border border-white/10 bg-black/35 px-3 py-2 text-sm text-white outline-none focus:border-cyan-300"
+              >
+                <option value="subtle">subtle</option>
+                <option value="balanced">balanced</option>
+                <option value="ultra">ultra</option>
+              </select>
+            </label>
+          )}
         </section>
       </div>
 
