@@ -117,7 +117,7 @@ const Hero = () => {
               />
 
               <AdminFrame frameKey="heroCta" label="CTA Buttons" className="inline-flex">
-              <div className={`flex flex-wrap mt-10 ${introArrivalActive ? "intro-arrival-cta" : ""}`} style={{ gap: `${ev("heroCtaBtnGap")}px` }}>
+              <div className={`cinematic-cta-stack flex flex-wrap mt-10 ${introArrivalActive ? "intro-arrival-cta" : ""}`} style={{ gap: `${ev("heroCtaBtnGap")}px` }}>
                 <Editable path="heroGetTicketsBtn" langContext={lang} as="a" href="#tickets" className="cinematic-cta cinematic-cta-primary px-9 py-4 rounded-xl text-white font-black transition inline-block" style={{ backgroundColor: ev("accentOrangeColor"), boxShadow: `0 0 ${Math.round(55 * (ev("heroCtaGlowStrength") / 100))}px ${ev("accentOrangeColor")}88` }} />
                 <Editable path="heroExploreBtn" langContext={lang} as="a" href="#zones" className="cinematic-cta cinematic-cta-secondary px-9 py-4 rounded-xl border bg-black/30 backdrop-blur-xl font-black transition inline-block" style={{ borderColor: `${ev("accentCyanColor")}b3`, color: ev("accentCyanColor"), backgroundColor: "rgba(0,0,0,0.18)" }} />
               </div>

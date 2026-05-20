@@ -9,6 +9,7 @@ body,
 #root {
   width: 100%;
   min-height: 100%;
+  max-width: 100%;
   margin: 0;
   padding: 0;
   background: #050814;
@@ -19,6 +20,13 @@ body,
 
 * {
   box-sizing: border-box;
+}
+
+img,
+video,
+canvas,
+svg {
+  max-width: 100%;
 }
 
 a {
@@ -36,6 +44,193 @@ select:focus-visible,
 textarea:focus-visible {
   outline: 2px solid #67e8f9;
   outline-offset: 3px;
+}
+
+@media (max-width: 1279px) {
+  .compactHeader {
+    position: relative !important;
+    inset: auto !important;
+    top: auto !important;
+    z-index: 40;
+    width: 100%;
+    padding: calc(10px + env(safe-area-inset-top)) 12px 0 !important;
+  }
+
+  .compactHeaderBox {
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    padding: clamp(12px, 2.4vw, 18px) !important;
+    border-radius: clamp(18px, 3vw, 28px) !important;
+    backdrop-filter: blur(16px) !important;
+    box-shadow: 0 0 34px rgba(0, 217, 255, 0.18) !important;
+  }
+
+  .compactLogoRow {
+    display: flex;
+    align-items: center !important;
+    justify-content: space-between;
+    gap: 8px !important;
+    min-width: 0;
+  }
+
+  .compactLogo,
+  .site-logo-wordmark {
+    flex: 1 1 auto;
+    max-width: calc(100% - 56px);
+    overflow: visible;
+    white-space: nowrap;
+    font-size: clamp(18px, 5.2vw, 34px) !important;
+    letter-spacing: clamp(0.03em, 0.7vw, 0.16em) !important;
+    line-height: 0.95 !important;
+    transform-origin: left center;
+  }
+
+  .burgerButton {
+    width: 44px !important;
+    height: 44px !important;
+    min-width: 44px !important;
+    min-height: 44px !important;
+    flex-shrink: 0;
+    margin-left: 8px;
+  }
+
+  .compactCountdownWrap {
+    width: 100%;
+    max-width: 100%;
+    margin-top: clamp(8px, 2vw, 14px);
+  }
+
+  .compactCountdownWrap .cinematic-countdown {
+    position: relative !important;
+    inset: auto !important;
+    left: auto !important;
+    right: auto !important;
+    top: auto !important;
+    bottom: auto !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    height: auto !important;
+    margin: 0 !important;
+    padding: clamp(8px, 2vw, 14px) !important;
+    border-radius: clamp(16px, 3vw, 24px) !important;
+    transform: none !important;
+    box-shadow: 0 0 34px rgba(0, 217, 255, 0.22) !important;
+    backdrop-filter: blur(14px) !important;
+  }
+
+  .compactCountdownWrap .cinematic-countdown-grid {
+    width: 100%;
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: clamp(8px, 1.5vw, 14px) !important;
+  }
+
+  .compactCountdownWrap .cinematic-countdown-cell {
+    width: auto !important;
+    min-width: 0;
+    padding: clamp(8px, 1.6vw, 12px) 6px !important;
+  }
+
+  .compactCountdownWrap .cinematic-countdown-digit {
+    font-size: clamp(22px, 7vw, 42px) !important;
+    line-height: 0.95 !important;
+  }
+
+  .compactCountdownWrap .countdown-label {
+    margin-top: 4px !important;
+    font-size: clamp(9px, 2vw, 12px) !important;
+    letter-spacing: 0.03em !important;
+  }
+
+  .cinematic-hero-layout {
+    padding-top: clamp(28px, 5vw, 52px) !important;
+  }
+
+  .cinematic-headline {
+    max-width: 100%;
+    font-size: clamp(40px, 13vw, 74px) !important;
+    line-height: 0.9 !important;
+  }
+
+  .mobile-menu-panel {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: hidden;
+  }
+}
+
+@media (max-width: 767px) {
+  section {
+    max-width: 100%;
+    overflow-x: hidden;
+    padding: 56px 16px !important;
+  }
+
+  .cinematic-hero {
+    padding: 0 !important;
+  }
+
+  .compactCountdownWrap .cinematic-countdown-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px !important;
+  }
+
+  .cinematic-cta-stack {
+    flex-direction: column;
+    gap: 12px !important;
+  }
+
+  .cinematic-cta {
+    width: 100%;
+    min-height: 48px;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .global-box,
+  .glass-card {
+    max-width: 100%;
+    padding: clamp(16px, 5vw, 24px) !important;
+    border-radius: clamp(20px, 6vw, 26px) !important;
+  }
+
+  #gallery .grid,
+  #tickets .grid,
+  #schedule .grid,
+  #sponsors .grid,
+  #faq .grid,
+  #zones .grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+
+  #gallery img,
+  #zones img,
+  #faq img {
+    width: 100%;
+    height: clamp(220px, 65vw, 340px) !important;
+  }
+
+  #tickets .flex.items-start.justify-between,
+  #schedule .flex {
+    flex-wrap: wrap;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1279px) {
+  section {
+    padding-left: 24px !important;
+    padding-right: 24px !important;
+    padding-top: 72px !important;
+    padding-bottom: 72px !important;
+  }
+
+  #gallery .grid,
+  #tickets .grid,
+  #schedule .grid,
+  #sponsors .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
 }
 
 .section {
@@ -583,9 +778,33 @@ textarea:focus-visible {
 }
 
 @media (max-width: 768px) {
+  html,
+  body,
+  #root {
+    max-width: 100%;
+    overflow-x: clip;
+  }
+
   .site-header-shell {
     backdrop-filter: blur(14px) !important;
     box-shadow: 0 0 28px rgba(0, 217, 255, 0.18) !important;
+  }
+
+  .cinematic-hero > header {
+    position: relative !important;
+    top: 0 !important;
+    z-index: 40;
+    padding-top: calc(10px + env(safe-area-inset-top)) !important;
+  }
+
+  .site-logo-wordmark {
+    max-width: calc(100% - 56px);
+    white-space: nowrap;
+    overflow-wrap: normal;
+    word-break: normal;
+    transform-origin: left center;
+    letter-spacing: clamp(0.01em, 0.45vw, 0.08em) !important;
+    line-height: 0.95 !important;
   }
 
   .site-header-shell .text-orange-500 {
@@ -594,20 +813,34 @@ textarea:focus-visible {
 
   .cinematic-hero {
     min-height: 100svh;
+    overflow-x: clip;
   }
 
   .cinematic-hero-layout {
-    min-height: 100svh;
+    min-height: auto;
+    display: flex !important;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
     padding-left: 18px !important;
     padding-right: 18px !important;
-    padding-bottom: 220px !important;
+    padding-top: 30px !important;
+    padding-bottom: calc(48px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .cinematic-hero-copy {
+    width: 100%;
+    max-width: 100% !important;
+    isolation: isolate;
+    z-index: 3;
   }
 
   .cinematic-headline {
     max-width: 100%;
-    font-size: clamp(42px, 15vw, 72px) !important;
+    font-size: clamp(42px, 15vw, 58px) !important;
     line-height: 0.9 !important;
     overflow-wrap: anywhere;
+    transform: none !important;
   }
 
   .cinematic-subtitle {
@@ -623,18 +856,20 @@ textarea:focus-visible {
   }
 
   .cinematic-countdown {
-    position: absolute !important;
-    left: 50% !important;
+    position: relative !important;
+    left: auto !important;
     right: auto !important;
     top: auto !important;
-    bottom: -190px !important;
-    width: min(92vw, 380px) !important;
+    bottom: auto !important;
+    width: min(100%, 360px) !important;
     height: auto !important;
-    padding: 12px !important;
-    border-radius: 24px !important;
-    transform: translateX(-50%) scale(1) !important;
+    margin: 26px auto 0 !important;
+    padding: 10px !important;
+    border-radius: 22px !important;
+    transform: none !important;
     box-shadow: 0 0 32px rgba(0, 217, 255, 0.22) !important;
     backdrop-filter: blur(14px) !important;
+    z-index: 2 !important;
   }
 
   .cinematic-countdown-grid {
@@ -647,28 +882,112 @@ textarea:focus-visible {
   .cinematic-countdown-cell {
     width: auto !important;
     min-width: 0;
-    padding: 10px 6px !important;
+    padding: 8px 6px !important;
   }
 
   .cinematic-countdown-digit {
-    font-size: clamp(26px, 9vw, 42px) !important;
+    font-size: clamp(24px, 10vw, 36px) !important;
+    line-height: 0.95 !important;
   }
 
   .countdown-label {
-    font-size: clamp(10px, 3vw, 13px) !important;
-    letter-spacing: 0.04em !important;
+    margin-top: 4px !important;
+    font-size: clamp(10px, 3vw, 12px) !important;
+    letter-spacing: 0.03em !important;
+  }
+
+  .cinematic-cta-stack {
+    flex-direction: column;
+    gap: 12px !important;
   }
 
   .glass-card,
   .global-box {
+    max-width: 100%;
     backdrop-filter: blur(10px) !important;
     box-shadow: 0 0 26px rgba(0, 217, 255, 0.08) !important;
+  }
+
+  section {
+    max-width: 100%;
+    overflow-x: clip;
+    padding-left: 16px !important;
+    padding-right: 16px !important;
+    padding-top: 56px !important;
+    padding-bottom: 56px !important;
+  }
+
+  .cinematic-hero {
+    padding: 0 !important;
+  }
+
+  section h1,
+  section h2,
+  section h3,
+  section h4,
+  section p,
+  section a,
+  section span,
+  section li {
+    max-width: 100%;
+    overflow-wrap: anywhere;
+  }
+
+  .global-box {
+    padding: 20px !important;
+    border-radius: 22px !important;
+  }
+
+  .mobile-menu-panel {
+    width: 100%;
+    max-width: 100%;
+    border-radius: 22px !important;
+    padding: 14px !important;
+  }
+
+  .grid {
+    min-width: 0;
+  }
+
+  .marquee-track {
+    max-width: none;
+    will-change: transform;
+  }
+
+  #gallery img {
+    height: clamp(220px, 70vw, 320px) !important;
+  }
+
+  #tickets .flex.items-start.justify-between {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  #tickets h3,
+  #schedule h3 {
+    font-size: clamp(22px, 7vw, 30px) !important;
+    line-height: 1.05;
+  }
+
+  #schedule .rounded-2xl {
+    max-width: 100%;
   }
 }
 
 @media (max-width: 430px) {
   .site-header-shell {
     border-radius: 18px !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  .site-logo-wordmark {
+    max-width: calc(100% - 56px);
+    font-size: clamp(18px, 7vw, 24px) !important;
+  }
+
+  .site-logo-wordmark span {
+    display: inline;
   }
 
   .cinematic-date-badge {
@@ -677,18 +996,37 @@ textarea:focus-visible {
   }
 
   .cinematic-hero-layout {
-    padding-top: 150px !important;
-    padding-bottom: 230px !important;
+    padding-top: 26px !important;
+    padding-bottom: calc(38px + env(safe-area-inset-bottom)) !important;
+  }
+
+  .cinematic-subtitle {
+    margin-top: 22px !important;
+  }
+
+  .cinematic-hero-copy .mt-10 {
+    margin-top: 26px !important;
   }
 }
 
 @media (max-width: 360px) {
+  .site-logo-wordmark {
+    max-width: calc(100% - 54px);
+    font-size: 18px !important;
+    letter-spacing: 0.01em !important;
+  }
+
   .cinematic-headline {
-    font-size: clamp(36px, 14vw, 54px) !important;
+    font-size: clamp(42px, 15vw, 58px) !important;
   }
 
   .cinematic-countdown {
-    width: min(94vw, 330px) !important;
+    width: min(100%, 316px) !important;
+    padding: 8px !important;
+  }
+
+  .cinematic-countdown-grid {
+    gap: 8px !important;
   }
 }
 

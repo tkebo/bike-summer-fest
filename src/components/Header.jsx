@@ -15,7 +15,7 @@ const Header = () => {
 <>
           {/* HEADER */}
           <header 
-            className="absolute left-0 right-0 z-40" 
+            className="compactHeader absolute left-0 right-0 z-40" 
             style={{ 
               top: `${ev("headerTop")}px`, 
               paddingLeft: "clamp(12px, 2vw, 32px)", 
@@ -23,7 +23,7 @@ const Header = () => {
             }}
           >
             <div
-              className="site-header-shell relative mx-auto bg-black/72 backdrop-blur-2xl transition-all"
+              className="compactHeaderBox site-header-shell relative mx-auto bg-black/72 backdrop-blur-2xl transition-all"
               style={{
                 width: ev("headerWidth") === 0 ? "auto" : `min(100%, ${ev("headerWidth")}px)`,
                 height: ev("headerHeight") === 0 ? "auto" : `${ev("headerHeight")}px`,
@@ -39,11 +39,11 @@ const Header = () => {
                 boxShadow: `0 0 80px rgba(0,217,255,${ev("headerGlow") / 100})`,
               }}
             >
-              <div className="flex items-start justify-between gap-6 h-full">
-                <div className="flex-1 min-w-0">
+              <div className="compactLogoRow flex items-start justify-between gap-6 h-full">
+                <div className="min-w-0 flex-1 overflow-hidden">
                   <AdminFrame frameKey="logo" label="Logo" className="inline-block" resize={false}>
                   <div 
-                    className={`font-black whitespace-nowrap inline-block ${introArrivalActive ? "intro-arrival-logo" : ""}`}
+                    className={`compactLogo site-logo-wordmark font-black inline-block ${introArrivalActive ? "intro-arrival-logo" : ""}`}
                     style={{ 
                       fontSize: `clamp(24px, 5vw, ${ev("logoFontSize")}px)`,
                       letterSpacing: `clamp(0.02em, 0.8vw, ${ev("logoLetterSpacing")}em)`, 
@@ -96,7 +96,7 @@ const Header = () => {
                   </div>
                 </div>
 
-                <div className="hidden lg:flex items-center gap-5" style={{ paddingTop: ev("headerHeight") === 0 ? "70px" : "0", alignSelf: ev("headerHeight") === 0 ? "flex-start" : "center" }}>
+                <div className="hidden xl:flex items-center gap-5" style={{ paddingTop: ev("headerHeight") === 0 ? "70px" : "0", alignSelf: ev("headerHeight") === 0 ? "flex-start" : "center" }}>
                   <div
                     className="grid font-black"
                     style={{
@@ -152,16 +152,18 @@ const Header = () => {
                   />
                 </div>
 
-                <button onClick={() => setMenuOpen(!menuOpen)} aria-label={menuOpen ? "Close menu" : "Open menu"} className="xl:hidden min-h-12 min-w-12 rounded-2xl border border-white/10 bg-white/10 text-white font-black text-xl">
+                <button onClick={() => setMenuOpen(!menuOpen)} aria-label={menuOpen ? "Close menu" : "Open menu"} className="burgerButton xl:hidden min-h-12 min-w-12 rounded-2xl border border-white/10 bg-white/10 text-white font-black text-xl">
                   {menuOpen ? "✕" : "☰"}
                 </button>
               </div>
 
-              <Countdown />
+              <div className="compactCountdownWrap">
+                <Countdown />
+              </div>
             </div>
 
             {menuOpen && (
-              <motion.div initial={{ opacity: 0, y: -15 }} animate={{ opacity: 1, y: 0 }} className="xl:hidden max-w-[1680px] mx-auto mt-3 rounded-3xl border border-white/10 bg-black/85 backdrop-blur-2xl p-5 z-50 relative">
+              <motion.div initial={{ opacity: 0, y: -15 }} animate={{ opacity: 1, y: 0 }} className="mobile-menu-panel xl:hidden max-w-[1680px] mx-auto mt-3 rounded-3xl border border-white/10 bg-black/85 backdrop-blur-2xl p-5 z-50 relative">
                 <div className="mb-4 grid grid-cols-2 gap-3 lg:hidden">
                   {languageOptions.map(([code, label]) => (
                     <button
