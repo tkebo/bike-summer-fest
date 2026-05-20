@@ -44,6 +44,9 @@ export const designTabs = {
       ["heroSubtitleSize", "Subtitle Size", 10, 60], ["heroCtaBtnGap", "CTA Gap", 0, 100], ["heroOverlayOpacity", "Overlay Opacity", 0, 100],
       ["heroContentPosX", "Content X", -800, 800], ["heroContentPosY", "Content Y", -800, 800], ["heroContentWidth", "Content Width", 240, 1400], ["heroContentHeight", "Content Height", 0, 900],
       ["heroCtaPosX", "CTA X", -500, 500], ["heroCtaPosY", "CTA Y", -500, 500], ["heroCtaWidth", "CTA Width", 0, 1000], ["heroCtaHeight", "CTA Height", 0, 300],
+      ["heroFogIntensity", "Fog Intensity", 0, 100], ["heroParticleDensity", "Particle Density", 0, 100], ["heroVignetteStrength", "Vignette Strength", 0, 100],
+      ["heroCenterLogoScale", "Center Logo Scale", 0.4, 1.8, 0.05], ["heroGlowStrength", "Hero Glow Strength", 0, 100],
+      ["heroCtaGlowStrength", "CTA Glow Strength", 0, 100], ["heroBackgroundAnimationSpeed", "Animation Speed", 0.2, 3, 0.05],
     ],
     theme: [
       ["accentCyanColor", "Accent Cyan", 0, 0, 0, "color"], ["accentOrangeColor", "Accent Orange", 0, 0, 0, "color"],

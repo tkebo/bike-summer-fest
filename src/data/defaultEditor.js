@@ -47,6 +47,9 @@ export const defaultEditor = {
     heroCtaPosX: 0, heroCtaPosY: 0, heroCtaWidth: 0, heroCtaHeight: 0,
     heroBgBlur: 0, heroBgBrightness: 100, heroBgContrast: 100,
     heroBgPositionX: 50, heroBgPositionY: 50, heroBgScale: 100,
+    heroFogIntensity: 55, heroParticleDensity: 55, heroVignetteStrength: 72,
+    heroCenterLogoScale: 1, heroGlowStrength: 70, heroCtaGlowStrength: 70,
+    heroBackgroundAnimationSpeed: 1,
     sectionBgOverlayOpacity: 0, sectionBgBlur: 0, sectionBgBrightness: 100,
     sectionBgContrast: 100, sectionBgPositionX: 50, sectionBgPositionY: 50, sectionBgScale: 100,
 

@@ -16,12 +16,22 @@ const Hero = () => {
     ? cmsData.config.eventSettings?.dates?.displayKa
     : cmsData.config.eventSettings?.dates?.displayEn;
   const heroDate = cmsData[lang]?.heroDate?.trim() || generatedHeroDate;
+  const heroFxStyle = {
+    "--hero-fog-opacity": ev("heroFogIntensity") / 100,
+    "--hero-particle-opacity": ev("heroParticleDensity") / 100,
+    "--hero-vignette-opacity": ev("heroVignetteStrength") / 100,
+    "--hero-glow-opacity": ev("heroGlowStrength") / 100,
+    "--hero-cta-glow": ev("heroCtaGlowStrength") / 100,
+    "--hero-motion-speed": ev("heroBackgroundAnimationSpeed"),
+    "--accent-cyan": ev("accentCyanColor"),
+    "--accent-orange": ev("accentOrangeColor"),
+  };
   return (
 <>
         {/* HERO SECTION */}
-        <section className="relative min-h-screen overflow-hidden">
+        <section className="cinematic-hero relative min-h-screen overflow-hidden" style={heroFxStyle}>
           <div
-            className="hero-responsive-background absolute inset-0 bg-cover bg-center transition-all duration-1000"
+            className="hero-responsive-background cinematic-hero-bg absolute inset-0 bg-cover bg-center transition-all duration-1000"
             style={{
               backgroundImage: `linear-gradient(90deg, rgba(5,8,20,.95), rgba(5,8,20,.52), rgba(5,8,20,.78)), url('${heroImage}')`,
               filter: `blur(${ev("heroBgBlur")}px) brightness(${ev("heroBgBrightness")}%) contrast(${ev("heroBgContrast")}%)`,
@@ -47,22 +57,31 @@ const Hero = () => {
             }
           `}</style>
           <div className="absolute inset-0" style={{ backgroundColor: `rgba(0,0,0,${ev("heroOverlayOpacity") / 100})` }} />
+          <div className="cinematic-sky-glow absolute inset-0" />
+          <div className="cinematic-laser-field absolute inset-0" />
+          <div className="cinematic-fog cinematic-fog-a absolute inset-0" />
+          <div className="cinematic-fog cinematic-fog-b absolute inset-0" />
+          <div className="cinematic-particles absolute inset-0" />
+          <div className="cinematic-embers absolute inset-0" />
+          <div className="cinematic-wet-reflection absolute inset-x-0 bottom-0" />
+          <div className="cinematic-crowd-illusion absolute inset-x-0 bottom-0" />
+          <div className="cinematic-vignette absolute inset-0" />
 
           <Header />
 
           {/* HERO TEXT */}
-          <div className="relative z-10 min-h-screen max-w-[1680px] mx-auto px-8 pb-24 flex items-center" style={{ paddingTop: `${ev("heroTop")}px` }}>
-            <AdminFrame frameKey="heroContent" label="Hero Content" className="max-w-[720px]">
-            <motion.div initial={{ opacity: 0, y: 45 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.9 }}>
+          <div className="cinematic-hero-layout relative z-10 min-h-screen max-w-[1680px] mx-auto px-6 md:px-8 pb-24 grid items-center gap-8 lg:grid-cols-[minmax(320px,0.95fr)_minmax(260px,0.8fr)_minmax(260px,0.72fr)]" style={{ paddingTop: `${ev("heroTop")}px` }}>
+            <AdminFrame frameKey="heroContent" label="Hero Content" className="cinematic-hero-copy max-w-[720px]">
+            <motion.div initial={{ opacity: 0, y: 45 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.05, ease: [0.16, 1, 0.3, 1] }}>
               
               {cmsData[lang]?.heroDate?.trim() ? (
-                <Editable path="heroDate" langContext={lang} as="div" className="font-black tracking-[0.28em] text-xl md:text-2xl mb-6 inline-block" style={{ color: ev("accentOrangeColor") }} />
+                <Editable path="heroDate" langContext={lang} as="div" className="cinematic-date-badge font-black tracking-[0.28em] text-xl md:text-2xl mb-6 inline-block" style={{ color: ev("accentOrangeColor") }} />
               ) : (
-                <div className="font-black tracking-[0.28em] text-xl md:text-2xl mb-6 inline-block" style={{ color: ev("accentOrangeColor") }}>{heroDate}</div>
+                <div className="cinematic-date-badge font-black tracking-[0.28em] text-xl md:text-2xl mb-6 inline-block" style={{ color: ev("accentOrangeColor") }}>{heroDate}</div>
               )}
 
               <h1 
-                className="uppercase font-black inline-block" 
+                className="cinematic-headline uppercase font-black inline-block" 
                 style={{ 
                   fontSize: `clamp(48px, 7vw, ${ev("heroTitleSize")}px)`,
                   lineHeight: ev("heroTitleLineHeight"),
@@ -70,10 +89,10 @@ const Hero = () => {
                   transform: `translate(${ev("heroTitlePosX")}px, ${ev("heroTitlePosY")}px)`
                 }}
               >
-                <Editable path="heroTitleLines.0" langContext={lang} as="span" className="block" />
-                <Editable path="heroTitleLines.1" langContext={lang} as="span" className="block" />
-                <Editable path="heroTitleLines.2" langContext={lang} as="span" className="block" />
-                <Editable path="heroTitleLines.3" langContext={lang} as="span" className="block italic" style={{ color: ev("accentOrangeColor"), textShadow: `0 0 ${ev("logoSummerGlow")}px ${ev("accentOrangeColor")}` }} />
+                <Editable path="heroTitleLines.0" langContext={lang} as="span" className="cinematic-title-line block" />
+                <Editable path="heroTitleLines.1" langContext={lang} as="span" className="cinematic-title-line block" />
+                <Editable path="heroTitleLines.2" langContext={lang} as="span" className="cinematic-title-line block" />
+                <Editable path="heroTitleLines.3" langContext={lang} as="span" className="cinematic-title-line cinematic-title-repeat block italic" style={{ color: ev("accentOrangeColor"), textShadow: `0 0 ${ev("logoSummerGlow")}px ${ev("accentOrangeColor")}` }} />
               </h1>
               <br />
               <Editable 
@@ -81,18 +100,35 @@ const Hero = () => {
                 langContext={lang} 
                 multiline 
                 as="p" 
-                className="mt-8 uppercase tracking-widest font-black inline-block text-white/85" 
+                className="cinematic-subtitle mt-8 uppercase tracking-widest font-black inline-block text-white/85" 
                 style={{ fontSize: `${ev("heroSubtitleSize")}px` }}
               />
 
               <AdminFrame frameKey="heroCta" label="CTA Buttons" className="inline-flex">
               <div className={`flex flex-wrap mt-10 ${introArrivalActive ? "intro-arrival-cta" : ""}`} style={{ gap: `${ev("heroCtaBtnGap")}px` }}>
-                <Editable path="heroGetTicketsBtn" langContext={lang} as="a" href="#tickets" className="px-9 py-4 rounded-xl text-white font-black transition shadow-[0_0_40px_rgba(255,77,0,.45)] inline-block" style={{ backgroundColor: ev("accentOrangeColor"), boxShadow: `0 0 40px ${ev("accentOrangeColor")}55` }} />
-                <Editable path="heroExploreBtn" langContext={lang} as="a" href="#zones" className="px-9 py-4 rounded-xl border bg-black/30 backdrop-blur-xl font-black hover:text-black transition inline-block" style={{ borderColor: `${ev("accentCyanColor")}b3`, color: ev("accentCyanColor"), backgroundColor: "rgba(0,0,0,0.18)" }} />
+                <Editable path="heroGetTicketsBtn" langContext={lang} as="a" href="#tickets" className="cinematic-cta cinematic-cta-primary px-9 py-4 rounded-xl text-white font-black transition inline-block" style={{ backgroundColor: ev("accentOrangeColor"), boxShadow: `0 0 ${Math.round(55 * (ev("heroCtaGlowStrength") / 100))}px ${ev("accentOrangeColor")}88` }} />
+                <Editable path="heroExploreBtn" langContext={lang} as="a" href="#zones" className="cinematic-cta cinematic-cta-secondary px-9 py-4 rounded-xl border bg-black/30 backdrop-blur-xl font-black transition inline-block" style={{ borderColor: `${ev("accentCyanColor")}b3`, color: ev("accentCyanColor"), backgroundColor: "rgba(0,0,0,0.18)" }} />
               </div>
               </AdminFrame>
             </motion.div>
             </AdminFrame>
+
+            <motion.div
+              aria-hidden="true"
+              className={`cinematic-center-mark hidden lg:flex ${introArrivalActive ? "intro-arrival-logo" : ""}`}
+              initial={{ opacity: 0, scale: 0.88, y: 30 }}
+              animate={{ opacity: 1, scale: ev("heroCenterLogoScale"), y: 0 }}
+              transition={{ duration: 1.2, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
+            >
+              <div className="cinematic-center-ring">
+                <span>BIKE</span>
+                <strong>SUMMER</strong>
+                <span>FEST</span>
+                <em>2026</em>
+              </div>
+            </motion.div>
+
+            <div className="hidden lg:block" />
           </div>
         </section>
         <style>{`
