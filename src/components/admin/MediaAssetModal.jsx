@@ -23,7 +23,7 @@ const MediaAssetModal = ({ asset, assignedLabels, onClose, onUpdate, onDeactivat
             <input value={draft.alt || ""} onChange={(event) => setDraft({ ...draft, alt: event.target.value })} placeholder="Alt text" className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm" />
             <input value={(draft.tags || []).join(", ")} onChange={(event) => setDraft({ ...draft, tags: event.target.value.split(",").map((tag) => tag.trim()).filter(Boolean) })} placeholder="tags, comma separated" className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm" />
             <select value={draft.type} onChange={(event) => setDraft({ ...draft, type: event.target.value })} className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm">
-              {["hero", "gallery", "sponsor", "intro", "background", "general"].map((type) => <option key={type} value={type}>{type}</option>)}
+              {["hero", "gallery", "sponsor", "intro", "center-mark", "background", "general"].map((type) => <option key={type} value={type}>{type}</option>)}
             </select>
             <div className="flex flex-wrap gap-2">
               {assignedLabels.map((label) => <span key={label} className="rounded-full bg-cyan-300/15 px-3 py-1 text-xs font-black text-cyan-200">{label}</span>)}

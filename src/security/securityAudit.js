@@ -37,15 +37,19 @@ export const logAudit = async (action, {
   summary = "",
   metadata = {},
 } = {}) => {
-  await addDoc(AUDIT_LOGS_REF, {
-    action,
-    actorUid,
-    actorEmail,
-    actorRole,
-    targetType,
-    targetId,
-    summary,
-    createdAt: serverTimestamp(),
-    metadata,
-  });
+  try {
+    await addDoc(AUDIT_LOGS_REF, {
+      action,
+      actorUid,
+      actorEmail,
+      actorRole,
+      targetType,
+      targetId,
+      summary,
+      createdAt: serverTimestamp(),
+      metadata,
+    });
+  } catch (error) {
+    console.warn("Audit log write skipped", error);
+  }
 };

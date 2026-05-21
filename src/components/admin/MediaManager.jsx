@@ -37,6 +37,7 @@ const MediaManager = ({
     if (target === "section") updateContent("config.backgrounds.section", asset.url);
     if (target === "gallery") updateContent("config.galleryImages", [...(cmsData.config.galleryImages || []), asset.url]);
     if (target === "sponsor") updateContent("config.sponsorLogos", [...(cmsData.config.sponsorLogos || []), asset.url]);
+    if (target === "center-mark") updateContent("config.heroCenterMark.image", asset.url);
     if (target === "intro") updateContent("config.introImage", asset.url);
     if (target === "faq") updateContent("config.faqImage", asset.url);
     if (target === "zones") updateContent("config.zonesImage", asset.url);
@@ -48,6 +49,7 @@ const MediaManager = ({
     if (cmsData.config.backgrounds.hero.mobile === url) updateContent("config.backgrounds.hero.mobile", "");
     if (cmsData.config.backgrounds.section === url) updateContent("config.backgrounds.section", "");
     if (cmsData.config.introImage === url) updateContent("config.introImage", "");
+    if (cmsData.config.heroCenterMark?.image === url) updateContent("config.heroCenterMark.image", "");
     if (cmsData.config.faqImage === url) updateContent("config.faqImage", "");
     if (cmsData.config.zonesImage === url) updateContent("config.zonesImage", "");
     updateContent("config.galleryImages", (cmsData.config.galleryImages || []).filter((item) => item !== url));
@@ -60,6 +62,7 @@ const MediaManager = ({
     cmsData.config.backgrounds.hero.mobile === url && "Hero mobile",
     cmsData.config.backgrounds.section === url && "Section background",
     cmsData.config.introImage === url && "Intro",
+    cmsData.config.heroCenterMark?.image === url && "Hero center mark",
     cmsData.config.faqImage === url && "FAQ",
     cmsData.config.zonesImage === url && "Zones",
     cmsData.config.galleryImages?.includes(url) && "Gallery",
@@ -73,7 +76,7 @@ const MediaManager = ({
         <div className="mb-4 grid gap-3 md:grid-cols-[1fr_180px_180px]">
           <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search by title or tag" className="rounded-xl border border-white/10 bg-black/35 px-3 py-2 text-sm outline-none focus:border-cyan-300" />
           <select value={typeFilter} onChange={(event) => setTypeFilter(event.target.value)} className="rounded-xl border border-white/10 bg-black/35 px-3 py-2 text-sm">
-            {["all", "hero", "gallery", "sponsor", "intro", "background", "general"].map((type) => <option key={type} value={type}>{type}</option>)}
+            {["all", "hero", "gallery", "sponsor", "intro", "center-mark", "background", "general"].map((type) => <option key={type} value={type}>{type}</option>)}
           </select>
           <select value={activeFilter} onChange={(event) => setActiveFilter(event.target.value)} className="rounded-xl border border-white/10 bg-black/35 px-3 py-2 text-sm">
             <option value="all">all</option>

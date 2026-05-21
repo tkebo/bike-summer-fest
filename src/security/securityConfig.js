@@ -39,7 +39,7 @@ export const SECURITY_LIMITS = {
   maxImageBytes: 5 * 1024 * 1024,
 };
 
-export const ALLOWED_IMAGE_MIME_TYPES = ["image/jpeg", "image/png", "image/webp", "image/svg+xml"];
+export const ALLOWED_IMAGE_MIME_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
 export const ALLOWED_EXTERNAL_URL_HOSTS = [
   "www.google.com",

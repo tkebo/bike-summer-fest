@@ -47,6 +47,10 @@ export const designTabs = {
       ["heroFogIntensity", "Fog Intensity", 0, 100], ["heroParticleDensity", "Particle Density", 0, 100], ["heroVignetteStrength", "Vignette Strength", 0, 100],
       ["heroCenterLogoScale", "Center Logo Scale", 0.4, 1.8, 0.05], ["heroGlowStrength", "Hero Glow Strength", 0, 100],
       ["heroCtaGlowStrength", "CTA Glow Strength", 0, 100], ["heroBackgroundAnimationSpeed", "Animation Speed", 0.2, 3, 0.05],
+      ["heroCenterMarkPosX", "Center Mark X", -900, 900], ["heroCenterMarkPosY", "Center Mark Y", -900, 900],
+      ["heroCenterMarkWidth", "Center Mark Width", 0, 900], ["heroCenterMarkHeight", "Center Mark Height", 0, 900],
+      ["heroCenterMarkZIndex", "Center Mark Layer", 0, 100], ["heroCenterMarkTextScale", "Center Text Scale", 0.4, 2.5, 0.05],
+      ["heroCenterMarkImageScale", "Center Image Scale", 0.5, 2.5, 0.05],
     ],
     theme: [
       ["accentCyanColor", "Accent Cyan", 0, 0, 0, "color"], ["accentOrangeColor", "Accent Orange", 0, 0, 0, "color"],

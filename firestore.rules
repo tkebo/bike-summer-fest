@@ -38,14 +38,64 @@ service cloud.firestore {
         && currentAdmin().role in ['owner', 'admin'];
     }
 
+    function isString(value) {
+      return value is string;
+    }
+
+    function isBool(value) {
+      return value is bool;
+    }
+
+    function isTimestamp(value) {
+      return value is timestamp;
+    }
+
+    function isMap(value) {
+      return value is map;
+    }
+
+    function validAdminRole(role) {
+      return role in ['owner', 'admin', 'editor', 'viewer'];
+    }
+
+    function validWritableAdminRole(role) {
+      return role in ['admin', 'editor', 'viewer'];
+    }
+
+    function validAdminProfile(uid) {
+      return request.resource.data.keys().hasOnly([
+          'displayName',
+          'email',
+          'role',
+          'active',
+          'provider',
+          'createdAt',
+          'updatedAt'
+        ])
+        && request.resource.data.keys().hasAll(['email', 'role', 'active'])
+        && isString(request.resource.data.email)
+        && validAdminRole(request.resource.data.role)
+        && isBool(request.resource.data.active)
+        && (!('displayName' in request.resource.data) || isString(request.resource.data.displayName))
+        && (!('provider' in request.resource.data) || isString(request.resource.data.provider))
+        && (!('createdAt' in request.resource.data) || isTimestamp(request.resource.data.createdAt))
+        && (!('updatedAt' in request.resource.data) || isTimestamp(request.resource.data.updatedAt));
+    }
+
     function isBootstrapOwner(uid) {
       return signedIn()
         && request.auth.uid == uid
         && request.auth.token.email == 'iraklitkebuchava@gmail.com'
-        && request.resource.data.keys().hasOnly(['email', 'role', 'active'])
+        && validAdminProfile(uid)
         && request.resource.data.email == 'iraklitkebuchava@gmail.com'
         && request.resource.data.role == 'owner'
         && request.resource.data.active == true;
+    }
+
+    function ownerManagedAdminProfile(uid) {
+      return isOwner()
+        && validAdminProfile(uid)
+        && validWritableAdminRole(request.resource.data.role);
     }
 
     function pendingInvite(email) {
@@ -56,49 +106,162 @@ service cloud.firestore {
       return exists(/databases/$(database)/documents/pending_invites/$(email));
     }
 
+    function validPendingInvite(email) {
+      return request.resource.data.keys().hasOnly(['email', 'role', 'active', 'createdAt', 'updatedAt'])
+        && request.resource.data.keys().hasAll(['email', 'role', 'active'])
+        && request.resource.data.email == email
+        && validWritableAdminRole(request.resource.data.role)
+        && request.resource.data.active == true
+        && (!('createdAt' in request.resource.data) || isTimestamp(request.resource.data.createdAt))
+        && (!('updatedAt' in request.resource.data) || isTimestamp(request.resource.data.updatedAt));
+    }
+
+    function validSiteDoc() {
+      return request.resource.data.keys().hasOnly([
+          'content',
+          'editor',
+          'versionId',
+          'status',
+          'updatedAt',
+          'updatedBy',
+          'publishedAt',
+          'publishedBy'
+        ])
+        && (!('content' in request.resource.data) || isMap(request.resource.data.content))
+        && (!('editor' in request.resource.data) || isMap(request.resource.data.editor))
+        && (!('versionId' in request.resource.data) || isString(request.resource.data.versionId))
+        && (!('status' in request.resource.data) || request.resource.data.status in ['draft', 'published'])
+        && (!('updatedAt' in request.resource.data) || isTimestamp(request.resource.data.updatedAt))
+        && (!('publishedAt' in request.resource.data) || isTimestamp(request.resource.data.publishedAt))
+        && (!('updatedBy' in request.resource.data) || request.resource.data.updatedBy == request.auth.token.email)
+        && (!('publishedBy' in request.resource.data) || request.resource.data.publishedBy == request.auth.token.email);
+    }
+
+    function validMediaAsset() {
+      return request.resource.data.keys().hasOnly([
+          'url',
+          'optimizedUrl',
+          'publicId',
+          'type',
+          'alt',
+          'title',
+          'tags',
+          'createdAt',
+          'updatedAt',
+          'createdBy',
+          'active'
+        ])
+        && request.resource.data.keys().hasAll(['url', 'optimizedUrl', 'publicId', 'type', 'title', 'createdBy', 'active'])
+        && request.resource.data.url.matches('https://res\\.cloudinary\\.com/.*')
+        && request.resource.data.optimizedUrl.matches('https://res\\.cloudinary\\.com/.*')
+        && isString(request.resource.data.publicId)
+        && request.resource.data.type in ['hero', 'gallery', 'sponsor', 'intro', 'center-mark', 'background', 'general']
+        && (!('alt' in request.resource.data) || isString(request.resource.data.alt))
+        && isString(request.resource.data.title)
+        && (!('tags' in request.resource.data) || request.resource.data.tags is list)
+        && (!('createdAt' in request.resource.data) || isTimestamp(request.resource.data.createdAt))
+        && (!('updatedAt' in request.resource.data) || isTimestamp(request.resource.data.updatedAt))
+        && isBool(request.resource.data.active);
+    }
+
+    function validVersionDoc() {
+      return request.resource.data.keys().hasOnly([
+          'createdAt',
+          'createdBy',
+          'note',
+          'contentSnapshot',
+          'editorSnapshot',
+          'seoSnapshot',
+          'eventSettingsSnapshot',
+          'sectionsSnapshot'
+        ])
+        && request.resource.data.keys().hasAll(['createdAt', 'createdBy', 'contentSnapshot', 'editorSnapshot'])
+        && isTimestamp(request.resource.data.createdAt)
+        && request.resource.data.createdBy == request.auth.token.email
+        && (!('note' in request.resource.data) || isString(request.resource.data.note))
+        && isMap(request.resource.data.contentSnapshot)
+        && isMap(request.resource.data.editorSnapshot);
+    }
+
+    function validAuditLog() {
+      return request.resource.data.keys().hasOnly([
+          'action',
+          'actorUid',
+          'actorEmail',
+          'actorRole',
+          'targetType',
+          'targetId',
+          'summary',
+          'createdAt',
+          'metadata'
+        ])
+        && request.resource.data.keys().hasAll(['action', 'actorUid', 'actorEmail', 'actorRole', 'targetType', 'targetId', 'summary', 'createdAt'])
+        && isString(request.resource.data.action)
+        && request.resource.data.actorUid == request.auth.uid
+        && request.resource.data.actorEmail == request.auth.token.email
+        && isString(request.resource.data.actorRole)
+        && isString(request.resource.data.targetType)
+        && isString(request.resource.data.targetId)
+        && isString(request.resource.data.summary)
+        && isTimestamp(request.resource.data.createdAt)
+        && (!('metadata' in request.resource.data) || isMap(request.resource.data.metadata));
+    }
+
     match /site/published {
       allow read: if true;
-      allow write: if canPublish();
+      allow write: if canPublish() && validSiteDoc() && request.resource.data.status == 'published';
     }
 
     match /site/draft {
-      allow read, write: if isActiveAdmin();
+      allow read: if isActiveAdmin();
+      allow write: if isActiveAdmin() && validSiteDoc() && request.resource.data.status == 'draft';
     }
 
     match /admins/{uid} {
       // Users may read only their own role document so the client can resolve access after login.
       allow read: if signedIn() && (request.auth.uid == uid || isOwner());
       allow create: if isBootstrapOwner(uid)
-        || isOwner()
+        || ownerManagedAdminProfile(uid)
         || (
           signedIn()
           && request.auth.uid == uid
           && hasPendingInvite(request.auth.token.email)
+          && validAdminProfile(uid)
           && request.resource.data.email == request.auth.token.email
           && request.resource.data.role == pendingInvite(request.auth.token.email).role
           && request.resource.data.active == true
         );
-      allow update, delete: if isOwner();
+      allow update: if ownerManagedAdminProfile(uid) && resource.data.role != 'owner';
+      allow delete: if isOwner() && resource.data.role != 'owner';
     }
 
     match /pending_invites/{email} {
       allow read: if isOwner() || (signedIn() && request.auth.token.email == email);
-      allow create, update: if isOwner();
+      allow create, update: if isOwner() && validPendingInvite(email);
       allow delete: if isOwner() || (signedIn() && request.auth.token.email == email);
     }
 
     match /media/{assetId} {
       allow read: if true;
-      allow write: if isActiveAdmin();
+      allow create: if isActiveAdmin()
+        && validMediaAsset()
+        && request.resource.data.createdBy == request.auth.uid;
+      allow update: if isActiveAdmin()
+        && validMediaAsset()
+        && request.resource.data.createdBy == resource.data.createdBy;
+      allow delete: if false;
     }
 
     match /site_versions/{versionId} {
-      allow read, write: if isActiveAdmin();
+      allow read: if isActiveAdmin();
+      allow create: if canPublish() && validVersionDoc();
+      allow update: if false;
+      allow delete: if isOwner();
     }
 
     match /audit_logs/{logId} {
       allow read: if canReadAuditLogs();
-      allow create: if isActiveAdmin();
+      allow create: if isActiveAdmin() && validAuditLog();
       allow update, delete: if false;
     }
   }

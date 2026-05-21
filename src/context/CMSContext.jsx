@@ -188,7 +188,10 @@ export const CMSProvider = ({ children }) => {
     if (!isAdmin || !cloudHydrated || !isAdminWorkspaceRoute) return undefined;
 
     const timeout = window.setTimeout(() => {
-      saveDraft({ content: cmsData, editor });
+      saveDraft({
+        content: mergeWithDefaults(defaultContent, validateImportedContent(cmsData)),
+        editor: { ...defaultEditor, ...validateImportedEditor(editor) },
+      });
     }, 700);
 
     return () => window.clearTimeout(timeout);
@@ -321,13 +324,18 @@ export const CMSProvider = ({ children }) => {
   const publishSite = useCallback(async (note = "") => {
     requireAdminAction(session, "publish:write");
     if (!note && !window.confirm("Publish current draft live?")) return;
-    await publish({ content: cmsData, editor }, note);
+    await publish({
+      content: mergeWithDefaults(defaultContent, validateImportedContent(cmsData)),
+      editor: { ...defaultEditor, ...validateImportedEditor(editor) },
+    }, note);
   }, [cmsData, editor, publish, session]);
 
   const quickPublishSite = useCallback(async () => {
     requireAdminAction(session, "publish:write");
-    await saveDraft({ content: cmsData, editor });
-    await publish({ content: cmsData, editor }, "Quick publish from admin topbar");
+    const content = mergeWithDefaults(defaultContent, validateImportedContent(cmsData));
+    const safeEditor = { ...defaultEditor, ...validateImportedEditor(editor) };
+    await saveDraft({ content, editor: safeEditor });
+    await publish({ content, editor: safeEditor }, "Quick publish from admin topbar");
   }, [cmsData, editor, publish, saveDraft, session]);
 
   const restoreVersionToDraft = useCallback((version) => {
@@ -484,7 +492,7 @@ export const CMSProvider = ({ children }) => {
     const body = lang === "ka"
       ? `სახელი: ${formData.name}%0D%0Aკონტაქტი: ${formData.contact}%0D%0Aმოთხოვნის ტიპი: ${formData.type}%0D%0Aშეტყობინება: ${formData.message}`
       : `Name: ${formData.name}%0D%0AContact: ${formData.contact}%0D%0ARequest type: ${formData.type}%0D%0AMessage: ${formData.message}`;
-    window.location.href = `mailto:info@bikesummerfest.ge?subject=${encodeURIComponent(subject)}&body=${body}`;
+    window.location.href = `mailto:info@bikesummerfest.ge?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body.replaceAll("%0D%0A", "\r\n"))}`;
   }, [formData, lang]);
 
   const value = useMemo(() => ({

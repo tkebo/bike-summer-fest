@@ -165,6 +165,21 @@ const validateContentShape = (payload) => {
       heroBackgroundScale: Math.min(Math.max(Number(imageStyles.heroBackgroundScale) || 100, 50), 200),
     };
   }
+  if (isPlainObject(sanitized.config?.heroCenterMark)) {
+    const mark = sanitized.config.heroCenterMark;
+    sanitized.config.heroCenterMark = {
+      enabled: mark.enabled !== false,
+      line1: sanitizeDeep(mark.line1 || "BIKE"),
+      line2: sanitizeDeep(mark.line2 || "SUMMER"),
+      line3: sanitizeDeep(mark.line3 || "FEST"),
+      line4: sanitizeDeep(mark.line4 || "2026"),
+      image: sanitizeUrl(mark.image || "", ""),
+      imageAlt: sanitizeDeep(mark.imageAlt || "Bike Summer Fest center mark"),
+      imageFit: ["cover", "contain"].includes(mark.imageFit) ? mark.imageFit : "cover",
+      imageOpacity: Math.min(Math.max(Number(mark.imageOpacity) || 45, 0), 100),
+      backgroundEnabled: mark.backgroundEnabled !== false,
+    };
+  }
   if (Array.isArray(sanitized.config?.ticketPackages)) {
     sanitized.config.ticketPackages = sanitized.config.ticketPackages
       .filter((ticket) => isPlainObject(ticket))

@@ -27,8 +27,9 @@ export const sanitizeFilename = (filename) => {
 
 export const isSafeUrl = (url) => {
   if (typeof url !== "string") return false;
-  if (url.startsWith("/")) return true;
   if (SCRIPT_LIKE_PROTOCOL.test(url)) return false;
+  if (url.startsWith("//") || url.startsWith("\\")) return false;
+  if (url.startsWith("/")) return true;
 
   try {
     const parsed = new URL(url);
@@ -45,6 +46,7 @@ export const sanitizeUrl = (url, fallback = "") => {
 
 export const isSafeHttpUrl = (url) => {
   if (typeof url !== "string" || SCRIPT_LIKE_PROTOCOL.test(url)) return false;
+  if (url.startsWith("//") || url.startsWith("\\")) return false;
   try {
     const parsed = new URL(url);
     return ["http:", "https:"].includes(parsed.protocol);

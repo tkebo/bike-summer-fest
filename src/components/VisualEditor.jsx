@@ -143,7 +143,7 @@ export const MediaLibraryPanel = ({
       <div className="grid grid-cols-[1fr_auto] gap-2">
         <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search title or tag" className="rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none focus:border-cyan-300" />
         <select value={filter} onChange={(event) => setFilter(event.target.value)} className="rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm text-white outline-none">
-          {["all", "hero", "gallery", "sponsor", "intro", "general"].map((type) => <option key={type} value={type}>{type}</option>)}
+          {["all", "hero", "gallery", "sponsor", "intro", "center-mark", "general"].map((type) => <option key={type} value={type}>{type}</option>)}
         </select>
       </div>
       {loading ? (
@@ -175,12 +175,13 @@ export const MediaLibraryPanel = ({
               <input value={preview.alt || ""} onChange={(event) => setPreview({ ...preview, alt: event.target.value })} placeholder="Alt text" className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white" />
               <input value={(preview.tags || []).join(", ")} onChange={(event) => setPreview({ ...preview, tags: event.target.value.split(",").map((tag) => tag.trim()).filter(Boolean) })} placeholder="tags, comma, separated" className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white" />
               <select value={preview.type} onChange={(event) => setPreview({ ...preview, type: event.target.value })} className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-sm text-white">
-                {["hero", "gallery", "sponsor", "intro", "general"].map((type) => <option key={type} value={type}>{type}</option>)}
+                {["hero", "gallery", "sponsor", "intro", "center-mark", "general"].map((type) => <option key={type} value={type}>{type}</option>)}
               </select>
               <button onClick={() => onUpdate(preview.id, { title: preview.title, alt: preview.alt, tags: preview.tags, type: preview.type })} className="rounded-xl bg-cyan-300 px-4 py-3 font-black text-black">Save metadata</button>
               <div className="grid grid-cols-2 gap-2">
                 <button onClick={() => onUse("hero", preview)} className="rounded-xl border border-white/15 px-3 py-2 text-xs font-black">Use as hero</button>
                 <button onClick={() => onUse("intro", preview)} className="rounded-xl border border-white/15 px-3 py-2 text-xs font-black">Use as intro</button>
+                <button onClick={() => onUse("center-mark", preview)} className="rounded-xl border border-white/15 px-3 py-2 text-xs font-black">Use as center mark</button>
                 <button onClick={() => onUse("gallery", preview)} className="rounded-xl border border-white/15 px-3 py-2 text-xs font-black">Add gallery</button>
                 <button onClick={() => onUse("sponsor", preview)} className="rounded-xl border border-white/15 px-3 py-2 text-xs font-black">Add sponsor</button>
               </div>
@@ -530,12 +531,14 @@ const VisualEditor = () => {
               onUse={(target, asset) => {
                 if (target === "hero") updateContent("config.heroImage", asset.url);
                 if (target === "intro") updateContent("config.introImage", asset.url);
+                if (target === "center-mark") updateContent("config.heroCenterMark.image", asset.url);
                 if (target === "gallery") updateContent("config.galleryImages", [...(cmsData.config.galleryImages || []), asset.url]);
                 if (target === "sponsor") updateContent("config.sponsorLogos", [...(cmsData.config.sponsorLogos || []), asset.url]);
               }}
               onRemoveFromSection={(url) => {
                 if (cmsData.config.heroImage === url) updateContent("config.heroImage", "");
                 if (cmsData.config.introImage === url) updateContent("config.introImage", "");
+                if (cmsData.config.heroCenterMark?.image === url) updateContent("config.heroCenterMark.image", "");
                 updateContent("config.galleryImages", (cmsData.config.galleryImages || []).filter((item) => item !== url));
                 updateContent("config.sponsorLogos", (cmsData.config.sponsorLogos || []).filter((item) => item !== url));
               }}

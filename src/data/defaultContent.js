@@ -462,6 +462,18 @@ export const defaultContent = {
       sponsorLogoPadding: 20,
       heroBackgroundScale: 100,
     },
+    heroCenterMark: {
+      enabled: true,
+      line1: "BIKE",
+      line2: "SUMMER",
+      line3: "FEST",
+      line4: "2026",
+      image: "",
+      imageAlt: "Bike Summer Fest center mark",
+      imageFit: "cover",
+      imageOpacity: 45,
+      backgroundEnabled: true,
+    },
     faqImage: "",
     zonesImage: "",
     backgrounds: {

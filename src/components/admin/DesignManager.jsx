@@ -99,6 +99,75 @@ const DesignManager = ({
               </select>
             </label>
           )}
+          {activeCategory === "hero" && (
+            <div className="mt-6 rounded-2xl border border-white/10 bg-black/20 p-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <h4 className="font-black">Center Mark Content</h4>
+                  <p className="mt-1 text-xs text-white/45">Controls the circular BIKE SUMMER FEST 2026 mark in the hero.</p>
+                </div>
+                <label className="flex items-center gap-2 text-sm font-black text-white/70">
+                  <input
+                    type="checkbox"
+                    checked={(cmsData.config.heroCenterMark || defaultContent.config.heroCenterMark).enabled !== false}
+                    onChange={(event) => updateContent("config.heroCenterMark.enabled", event.target.checked)}
+                    className="h-5 w-5 rounded accent-cyan-300"
+                  />
+                  Show mark
+                </label>
+                <label className="flex items-center gap-2 text-sm font-black text-white/70">
+                  <input
+                    type="checkbox"
+                    checked={(cmsData.config.heroCenterMark || defaultContent.config.heroCenterMark).backgroundEnabled !== false}
+                    onChange={(event) => updateContent("config.heroCenterMark.backgroundEnabled", event.target.checked)}
+                    className="h-5 w-5 rounded accent-cyan-300"
+                  />
+                  Show background ring
+                </label>
+              </div>
+              <div className="mt-5 grid gap-4 md:grid-cols-2">
+                {[
+                  ["line1", "Top text"],
+                  ["line2", "Main text"],
+                  ["line3", "Bottom text"],
+                  ["line4", "Year / small text"],
+                  ["image", "Image URL"],
+                  ["imageAlt", "Image alt text"],
+                ].map(([key, label]) => (
+                  <label key={key} className="grid gap-2">
+                    <span className="text-sm text-white/70">{label}</span>
+                    <input
+                      value={(cmsData.config.heroCenterMark || defaultContent.config.heroCenterMark)[key] || ""}
+                      onChange={(event) => updateContent(`config.heroCenterMark.${key}`, event.target.value)}
+                      className="rounded-xl border border-white/10 bg-black/35 px-3 py-2 text-sm text-white outline-none focus:border-cyan-300"
+                    />
+                  </label>
+                ))}
+                <label className="grid gap-2">
+                  <span className="text-sm text-white/70">Image fit</span>
+                  <select
+                    value={(cmsData.config.heroCenterMark || defaultContent.config.heroCenterMark).imageFit || "cover"}
+                    onChange={(event) => updateContent("config.heroCenterMark.imageFit", event.target.value)}
+                    className="rounded-xl border border-white/10 bg-black/35 px-3 py-2 text-sm text-white outline-none focus:border-cyan-300"
+                  >
+                    <option value="cover">Cover</option>
+                    <option value="contain">Contain</option>
+                  </select>
+                </label>
+                <label className="grid gap-2">
+                  <span className="text-sm text-white/70">Image opacity</span>
+                  <input
+                    type="range"
+                    min="0"
+                    max="100"
+                    value={(cmsData.config.heroCenterMark || defaultContent.config.heroCenterMark).imageOpacity ?? 45}
+                    onChange={(event) => updateContent("config.heroCenterMark.imageOpacity", Number(event.target.value))}
+                  />
+                  <span className="text-xs text-cyan-200">{(cmsData.config.heroCenterMark || defaultContent.config.heroCenterMark).imageOpacity ?? 45}%</span>
+                </label>
+              </div>
+            </div>
+          )}
         </section>
       </div>
 

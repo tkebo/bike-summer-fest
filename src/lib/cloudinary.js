@@ -3,6 +3,18 @@ const UPLOAD_PRESET = "bike-summer-fest";
 const FOLDER = "bike-summer-fest";
 const UPLOAD_URL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
 
+const isTrustedUploadResponse = (payload) => {
+  try {
+    const parsedUrl = new URL(payload.secure_url);
+    return parsedUrl.protocol === "https:"
+      && parsedUrl.hostname === "res.cloudinary.com"
+      && parsedUrl.pathname.includes(`/${CLOUD_NAME}/`)
+      && String(payload.public_id || "").startsWith(`${FOLDER}/`);
+  } catch {
+    return false;
+  }
+};
+
 export const uploadImage = (file, onProgress) => {
   return new Promise((resolve, reject) => {
     const formData = new FormData();
@@ -21,6 +33,10 @@ export const uploadImage = (file, onProgress) => {
       try {
         const payload = JSON.parse(request.responseText);
         if (request.status >= 200 && request.status < 300) {
+          if (!isTrustedUploadResponse(payload)) {
+            reject(new Error("Unexpected upload response"));
+            return;
+          }
           resolve(payload);
           return;
         }

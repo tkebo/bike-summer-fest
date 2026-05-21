@@ -5,6 +5,7 @@ const assignments = [
   ["section", "Section background"],
   ["gallery", "Gallery"],
   ["sponsor", "Sponsor logo"],
+  ["center-mark", "Hero center mark"],
   ["intro", "Intro portal image"],
   ["faq", "FAQ / location image"],
   ["zones", "Zones panorama"],

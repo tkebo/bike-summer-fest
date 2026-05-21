@@ -11,6 +11,8 @@ const Hero = () => {
   const configuredHeroImage = isConfiguredImageActive(cmsData.config.heroImage) ? cmsData.config.heroImage : cmsData.config.images.hero;
   const heroImage = getOptimizedImageUrl(configuredHeroImage, 1920);
   const imageStyles = cmsData.config.imageStyles || {};
+  const centerMark = cmsData.config.heroCenterMark || {};
+  const centerMarkImage = centerMark.image ? getOptimizedImageUrl(centerMark.image, 700) : "";
   const heroBackgrounds = cmsData.config.backgrounds?.hero || {};
   const generatedHeroDate = lang === "ka"
     ? cmsData.config.eventSettings?.dates?.displayKa
@@ -125,20 +127,46 @@ const Hero = () => {
             </motion.div>
             </AdminFrame>
 
-            <motion.div
-              aria-hidden="true"
-              className={`cinematic-center-mark hidden lg:flex ${introArrivalActive ? "intro-arrival-logo" : ""}`}
-              initial={{ opacity: 0, scale: 0.88, y: 30 }}
-              animate={{ opacity: 1, scale: ev("heroCenterLogoScale"), y: 0 }}
-              transition={{ duration: 1.2, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
-            >
-              <div className="cinematic-center-ring">
-                <span>BIKE</span>
-                <strong>SUMMER</strong>
-                <span>FEST</span>
-                <em>2026</em>
-              </div>
-            </motion.div>
+            {centerMark.enabled !== false && (
+              <AdminFrame
+                frameKey="heroCenterMark"
+                label="Center Mark"
+                className="cinematic-center-mark hidden lg:flex"
+                style={{ zIndex: ev("heroCenterMarkZIndex") }}
+              >
+                <motion.div
+                  aria-hidden="true"
+                  className={introArrivalActive ? "intro-arrival-logo" : ""}
+                  initial={{ opacity: 0, scale: 0.88, y: 30 }}
+                  animate={{ opacity: 1, scale: ev("heroCenterLogoScale"), y: 0 }}
+                  transition={{ duration: 1.2, delay: 0.18, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <div
+                    className={`cinematic-center-ring ${centerMark.backgroundEnabled === false ? "cinematic-center-ring-transparent" : ""}`}
+                    style={{
+                      fontSize: `${ev("heroCenterMarkTextScale")}em`,
+                    }}
+                  >
+                    {centerMarkImage && (
+                      <img
+                        src={centerMarkImage}
+                        alt=""
+                        className="cinematic-center-ring-image"
+                        style={{
+                          objectFit: centerMark.imageFit || "cover",
+                          opacity: (centerMark.imageOpacity ?? 45) / 100,
+                          transform: `scale(${ev("heroCenterMarkImageScale")})`,
+                        }}
+                      />
+                    )}
+                    <span>{centerMark.line1 || "BIKE"}</span>
+                    <strong>{centerMark.line2 || "SUMMER"}</strong>
+                    <span>{centerMark.line3 || "FEST"}</span>
+                    <em>{centerMark.line4 || "2026"}</em>
+                  </div>
+                </motion.div>
+              </AdminFrame>
+            )}
 
             <div className="hidden lg:block" />
           </div>

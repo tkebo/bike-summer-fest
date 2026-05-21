@@ -9,10 +9,9 @@ import AtmosphereLayer from "./components/AtmosphereLayer";
 const ProtectedAdminRoute = lazy(() => import("./components/ProtectedAdminRoute"));
 const AdminLayout = lazy(() => import("./components/admin/AdminLayout"));
 const AdminPreviewPage = lazy(() => import("./components/admin/AdminPreviewPage"));
-const IntroPortal = lazy(() => import("./components/IntroPortal"));
 
 function Platform() {
-  const { editor, cmsData, lang } = useCMS();
+  const { editor, cmsData } = useCMS();
   const isAdminPreviewRoute = window.location.pathname.startsWith("/admin/preview");
   const isAdminRoute = window.location.pathname.startsWith("/admin");
 
@@ -41,9 +40,6 @@ function Platform() {
       <SEOHead />
       <AtmosphereLayer editor={editor} />
       <AdminOverlay />
-      <Suspense fallback={null}>
-        <IntroPortal settings={cmsData.config.introSettings} audioSettings={cmsData.config.introAudio} lang={lang} />
-      </Suspense>
       <SiteCanvas cmsData={cmsData} editor={editor} />
     </main>
   );

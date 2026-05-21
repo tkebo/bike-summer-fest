@@ -50,6 +50,8 @@ export const defaultEditor = {
     heroFogIntensity: 55, heroParticleDensity: 55, heroVignetteStrength: 72,
     heroCenterLogoScale: 1, heroGlowStrength: 70, heroCtaGlowStrength: 70,
     heroBackgroundAnimationSpeed: 1,
+    heroCenterMarkPosX: 0, heroCenterMarkPosY: 0, heroCenterMarkWidth: 0, heroCenterMarkHeight: 0,
+    heroCenterMarkZIndex: 10, heroCenterMarkTextScale: 1, heroCenterMarkImageScale: 1,
 
     // Atmosphere
     atmosphereParticleDensity: 42, atmosphereLaserIntensity: 36, atmosphereOpacity: 62,

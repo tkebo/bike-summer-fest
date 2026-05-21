@@ -29,6 +29,8 @@ const VERSIONS_REF = () => collection(db, "site_versions");
 const ADMINS_COLLECTION = () => collection(db, "admins");
 const INVITES_COLLECTION = () => collection(db, "pending_invites");
 const INVITE_REF = (email) => doc(db, "pending_invites", email.toLowerCase());
+const INVITABLE_ROLES = new Set(["admin", "editor", "viewer"]);
+const normalizeEmail = (email) => String(email || "").trim().toLowerCase();
 
 export async function loadPublishedConfig() {
   const snap = await getDoc(PUBLISHED_REF());
@@ -60,7 +62,7 @@ export async function createBootstrapOwnerProfile(user) {
 }
 
 export async function loadPendingInvite(email) {
-  const snap = await getDoc(INVITE_REF(email));
+  const snap = await getDoc(INVITE_REF(normalizeEmail(email)));
   return snap.exists() ? snap.data() : null;
 }
 
@@ -75,7 +77,7 @@ export async function acceptPendingInvite(user, invite) {
     updatedAt: serverTimestamp(),
   };
   await setDoc(ADMIN_REF(user.uid), profile);
-  await deleteDoc(INVITE_REF(user.email));
+  await deleteDoc(INVITE_REF(normalizeEmail(user.email)));
   return profile;
 }
 
@@ -121,6 +123,22 @@ export async function createVersion(data, note, user) {
     sectionsSnapshot: data.content?.config?.sections || [],
   });
   return ref.id;
+}
+
+async function triggerVercelDeploy(user) {
+  if (!user?.getIdToken) throw new Error("Admin authentication is required");
+  const token = await user.getIdToken();
+  const response = await fetch("/api/redeploy", {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    throw new Error(payload.error || "Vercel deploy failed");
+  }
+  return payload;
 }
 
 export async function loadVersions() {
@@ -252,7 +270,17 @@ export const useFirebaseCMS = () => {
       setPublishedMeta(await loadPublishedConfig());
       setVersions(await loadVersions());
       setCloudStatus("Connected");
-      setPublishStatus("Published");
+      setPublishStatus("Published, deploying...");
+      let deployStatus = "not_requested";
+      try {
+        await triggerVercelDeploy(user);
+        deployStatus = "queued";
+        setPublishStatus("Deploy queued");
+      } catch (deployError) {
+        deployStatus = "failed";
+        console.error(deployError);
+        setPublishStatus("Published, deploy failed");
+      }
       await logAudit(AUDIT_ACTIONS.PUBLISH, {
         actorUid: user?.uid || "",
         actorEmail: user?.email || "",
@@ -260,8 +288,13 @@ export const useFirebaseCMS = () => {
         targetType: "site",
         targetId: "published",
         summary: note || "Draft published",
-        metadata: { versionId },
+        metadata: { versionId, deploy: deployStatus },
       });
+      window.setTimeout(() => {
+        if (!window.location.pathname.startsWith("/admin")) {
+          window.location.reload();
+        }
+      }, 45000);
       return true;
     } catch (error) {
       console.error(error);
@@ -285,8 +318,10 @@ export const useFirebaseCMS = () => {
   }, []);
 
   const inviteAdminUser = useCallback(async (email, role) => {
-    await setDoc(INVITE_REF(email), {
-      email: email.toLowerCase(),
+    const normalizedEmail = normalizeEmail(email);
+    if (!normalizedEmail || !INVITABLE_ROLES.has(role)) throw new Error("Invalid invite");
+    await setDoc(INVITE_REF(normalizedEmail), {
+      email: normalizedEmail,
       role,
       active: true,
       createdAt: serverTimestamp(),
@@ -298,8 +333,8 @@ export const useFirebaseCMS = () => {
       actorEmail: user?.email || "",
       actorRole: adminProfile?.role || "",
       targetType: "pending_invite",
-      targetId: email,
-      summary: `Invited ${email} as ${role}`,
+      targetId: normalizedEmail,
+      summary: `Invited ${normalizedEmail} as ${role}`,
     });
   }, [adminProfile?.role, refreshAdminUsers, user]);
 
@@ -337,7 +372,7 @@ export const useFirebaseCMS = () => {
   }, [adminProfile?.role, refreshAdminUsers, user]);
 
   const removePendingInvite = useCallback(async (email) => {
-    await deleteDoc(INVITE_REF(email));
+    await deleteDoc(INVITE_REF(normalizeEmail(email)));
     await refreshAdminUsers();
   }, [refreshAdminUsers]);
 
