@@ -15,13 +15,41 @@ const Sponsors = () => {
   const marqueeSponsors = configuredSponsors.filter((sponsor) => sponsor.showInMarquee !== false);
   const hasConfiguredSponsors = configuredSponsors.length > 0;
   const imageStyles = cmsData.config.imageStyles || {};
+  const sponsorLogoCleanMode = imageStyles.sponsorLogoCleanMode !== false;
   const socialLinkKeys = ["facebook", "instagram", "tiktok", "youtube", "telegram", "whatsapp"];
   const socialLinks = eventSettings.socials || {};
   const firstActiveSocialLink = socialLinkKeys
     .map((key) => socialLinks[key])
     .find((url) => isSafeHttpUrl(url));
 
-  const renderSponsorContent = (sponsor, imageClassName = "max-w-full object-contain") => {
+  const sponsorLogoStyle = sponsorLogoCleanMode
+    ? {
+      width: "auto",
+      height: "auto",
+      maxHeight: `${imageStyles.sponsorLogoHeight || 64}px`,
+      maxWidth: `${imageStyles.sponsorLogoMaxWidth || 220}px`,
+      objectFit: "contain",
+      imageRendering: "auto",
+    }
+    : {
+      width: "100%",
+      height: `${imageStyles.sponsorLogoHeight || 64}px`,
+      maxWidth: `${imageStyles.sponsorLogoMaxWidth || 220}px`,
+      objectFit: "contain",
+    };
+  const sponsorCardStyle = {
+    padding: sponsorLogoCleanMode
+      ? `clamp(8px, 2.2vw, ${Math.max(imageStyles.sponsorLogoPadding || 20, 8)}px)`
+      : `${imageStyles.sponsorLogoPadding || 20}px`,
+  };
+  const sponsorCardClassName = sponsorLogoCleanMode
+    ? "sponsor-clean-card flex min-h-[132px] items-center justify-center text-center font-black tracking-widest transition duration-300"
+    : "border border-white/10 flex min-h-[132px] items-center justify-center text-center font-black tracking-widest hover:border-cyan-300/50 hover:-translate-y-2 transition duration-300 global-box";
+  const sponsorMarqueeCardClassName = sponsorLogoCleanMode
+    ? "sponsor-clean-card sponsor-clean-marquee-card min-w-[240px] flex min-h-[116px] items-center justify-center text-center font-black tracking-[0.18em]"
+    : "min-w-[240px] border border-white/10 flex min-h-[116px] items-center justify-center text-center font-black tracking-[0.18em] global-box";
+
+  const renderSponsorContent = (sponsor, imageClassName = "sponsor-logo-image max-w-full object-contain") => {
     const hasActiveLogo = sponsor.logo && isConfiguredImageActive(sponsor.logo);
     const content = hasActiveLogo
       ? (
@@ -33,18 +61,13 @@ const Sponsors = () => {
           loading="lazy"
           decoding="async"
           className={imageClassName}
-          style={{
-            width: "100%",
-            height: `${imageStyles.sponsorLogoHeight || 64}px`,
-            maxWidth: `${imageStyles.sponsorLogoMaxWidth || 220}px`,
-            objectFit: "contain",
-          }}
+          style={sponsorLogoStyle}
         />
       )
       : sponsor.name;
 
     return sponsor.website && isSafeHttpUrl(sponsor.website) ? (
-      <a href={sponsor.website} target="_blank" rel="noreferrer" className="flex h-full w-full items-center justify-center">
+      <a href={sponsor.website} target="_blank" rel="noreferrer" className="sponsor-logo-link flex h-full w-full items-center justify-center">
         {content}
       </a>
     ) : content;
@@ -72,14 +95,21 @@ const Sponsors = () => {
                 ? gridSponsors.map((sponsor) => (
                   <div
                     key={sponsor.id}
-                    className="border border-white/10 flex min-h-[132px] items-center justify-center text-center font-black tracking-widest hover:border-cyan-300/50 hover:-translate-y-2 transition duration-300 global-box"
-                    style={{ padding: `${imageStyles.sponsorLogoPadding || 20}px` }}
+                    className={sponsorCardClassName}
+                    style={sponsorCardStyle}
                   >
                     {renderSponsorContent(sponsor)}
                   </div>
                 ))
                 : t.sponsorCards.map((item, index) => (
-                  <Editable key={index} path={`sponsorCards.${index}`} langContext={lang} as="div" className="border border-white/10 flex items-center justify-center text-center font-black tracking-widest hover:border-cyan-300/50 hover:-translate-y-2 transition duration-300 global-box" />
+                  <Editable
+                    key={index}
+                    path={`sponsorCards.${index}`}
+                    langContext={lang}
+                    as="div"
+                    className={sponsorCardClassName}
+                    style={sponsorCardStyle}
+                  />
                 ))}
             </div>
           </div>
@@ -99,8 +129,8 @@ const Sponsors = () => {
                 ? [...marqueeSponsors, ...marqueeSponsors].map((sponsor, index) => (
                   <div
                     key={`${sponsor.id}-${index}`}
-                    className="min-w-[240px] border border-white/10 flex min-h-[116px] items-center justify-center text-center font-black tracking-[0.18em] global-box"
-                    style={{ padding: `${imageStyles.sponsorLogoPadding || 20}px` }}
+                    className={sponsorMarqueeCardClassName}
+                    style={sponsorCardStyle}
                   >
                     {renderSponsorContent(sponsor)}
                   </div>
@@ -108,8 +138,8 @@ const Sponsors = () => {
                 : [...(sponsorLogos.length ? sponsorLogos : t.sponsorMarqueeItems), ...(sponsorLogos.length ? sponsorLogos : t.sponsorMarqueeItems)].map((item, index) => (
                   <div
                     key={`${item}-${index}`}
-                    className="min-w-[240px] border border-white/10 flex min-h-[116px] items-center justify-center text-center font-black tracking-[0.18em] global-box"
-                    style={{ padding: `${imageStyles.sponsorLogoPadding || 20}px` }}
+                    className={sponsorMarqueeCardClassName}
+                    style={sponsorCardStyle}
                   >
                     {sponsorLogos.length ? (
                       <img
@@ -119,12 +149,8 @@ const Sponsors = () => {
                         alt="Sponsor"
                         loading="lazy"
                         decoding="async"
-                        className="max-w-full object-contain"
-                        style={{
-                          width: "100%",
-                          height: `${imageStyles.sponsorLogoHeight || 64}px`,
-                          maxWidth: `${imageStyles.sponsorLogoMaxWidth || 220}px`,
-                        }}
+                        className="sponsor-logo-image max-w-full object-contain"
+                        style={sponsorLogoStyle}
                       />
                     ) : item}
                   </div>

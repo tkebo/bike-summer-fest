@@ -162,6 +162,7 @@ const validateContentShape = (payload) => {
       sponsorLogoHeight: Math.min(Math.max(Number(imageStyles.sponsorLogoHeight) || 64, 24), 240),
       sponsorLogoMaxWidth: Math.min(Math.max(Number(imageStyles.sponsorLogoMaxWidth) || 220, 80), 480),
       sponsorLogoPadding: Math.min(Math.max(Number(imageStyles.sponsorLogoPadding) || 20, 0), 64),
+      sponsorLogoCleanMode: imageStyles.sponsorLogoCleanMode !== false,
       heroBackgroundScale: Math.min(Math.max(Number(imageStyles.heroBackgroundScale) || 100, 50), 200),
     };
   }

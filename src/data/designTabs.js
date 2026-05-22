@@ -67,6 +67,7 @@ export const designTabs = {
     sections: [
       ["sectionMaxWidth", "Max Width", 0, 2000], ["sectionPaddingX", "Padding X", 0, 200], ["sectionPaddingY", "Padding Y", 0, 300],
     ],
+    sponsors: [],
     buttons: [
       ["ticketBtnWidth", "Ticket Width", 0, 300], ["ticketBtnHeight", "Ticket Height", 0, 100],
       ["ticketBtnPaddingX", "Ticket Padding X", 0, 100], ["ticketBtnPaddingY", "Ticket Padding Y", 0, 100],

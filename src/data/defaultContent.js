@@ -460,6 +460,7 @@ export const defaultContent = {
       sponsorLogoHeight: 64,
       sponsorLogoMaxWidth: 220,
       sponsorLogoPadding: 20,
+      sponsorLogoCleanMode: true,
       heroBackgroundScale: 100,
     },
     heroCenterMark: {
