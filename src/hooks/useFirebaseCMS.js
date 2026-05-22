@@ -14,8 +14,11 @@ import {
   updateDoc,
 } from "firebase/firestore";
 import {
+  browserPopupRedirectResolver,
+  getRedirectResult,
   onAuthStateChanged,
   signInWithPopup,
+  signInWithRedirect,
   signOut,
 } from "firebase/auth";
 import { auth, db, googleProvider } from "../lib/firebase";
@@ -159,10 +162,20 @@ export const useFirebaseCMS = () => {
   const [versions, setVersions] = useState([]);
   const [adminUsers, setAdminUsers] = useState([]);
   const [pendingInvites, setPendingInvites] = useState([]);
+  const [authError, setAuthError] = useState("");
+
+  useEffect(() => {
+    if (!window.location.pathname.startsWith("/admin")) return;
+    getRedirectResult(auth, browserPopupRedirectResolver).catch((error) => {
+      console.error(error);
+      setAuthError(error.message || "Google login failed");
+    });
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (nextUser) => {
       setUser(nextUser);
+      setAuthError("");
       if (!nextUser?.uid) {
         setAdminProfile(null);
         setAdminReady(true);
@@ -203,7 +216,17 @@ export const useFirebaseCMS = () => {
   }, []);
 
   const loginWithGoogle = useCallback(async () => {
-    await signInWithPopup(auth, googleProvider);
+    setAuthError("");
+    try {
+      await signInWithPopup(auth, googleProvider, browserPopupRedirectResolver);
+    } catch (error) {
+      console.error(error);
+      if (["auth/popup-blocked", "auth/popup-closed-by-user", "auth/cancelled-popup-request"].includes(error.code)) {
+        await signInWithRedirect(auth, googleProvider, browserPopupRedirectResolver);
+        return;
+      }
+      setAuthError(error.message || "Google login failed");
+    }
   }, []);
 
   const logout = useCallback(async () => {
@@ -401,6 +424,7 @@ export const useFirebaseCMS = () => {
     versions,
     adminUsers,
     pendingInvites,
+    authError,
     loginWithGoogle,
     logout,
     loadCloudConfig,

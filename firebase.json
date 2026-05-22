@@ -3,6 +3,7 @@
     "rules": "firestore.rules"
   },
   "hosting": {
+    "site": "bike-summer-fest",
     "public": "dist",
     "ignore": [
       "firebase.json",
