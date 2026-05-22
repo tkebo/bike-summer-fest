@@ -16,6 +16,7 @@ const MediaManager = ({
   updateMediaAsset,
   softDeleteMediaAsset,
   restoreMediaAsset,
+  hardDeleteMediaAsset,
 }) => {
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("all");
@@ -69,6 +70,16 @@ const MediaManager = ({
     cmsData.config.sponsorLogos?.includes(url) && "Sponsor",
   ].filter(Boolean);
 
+  const deletePermanently = async (asset) => {
+    const confirmed = window.confirm(
+      `Delete "${asset.title || "this image"}" permanently from the media library? This also removes it from all assigned sections.`
+    );
+    if (!confirmed) return;
+    removeFromSections(asset.url);
+    await hardDeleteMediaAsset(asset);
+    setSelectedAsset(null);
+  };
+
   return (
     <div className="space-y-4">
       <MediaUpload onUpload={(file) => createMediaAsset(file, "general")} progress={mediaUploadProgress} error={mediaError} />
@@ -101,6 +112,7 @@ const MediaManager = ({
             onUpdate={updateMediaAsset}
             onDeactivate={softDeleteMediaAsset}
             onRestore={restoreMediaAsset}
+            onDeletePermanently={deletePermanently}
             onRemoveFromSections={removeFromSections}
             onAssign={assignAsset}
           />

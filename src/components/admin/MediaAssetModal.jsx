@@ -2,7 +2,17 @@ import { useState } from "react";
 import { getOptimizedImageUrl } from "../../lib/cloudinary";
 import MediaAssignmentPanel from "./MediaAssignmentPanel";
 
-const MediaAssetModal = ({ asset, assignedLabels, onClose, onUpdate, onDeactivate, onRestore, onRemoveFromSections, onAssign }) => {
+const MediaAssetModal = ({
+  asset,
+  assignedLabels,
+  onClose,
+  onUpdate,
+  onDeactivate,
+  onRestore,
+  onDeletePermanently,
+  onRemoveFromSections,
+  onAssign,
+}) => {
   const [draft, setDraft] = useState(asset);
 
   return (
@@ -39,6 +49,12 @@ const MediaAssetModal = ({ asset, assignedLabels, onClose, onUpdate, onDeactivat
                 <button onClick={() => onRestore(asset.id)} className="rounded-xl border border-cyan-300/30 px-3 py-2 text-xs font-black text-cyan-200">Restore</button>
               )}
             </div>
+            <button
+              onClick={() => onDeletePermanently(asset)}
+              className="rounded-xl border border-red-400/40 bg-red-500/10 px-4 py-3 text-xs font-black text-red-200 hover:bg-red-500/20"
+            >
+              Delete permanently
+            </button>
           </div>
         </div>
       </div>

@@ -14,6 +14,7 @@ export const AUDIT_ACTIONS = {
   MEDIA_UPLOAD: "media_upload",
   MEDIA_DEACTIVATE: "media_deactivate",
   MEDIA_RESTORE: "media_restore",
+  MEDIA_DELETE: "media_delete",
   SPONSOR_ADD: "sponsor_add",
   SPONSOR_EDIT: "sponsor_edit",
   SPONSOR_DELETE: "sponsor_delete",

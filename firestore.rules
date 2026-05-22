@@ -249,7 +249,7 @@ service cloud.firestore {
       allow update: if isActiveAdmin()
         && validMediaAsset()
         && request.resource.data.createdBy == resource.data.createdBy;
-      allow delete: if false;
+      allow delete: if isActiveAdmin();
     }
 
     match /site_versions/{versionId} {

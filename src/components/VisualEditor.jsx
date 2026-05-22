@@ -112,6 +112,7 @@ export const MediaLibraryPanel = ({
   onUpload,
   onUpdate,
   onDelete,
+  onHardDelete,
   onRestore,
   onUse,
   onRemoveFromSection,
@@ -193,6 +194,19 @@ export const MediaLibraryPanel = ({
                 )}
                 <button onClick={() => onRemoveFromSection(preview.url)} className="rounded-xl border border-white/15 px-3 py-2 text-xs font-black">Remove from section</button>
               </div>
+              {onHardDelete && (
+                <button
+                  onClick={async () => {
+                    if (!window.confirm(`Delete "${preview.title || "this image"}" permanently from the media library?`)) return;
+                    onRemoveFromSection(preview.url);
+                    await onHardDelete(preview);
+                    setPreview(null);
+                  }}
+                  className="rounded-xl border border-red-400/40 bg-red-500/10 px-3 py-2 text-xs font-black text-red-200"
+                >
+                  Delete permanently
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -248,6 +262,7 @@ const VisualEditor = () => {
     updateMediaAsset,
     softDeleteMediaAsset,
     restoreMediaAsset,
+    hardDeleteMediaAsset,
   } = useCMS();
   const isAdminRoute = window.location.pathname.startsWith("/admin");
 
@@ -527,6 +542,7 @@ const VisualEditor = () => {
               onUpload={(file) => file && createMediaAsset(file)}
               onUpdate={updateMediaAsset}
               onDelete={softDeleteMediaAsset}
+              onHardDelete={hardDeleteMediaAsset}
               onRestore={restoreMediaAsset}
               onUse={(target, asset) => {
                 if (target === "hero") updateContent("config.heroImage", asset.url);

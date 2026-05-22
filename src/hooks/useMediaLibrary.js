@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   onSnapshot,
   serverTimestamp,
@@ -104,6 +105,19 @@ export const useMediaLibrary = (user, isAdmin) => {
     });
   }, [updateMediaAsset, user]);
 
+  const hardDeleteMediaAsset = useCallback(async (asset) => {
+    if (!isAdmin) throw new Error("Admin access is required");
+    await deleteDoc(doc(db, "media", asset.id));
+    await logAudit(AUDIT_ACTIONS.MEDIA_DELETE, {
+      actorUid: user.uid,
+      actorEmail: user.email || "",
+      targetType: "media",
+      targetId: asset.id,
+      summary: `Permanently deleted ${asset.title || "media asset"}`,
+      metadata: { publicId: asset.publicId || "", url: asset.url || "" },
+    });
+  }, [isAdmin, user]);
+
   return {
     mediaAssets,
     activeMediaAssets,
@@ -115,5 +129,6 @@ export const useMediaLibrary = (user, isAdmin) => {
     updateMediaAsset,
     softDeleteMediaAsset,
     restoreMediaAsset,
+    hardDeleteMediaAsset,
   };
 };

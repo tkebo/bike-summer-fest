@@ -53,6 +53,7 @@ const AdminPanel = () => {
           onUpload={(file) => file && cms.createMediaAsset(file)}
           onUpdate={cms.updateMediaAsset}
           onDelete={cms.softDeleteMediaAsset}
+          onHardDelete={cms.hardDeleteMediaAsset}
           onRestore={cms.restoreMediaAsset}
           onUse={(target, asset) => {
             if (target === "hero") cms.updateContent("config.heroImage", asset.url);
