@@ -13,7 +13,7 @@ export const defaultEditor = {
     // Nav
     navWidth: 0, navHeight: 0, navPaddingX: 0, navPaddingY: 0, navGap: 48, 
     navBorderRadius: 0, navFontSize: 16, navLetterSpacing: 0.1, navBgOpacity: 0, 
-    navHoverColor: "#67e8f9", navActiveColor: "#ffffff",
+    navHoverColor: "#67e8f9", navActiveColor: "#ffffff", navPosX: 0, navPosY: 0,
     langActiveColor: "#ffffff", langInactiveColor: "#94a3b8",
 
     // Language Switcher

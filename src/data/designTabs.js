@@ -12,6 +12,7 @@ export const designTabs = {
     ],
     nav: [
       ["navWidth", "Width", 0, 300], ["navHeight", "Height", 0, 100], ["navPaddingX", "Padding X", 0, 50], ["navPaddingY", "Padding Y", 0, 50],
+      ["navPosX", "Position X", -500, 500], ["navPosY", "Position Y", -200, 200],
       ["navGap", "Gap", 0, 100], ["navBorderRadius", "Radius", 0, 50], ["navFontSize", "Font Size", 10, 40], ["navLetterSpacing", "Letter Space", 0, 0.5, 0.01],
       ["navBgOpacity", "Bg Opacity", 0, 100], ["navHoverColor", "Hover Color", 0, 0, 0, "color"], ["navActiveColor", "Active Color", 0, 0, 0, "color"],
     ],

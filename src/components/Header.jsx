@@ -72,7 +72,14 @@ const Header = () => {
                       — SINCE 2026 —
                     </div>
 
-                    <nav className="hidden xl:flex flex-wrap text-base uppercase font-black" style={{ gap: `${ev("navGap")}px`, rowGap: "12px" }}>
+                    <nav
+                      className="hidden xl:flex flex-wrap text-base uppercase font-black"
+                      style={{
+                        gap: `${ev("navGap")}px`,
+                        rowGap: "12px",
+                        transform: `translate(${ev("navPosX")}px, ${ev("navPosY")}px)`,
+                      }}
+                    >
                       {navItems.map((item) => (
                         <Editable 
                           key={item.href} 
