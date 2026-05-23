@@ -471,7 +471,7 @@ export const defaultContent = {
       line4: "2026",
       image: "",
       imageAlt: "Bike Summer Fest center mark",
-      imageFit: "cover",
+      imageFit: "contain",
       imageOpacity: 45,
       backgroundEnabled: true,
     },

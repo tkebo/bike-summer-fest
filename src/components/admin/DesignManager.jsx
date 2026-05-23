@@ -56,6 +56,7 @@ const DesignManager = ({
       setCenterMarkUploadStatus("Uploading...");
       const asset = await createMediaAsset(file, "center-mark");
       updateContent("config.heroCenterMark.image", asset.url);
+      updateContent("config.heroCenterMark.imageFit", "contain");
       setCenterMarkUploadStatus("Uploaded and assigned");
     } catch (error) {
       setCenterMarkUploadStatus(error.message || "Upload failed");
@@ -173,7 +174,7 @@ const DesignManager = ({
                   <label key={key} className="grid gap-2">
                     <span className="text-sm text-white/70">{label}</span>
                     <input
-                      value={(cmsData.config.heroCenterMark || defaultContent.config.heroCenterMark)[key] || ""}
+                      value={(cmsData.config.heroCenterMark || defaultContent.config.heroCenterMark)[key] ?? ""}
                       onChange={(event) => updateContent(`config.heroCenterMark.${key}`, event.target.value)}
                       className="rounded-xl border border-white/10 bg-black/35 px-3 py-2 text-sm text-white outline-none focus:border-cyan-300"
                     />
@@ -201,7 +202,7 @@ const DesignManager = ({
                 <label className="grid gap-2">
                   <span className="text-sm text-white/70">Image fit</span>
                   <select
-                    value={(cmsData.config.heroCenterMark || defaultContent.config.heroCenterMark).imageFit || "cover"}
+                    value={(cmsData.config.heroCenterMark || defaultContent.config.heroCenterMark).imageFit || "contain"}
                     onChange={(event) => updateContent("config.heroCenterMark.imageFit", event.target.value)}
                     className="rounded-xl border border-white/10 bg-black/35 px-3 py-2 text-sm text-white outline-none focus:border-cyan-300"
                   >

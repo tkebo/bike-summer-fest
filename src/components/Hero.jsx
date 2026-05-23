@@ -13,6 +13,9 @@ const Hero = () => {
   const imageStyles = cmsData.config.imageStyles || {};
   const centerMark = cmsData.config.heroCenterMark || {};
   const centerMarkImage = centerMark.image ? getOptimizedImageUrl(centerMark.image, 700) : "";
+  const getCenterMarkText = (key, fallback) => (
+    Object.prototype.hasOwnProperty.call(centerMark, key) ? centerMark[key] : fallback
+  );
   const heroBackgrounds = cmsData.config.backgrounds?.hero || {};
   const generatedHeroDate = lang === "ka"
     ? cmsData.config.eventSettings?.dates?.displayKa
@@ -153,16 +156,16 @@ const Hero = () => {
                         alt=""
                         className="cinematic-center-ring-image"
                         style={{
-                          objectFit: centerMark.imageFit || "cover",
+                          objectFit: centerMark.imageFit || "contain",
                           opacity: (centerMark.imageOpacity ?? 45) / 100,
                           transform: `scale(${ev("heroCenterMarkImageScale")})`,
                         }}
                       />
                     )}
-                    <span>{centerMark.line1 || "BIKE"}</span>
-                    <strong>{centerMark.line2 || "SUMMER"}</strong>
-                    <span>{centerMark.line3 || "FEST"}</span>
-                    <em>{centerMark.line4 || "2026"}</em>
+                    <span>{getCenterMarkText("line1", "BIKE")}</span>
+                    <strong>{getCenterMarkText("line2", "SUMMER")}</strong>
+                    <span>{getCenterMarkText("line3", "FEST")}</span>
+                    <em>{getCenterMarkText("line4", "2026")}</em>
                   </div>
                 </motion.div>
               </AdminFrame>
