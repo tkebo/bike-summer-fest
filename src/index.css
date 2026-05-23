@@ -1242,6 +1242,22 @@ textarea:focus-visible {
   --section-drift-x: 18px;
 }
 
+.atmosphere-section[data-section-id="footer"] {
+  animation: none;
+  filter: none;
+  opacity: 1;
+  transform: none;
+}
+
+.atmosphere-section[data-section-id="footer"]::before {
+  display: none;
+}
+
+#contact .global-box {
+  backdrop-filter: none !important;
+  filter: none !important;
+}
+
 @keyframes festivalFogFlow {
   from { transform: translate3d(-4%, 2%, 0) scale(1.04); }
   to { transform: translate3d(5%, -2%, 0) scale(1.12); }

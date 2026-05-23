@@ -31,6 +31,7 @@ const SiteCanvas = ({ cmsData, editor, className = "" }) => {
           <div
             key={`${section.id}-${section.instanceId || index}`}
             className="atmosphere-section"
+            data-section-id={section.id}
             style={{
               "--section-index": index,
               "--section-transition-speed": transitionSpeed,
