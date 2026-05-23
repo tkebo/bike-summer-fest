@@ -68,7 +68,10 @@ const Header = () => {
                   </AdminFrame>
 
                   <div className="mt-4 flex items-center gap-10">
-                    <div className="text-orange-500 font-black tracking-[0.45em] text-sm md:text-lg whitespace-nowrap">
+                    <div
+                      className="text-orange-500 font-black tracking-[0.45em] text-sm md:text-lg whitespace-nowrap"
+                      style={{ transform: `translate(${ev("logoSincePosX")}px, ${ev("logoSincePosY")}px)` }}
+                    >
                       — SINCE 2026 —
                     </div>
 

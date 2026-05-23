@@ -7,6 +7,7 @@ export const defaultEditor = {
     // Logo
     logoFontSize: 86, logoLetterSpacing: 0.22, logoLineHeight: 1, 
     logoPosX: 0, logoPosY: 0, logoSummerColor: "#67e8f9", logoSummerGlow: 28,
+    logoSincePosX: 0, logoSincePosY: 0,
     // (Legacy support)
     logoSize: 86, logoSpacing: 0.22,
     

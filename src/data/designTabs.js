@@ -8,6 +8,7 @@ export const designTabs = {
     logo: [
       ["logoFontSize", "Font Size", 20, 200], ["logoLetterSpacing", "Letter Space", 0, 1, 0.01], ["logoLineHeight", "Line Height", 0.5, 3, 0.05],
       ["logoPosX", "Position X", -200, 200], ["logoPosY", "Position Y", -200, 200],
+      ["logoSincePosX", "Since Text X", -500, 500], ["logoSincePosY", "Since Text Y", -200, 200],
       ["logoSummerColor", "Summer Color", 0, 0, 0, "color"], ["logoSummerGlow", "Summer Glow", 0, 100],
     ],
     nav: [
