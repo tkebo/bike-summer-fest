@@ -16,7 +16,7 @@ const groups = [
   { key: "sponsors", title: "Sponsors", fields: ["sponsorsLabel", "sponsorsTitle1", "sponsorsTitle2", "sponsorsText", "sponsorshipOffer", "sponsorMarqueeLabel", "sponsorMarqueeTitle"], arrays: ["sponsorCards", "sponsorMarqueeItems"] },
   { key: "social", title: "Social", fields: ["socialLabel", "socialTitle", "socialText", "socialButton"], arrays: ["socialCards"] },
   { key: "faq", title: "FAQ", fields: ["faqLabel", "faqTitle", "locationTitle", "locationText", "openMap"], arrays: ["faqItems"] },
-  { key: "gallery", title: "Gallery", fields: ["galleryLabel", "galleryTitle"] },
+  { key: "gallery", title: "Gallery", fields: ["galleryLabel", "galleryTitle", "galleryOpenButton"] },
   { key: "newsletter", title: "Newsletter", fields: ["newsletterLabel", "newsletterTitle1", "newsletterTitle2", "newsletterText", "newsletterInput", "newsletterBtn"] },
   { key: "footer", title: "Footer", fields: ["footerLabel", "footerTitle", "footerText", "contact"] },
   { key: "form", title: "Contact form labels", objectFields: ["form"] },

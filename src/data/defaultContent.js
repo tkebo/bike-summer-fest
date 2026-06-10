@@ -128,6 +128,7 @@ export const defaultContent = {
 
     galleryLabel: "გალერეა",
     galleryTitle: "იგრძენი ენერგია",
+    galleryOpenButton: "გალერიის გახსნა",
 
     footerLabel: "კონტაქტი",
     footerTitle: "დაგვიკავშირდი",
@@ -312,6 +313,7 @@ export const defaultContent = {
 
     galleryLabel: "Gallery",
     galleryTitle: "Feel The Energy",
+    galleryOpenButton: "Open Gallery",
 
     footerLabel: "Contact",
     footerTitle: "Get In Touch",
@@ -416,6 +418,7 @@ export const defaultContent = {
     },
     heroImage: "",
     galleryImages: [],
+    externalGalleryUrl: "",
     sponsorLogos: [],
     introImage: "",
     introSettings: {
@@ -445,6 +448,8 @@ export const defaultContent = {
     },
     imageStyles: {
       galleryHeight: 384,
+      galleryGridLimit: 6,
+      galleryGridGap: 16,
       galleryFit: "cover",
       galleryPositionX: 50,
       galleryPositionY: 50,
@@ -539,6 +544,8 @@ export const defaultContent = {
         featured: true,
         showInGrid: true,
         showInMarquee: true,
+        logoMaxWidth: 0,
+        logoMaxHeight: 0,
         ka: { description: "ენერგეტიკული პარტნიორი." },
         en: { description: "Energy partner." },
       },
@@ -553,6 +560,8 @@ export const defaultContent = {
         featured: true,
         showInGrid: true,
         showInMarquee: true,
+        logoMaxWidth: 0,
+        logoMaxHeight: 0,
         ka: { description: "მოტო პარტნიორი." },
         en: { description: "Moto partner." },
       },
@@ -567,6 +576,8 @@ export const defaultContent = {
         featured: false,
         showInGrid: true,
         showInMarquee: true,
+        logoMaxWidth: 0,
+        logoMaxHeight: 0,
         ka: { description: "ენერგეტიკული სასმელების პარტნიორი." },
         en: { description: "Energy drink partner." },
       },

@@ -16,6 +16,7 @@ const categories = [
   ["buttons", "Buttons"],
   ["globalBox", "Cards / Boxes"],
   ["sections", "Sections"],
+  ["gallery", "Gallery"],
   ["sponsors", "Sponsors"],
   ["backgrounds", "Backgrounds"],
   ["atmosphere", "Atmosphere"],
@@ -136,6 +137,23 @@ const DesignManager = ({
               </div>
             </div>
           )}
+          {activeCategory === "gallery" && (
+            <div className="mt-6 rounded-2xl border border-white/10 bg-black/20 p-4">
+              <div>
+                <h4 className="font-black">External Gallery</h4>
+                <p className="mt-1 text-xs text-white/45">Paste a shared Google Photos album URL. The public gallery opens it in a new tab.</p>
+              </div>
+              <label className="mt-4 grid gap-2">
+                <span className="text-sm text-white/70">Google Photos / external gallery URL</span>
+                <input
+                  value={cmsData.config.externalGalleryUrl || ""}
+                  onChange={(event) => updateContent("config.externalGalleryUrl", event.target.value)}
+                  placeholder="https://photos.app.goo.gl/..."
+                  className="rounded-xl border border-white/10 bg-black/35 px-3 py-2 text-sm text-white outline-none focus:border-cyan-300"
+                />
+              </label>
+            </div>
+          )}
           {activeCategory === "hero" && (
             <div className="mt-6 rounded-2xl border border-white/10 bg-black/20 p-4">
               <div className="flex flex-wrap items-center justify-between gap-3">
@@ -236,6 +254,8 @@ const DesignManager = ({
         <div className="grid gap-5 md:grid-cols-2">
           {[
             ["galleryHeight", "Gallery image height", 120, 900],
+            ["galleryGridLimit", "Gallery visible items", 1, 24],
+            ["galleryGridGap", "Gallery grid gap", 0, 64],
             ["zonesMobileHeight", "Zones image mobile height", 120, 900],
             ["zonesDesktopHeight", "Zones image desktop height", 180, 1200],
             ["faqHeight", "FAQ image height", 120, 900],

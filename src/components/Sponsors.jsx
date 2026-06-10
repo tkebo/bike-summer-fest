@@ -22,21 +22,39 @@ const Sponsors = () => {
     .map((key) => socialLinks[key])
     .find((url) => isSafeHttpUrl(url));
 
-  const sponsorLogoStyle = sponsorLogoCleanMode
-    ? {
-      width: "auto",
-      height: "auto",
-      maxHeight: `${imageStyles.sponsorLogoHeight || 64}px`,
-      maxWidth: `${imageStyles.sponsorLogoMaxWidth || 220}px`,
-      objectFit: "contain",
-      imageRendering: "auto",
+  const getSponsorLogoStyle = (sponsor = {}) => {
+    const maxHeight = sponsor.logoMaxHeight || imageStyles.sponsorLogoHeight || 64;
+    const maxWidth = sponsor.logoMaxWidth || imageStyles.sponsorLogoMaxWidth || 220;
+
+    return sponsorLogoCleanMode
+      ? {
+        width: "auto",
+        height: "auto",
+        maxHeight: `${maxHeight}px`,
+        maxWidth: `min(${maxWidth}px, 100%)`,
+        objectFit: "contain",
+        imageRendering: "auto",
+      }
+      : {
+        width: "100%",
+        height: `${maxHeight}px`,
+        maxWidth: `min(${maxWidth}px, 100%)`,
+        objectFit: "contain",
+      };
+  };
+  const getSponsorCardStyle = (sponsor = {}, variant = "grid") => {
+    const padding = sponsorLogoCleanMode
+      ? `clamp(8px, 2.2vw, ${Math.max(imageStyles.sponsorLogoPadding || 20, 8)}px)`
+      : `${imageStyles.sponsorLogoPadding || 20}px`;
+    const cardStyle = { padding };
+    const logoMaxWidth = Number(sponsor.logoMaxWidth) || 0;
+
+    if (variant === "marquee" && logoMaxWidth > 0) {
+      cardStyle.minWidth = `min(${Math.min(Math.max(logoMaxWidth + 48, 240), 680)}px, 72vw)`;
     }
-    : {
-      width: "100%",
-      height: `${imageStyles.sponsorLogoHeight || 64}px`,
-      maxWidth: `${imageStyles.sponsorLogoMaxWidth || 220}px`,
-      objectFit: "contain",
-    };
+
+    return cardStyle;
+  };
   const sponsorCardStyle = {
     padding: sponsorLogoCleanMode
       ? `clamp(8px, 2.2vw, ${Math.max(imageStyles.sponsorLogoPadding || 20, 8)}px)`
@@ -61,7 +79,7 @@ const Sponsors = () => {
           loading="lazy"
           decoding="async"
           className={imageClassName}
-          style={sponsorLogoStyle}
+          style={getSponsorLogoStyle(sponsor)}
         />
       )
       : sponsor.name;
@@ -96,7 +114,7 @@ const Sponsors = () => {
                   <div
                     key={sponsor.id}
                     className={sponsorCardClassName}
-                    style={sponsorCardStyle}
+                    style={getSponsorCardStyle(sponsor)}
                   >
                     {renderSponsorContent(sponsor)}
                   </div>
@@ -130,7 +148,7 @@ const Sponsors = () => {
                   <div
                     key={`${sponsor.id}-${index}`}
                     className={sponsorMarqueeCardClassName}
-                    style={sponsorCardStyle}
+                    style={getSponsorCardStyle(sponsor, "marquee")}
                   >
                     {renderSponsorContent(sponsor)}
                   </div>
@@ -150,7 +168,7 @@ const Sponsors = () => {
                         loading="lazy"
                         decoding="async"
                         className="sponsor-logo-image max-w-full object-contain"
-                        style={sponsorLogoStyle}
+                        style={getSponsorLogoStyle()}
                       />
                     ) : item}
                   </div>

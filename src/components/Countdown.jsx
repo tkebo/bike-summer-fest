@@ -6,6 +6,15 @@ const Countdown = () => {
   const { ev, timeLeft, countdownLabels, countdownFinished, eventSettings, lang, introArrivalActive } = useCMS();
   if (eventSettings.countdown.enabled === false) return null;
   const finishedMessage = lang === "ka" ? eventSettings.countdown.finishedMessageKa : eventSettings.countdown.finishedMessageEn;
+  const shortLabels = lang === "ka"
+    ? { days: "დღე", hours: "საათი", minutes: "წუთი", seconds: "წამი" }
+    : { days: "Days", hours: "Hrs", minutes: "Min", seconds: "Sec" };
+  const countdownItems = [
+    { value: timeLeft.days, label: countdownLabels.days, shortLabel: shortLabels.days },
+    { value: timeLeft.hours, label: countdownLabels.hours, shortLabel: shortLabels.hours },
+    { value: timeLeft.minutes, label: countdownLabels.minutes, shortLabel: shortLabels.minutes },
+    { value: timeLeft.seconds, label: countdownLabels.seconds, shortLabel: shortLabels.seconds },
+  ];
   return (
 <>
               {/* COUNTDOWN */}
@@ -33,12 +42,7 @@ const Countdown = () => {
                   <div className="px-6 py-4 text-center font-black text-cyan-300">{finishedMessage}</div>
                 ) : (
                 <div className="cinematic-countdown-grid flex justify-center" style={{ gap: `${ev("countdownGap")}px` }}>
-                  {[
-                    { value: timeLeft.days, label: countdownLabels.days },
-                    { value: timeLeft.hours, label: countdownLabels.hours },
-                    { value: timeLeft.minutes, label: countdownLabels.minutes },
-                    { value: timeLeft.seconds, label: countdownLabels.seconds }
-                  ].map((item) => (
+                  {countdownItems.map((item) => (
                     <div 
                       key={item.label} 
                       className="cinematic-countdown-cell text-center"
@@ -65,7 +69,8 @@ const Countdown = () => {
                           letterSpacing: `${ev("countdownLabelLetterSpacing")}em`,
                         }}
                       >
-                        {item.label}
+                        <span className="countdown-label-full">{item.label}</span>
+                        <span className="countdown-label-short">{item.shortLabel}</span>
                       </div>
                     </div>
                   ))}

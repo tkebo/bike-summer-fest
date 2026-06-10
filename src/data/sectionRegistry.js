@@ -1,13 +1,16 @@
+import { lazy } from "react";
 import Hero from "../components/Hero";
-import About from "../components/About";
-import Zones from "../components/Zones";
-import Schedule from "../components/Schedule";
-import Tickets from "../components/Tickets";
-import Sponsors from "../components/Sponsors";
-import FAQ from "../components/FAQ";
-import Gallery from "../components/Gallery";
-import Newsletter from "../components/Newsletter";
-import Footer from "../components/Footer";
+
+const About = lazy(() => import("../components/About"));
+const Zones = lazy(() => import("../components/Zones"));
+const Schedule = lazy(() => import("../components/Schedule"));
+const Tickets = lazy(() => import("../components/Tickets"));
+const Sponsors = lazy(() => import("../components/Sponsors"));
+const FAQ = lazy(() => import("../components/FAQ"));
+const Gallery = lazy(() => import("../components/Gallery"));
+const Newsletter = lazy(() => import("../components/Newsletter"));
+const Footer = lazy(() => import("../components/Footer"));
+const CustomSection = lazy(() => import("../components/CustomSection"));
 
 export const sectionRegistry = {
   hero: { label: "Hero", component: Hero, renderKey: "hero" },
@@ -24,12 +27,15 @@ export const sectionRegistry = {
   gallery: { label: "Gallery", component: Gallery, renderKey: "gallery" },
   newsletter: { label: "Newsletter", component: Newsletter, renderKey: "newsletter" },
   footer: { label: "Footer", component: Footer, renderKey: "footer" },
+  custom: { label: "Custom Section", component: CustomSection, renderKey: "custom" },
   "intro-portal": { label: "Intro Portal", component: null, renderKey: "intro-portal" },
 };
 
 export const allowedSectionIds = Object.keys(sectionRegistry);
 
-export const createDefaultSections = () => allowedSectionIds.map((id, index) => ({
+const defaultSectionIds = allowedSectionIds.filter((id) => id !== "custom");
+
+export const createDefaultSections = () => defaultSectionIds.map((id, index) => ({
   id,
   label: sectionRegistry[id].label,
   visible: true,
@@ -43,4 +49,17 @@ export const createDefaultSections = () => allowedSectionIds.map((id, index) => 
   maxWidth: 1280,
   gap: 24,
   radius: 32,
+  content: id === "custom" ? {
+    eyebrowKa: "ახალი სექცია",
+    eyebrowEn: "New Section",
+    titleKa: "სათაური",
+    titleEn: "Section Title",
+    textKa: "დაამატე ტექსტი ამ სექციისთვის.",
+    textEn: "Add section text here.",
+    image: "",
+    mediaType: "image",
+    buttonTextKa: "",
+    buttonTextEn: "",
+    buttonUrl: "",
+  } : undefined,
 }));

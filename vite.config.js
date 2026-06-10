@@ -20,10 +20,6 @@ export default defineConfig({
           if (id.includes("/src/components/VisualEditor")) return "editor";
           if (id.includes("/src/components/ProtectedAdminRoute")) return "admin-core";
           if (id.includes("/src/components/intro/")) return "intro";
-          if (
-            (id.includes("/src/components/") && !id.includes("/src/components/admin/")) ||
-            id.includes("/src/data/sectionRegistry")
-          ) return "public-site";
         },
       },
     },

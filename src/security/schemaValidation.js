@@ -46,6 +46,23 @@ const sanitizePhone = (value) => sanitizeDeep(value || "").replace(/[^\d+()\-\s]
 
 const isPlainObject = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
 
+const sanitizeSectionContent = (content) => {
+  if (!isPlainObject(content)) return undefined;
+  return {
+    eyebrowKa: sanitizeDeep(content.eyebrowKa || ""),
+    eyebrowEn: sanitizeDeep(content.eyebrowEn || ""),
+    titleKa: sanitizeDeep(content.titleKa || ""),
+    titleEn: sanitizeDeep(content.titleEn || ""),
+    textKa: sanitizeDeep(content.textKa || ""),
+    textEn: sanitizeDeep(content.textEn || ""),
+    image: sanitizeUrl(content.image || "", ""),
+    mediaType: content.mediaType === "video" ? "video" : "image",
+    buttonTextKa: sanitizeDeep(content.buttonTextKa || ""),
+    buttonTextEn: sanitizeDeep(content.buttonTextEn || ""),
+    buttonUrl: sanitizeHttpUrl(content.buttonUrl || "", ""),
+  };
+};
+
 const assertNoBlockedKeys = (value, path = "root") => {
   if (Array.isArray(value)) {
     value.forEach((item, index) => assertNoBlockedKeys(item, `${path}.${index}`));
@@ -101,6 +118,9 @@ const validateContentShape = (payload) => {
       .map((url) => sanitizeUrl(url, ""))
       .filter(Boolean);
   }
+  if (sanitized.config?.externalGalleryUrl) {
+    sanitized.config.externalGalleryUrl = sanitizeHttpUrl(sanitized.config.externalGalleryUrl, "");
+  }
   if (Array.isArray(sanitized.config?.sponsorLogos)) {
     sanitized.config.sponsorLogos = sanitized.config.sponsorLogos
       .map((url) => sanitizeUrl(url, ""))
@@ -147,6 +167,8 @@ const validateContentShape = (payload) => {
     const imageStyles = sanitized.config.imageStyles;
     sanitized.config.imageStyles = {
       galleryHeight: Math.min(Math.max(Number(imageStyles.galleryHeight) || 384, 120), 900),
+      galleryGridLimit: Math.min(Math.max(Number(imageStyles.galleryGridLimit) || 6, 1), 24),
+      galleryGridGap: Math.min(Math.max(Number(imageStyles.galleryGridGap) || 16, 0), 64),
       galleryFit: ["cover", "contain"].includes(imageStyles.galleryFit) ? imageStyles.galleryFit : "cover",
       galleryPositionX: Math.min(Math.max(Number(imageStyles.galleryPositionX) || 50, 0), 100),
       galleryPositionY: Math.min(Math.max(Number(imageStyles.galleryPositionY) || 50, 0), 100),
@@ -221,6 +243,8 @@ const validateContentShape = (payload) => {
         featured: sponsor.featured === true,
         showInGrid: sponsor.showInGrid !== false,
         showInMarquee: sponsor.showInMarquee !== false,
+        logoMaxWidth: Math.min(Math.max(Number(sponsor.logoMaxWidth) || 0, 0), 600),
+        logoMaxHeight: Math.min(Math.max(Number(sponsor.logoMaxHeight) || 0, 0), 260),
         ka: {
           description: sanitizeDeep(sponsor.ka?.description || ""),
         },
@@ -393,6 +417,7 @@ const validateContentShape = (payload) => {
         maxWidth: Number.isFinite(Number(section.maxWidth)) ? Number(section.maxWidth) : 1280,
         gap: Number.isFinite(Number(section.gap)) ? Number(section.gap) : 24,
         radius: Number.isFinite(Number(section.radius)) ? Number(section.radius) : 32,
+        content: section.id === "custom" ? sanitizeSectionContent(section.content) : undefined,
       }));
   }
 

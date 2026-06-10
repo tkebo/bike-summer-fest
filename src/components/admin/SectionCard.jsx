@@ -2,6 +2,8 @@ import { sectionRegistry } from "../../data/sectionRegistry";
 
 const layoutOptions = ["grid", "split", "centered", "full-width", "cards"];
 
+const patchContent = (section, onPatch, patch) => onPatch({ content: { ...(section.content || {}), ...patch } });
+
 const SectionCard = ({ section, index, total, onPatch, onMove, onDuplicate, onRemove, onReset, duplicate }) => (
   <article
     draggable
@@ -26,7 +28,9 @@ const SectionCard = ({ section, index, total, onPatch, onMove, onDuplicate, onRe
         <button disabled={index === 0} onClick={() => onMove(index, index - 1)} className="rounded-xl border border-white/15 px-3 py-2 text-xs font-black disabled:opacity-30">Up</button>
         <button disabled={index === total - 1} onClick={() => onMove(index, index + 1)} className="rounded-xl border border-white/15 px-3 py-2 text-xs font-black disabled:opacity-30">Down</button>
         <button onClick={onDuplicate} className="rounded-xl border border-white/15 px-3 py-2 text-xs font-black">Duplicate</button>
-        {duplicate && <button onClick={onRemove} className="rounded-xl border border-red-400/35 px-3 py-2 text-xs font-black text-red-200">Remove duplicate</button>}
+        <button onClick={onRemove} className={`rounded-xl border px-3 py-2 text-xs font-black ${duplicate ? "border-red-400/35 text-red-200" : "border-white/15 text-white/70"}`}>
+          {duplicate ? "Remove duplicate" : "Remove"}
+        </button>
         <button onClick={onReset} className="rounded-xl border border-orange-400/30 px-3 py-2 text-xs font-black text-orange-300">Reset</button>
       </div>
     </div>
@@ -66,6 +70,56 @@ const SectionCard = ({ section, index, total, onPatch, onMove, onDuplicate, onRe
         </label>
       ))}
     </div>
+    {section.id === "custom" && (
+      <div className="mt-5 rounded-2xl border border-cyan-300/15 bg-cyan-300/[0.04] p-4">
+        <div className="mb-4 text-xs font-black uppercase text-cyan-200">Custom content</div>
+        <div className="grid gap-3 md:grid-cols-2">
+          {[
+            ["eyebrowKa", "Eyebrow KA"],
+            ["eyebrowEn", "Eyebrow EN"],
+            ["titleKa", "Title KA"],
+            ["titleEn", "Title EN"],
+            ["buttonTextKa", "Button text KA"],
+            ["buttonTextEn", "Button text EN"],
+            ["buttonUrl", "Button URL"],
+            ["image", "Image / video URL"],
+          ].map(([key, label]) => (
+            <label key={key} className="block">
+              <span className="mb-2 block text-xs font-black uppercase text-white/45">{label}</span>
+              <input
+                value={section.content?.[key] || ""}
+                onChange={(event) => patchContent(section, onPatch, { [key]: event.target.value })}
+                className="w-full rounded-xl border border-white/10 bg-black/35 px-3 py-2 text-sm"
+              />
+            </label>
+          ))}
+          <label className="block">
+            <span className="mb-2 block text-xs font-black uppercase text-white/45">Media type</span>
+            <select
+              value={section.content?.mediaType || "image"}
+              onChange={(event) => patchContent(section, onPatch, { mediaType: event.target.value })}
+              className="w-full rounded-xl border border-white/10 bg-black/35 px-3 py-2 text-sm"
+            >
+              <option value="image">Image</option>
+              <option value="video">Video</option>
+            </select>
+          </label>
+          {[
+            ["textKa", "Text KA"],
+            ["textEn", "Text EN"],
+          ].map(([key, label]) => (
+            <label key={key} className="block md:col-span-2">
+              <span className="mb-2 block text-xs font-black uppercase text-white/45">{label}</span>
+              <textarea
+                value={section.content?.[key] || ""}
+                onChange={(event) => patchContent(section, onPatch, { [key]: event.target.value })}
+                className="min-h-28 w-full rounded-xl border border-white/10 bg-black/35 px-3 py-2 text-sm"
+              />
+            </label>
+          ))}
+        </div>
+      </div>
+    )}
     <div className="mt-4 text-xs text-white/40">Registry: {sectionRegistry[section.id]?.label || "Unknown ignored"}</div>
   </article>
 );

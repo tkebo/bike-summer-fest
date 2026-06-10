@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { allowedSectionIds, sectionRegistry } from "../data/sectionRegistry";
 
 const previewWidths = {
@@ -36,9 +37,13 @@ const SiteCanvas = ({ cmsData, editor, className = "" }) => {
               "--section-index": index,
               "--section-transition-speed": transitionSpeed,
               "--section-parallax": `${parallaxAmount}px`,
+              contentVisibility: index > 1 ? "auto" : "visible",
+              containIntrinsicSize: index > 1 ? "1px 900px" : undefined,
             }}
           >
-            <Section />
+            <Suspense fallback={<div className="min-h-40" aria-hidden="true" />}>
+              <Section section={section} />
+            </Suspense>
           </div>
         );
       })}

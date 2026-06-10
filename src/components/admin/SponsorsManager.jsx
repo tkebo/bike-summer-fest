@@ -17,6 +17,8 @@ const createSponsor = (index) => ({
   featured: false,
   showInGrid: true,
   showInMarquee: true,
+  logoMaxWidth: 0,
+  logoMaxHeight: 0,
   ka: { description: "" },
   en: { description: "" },
 });

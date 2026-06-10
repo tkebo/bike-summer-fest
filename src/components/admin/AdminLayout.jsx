@@ -32,6 +32,7 @@ const AdminLayout = () => {
   const cms = useCMS();
   const [activeModule, setActiveModule] = useState("dashboard");
   const [previewOpen, setPreviewOpen] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(true);
 
   const renderModule = () => {
     if (activeModule === "dashboard") return <AdminDashboard {...cms} />;
@@ -73,8 +74,26 @@ const AdminLayout = () => {
         previewOpen={previewOpen}
         onTogglePreview={() => setPreviewOpen((current) => !current)}
       />
+      <div className="lg:hidden border-b border-white/10 bg-black/30 px-4 py-3">
+        <button
+          type="button"
+          onClick={() => setSidebarCollapsed((current) => !current)}
+          className="admin-sidebar-toggle w-full rounded-xl border border-cyan-300/25 px-4 py-3 text-left text-sm font-black text-cyan-100"
+        >
+          {sidebarCollapsed ? "Show admin menu" : "Hide admin menu"}
+        </button>
+      </div>
       <div className="grid lg:grid-cols-[260px_1fr]">
-        <AdminSidebar activeModule={activeModule} onSelect={setActiveModule} canManageUsers={cms.canManageUsers} canReadAuditLogs={cms.canReadAuditLogs} />
+        <AdminSidebar
+          activeModule={activeModule}
+          onSelect={(module) => {
+            setActiveModule(module);
+            setSidebarCollapsed(true);
+          }}
+          canManageUsers={cms.canManageUsers}
+          canReadAuditLogs={cms.canReadAuditLogs}
+          collapsed={sidebarCollapsed}
+        />
         <main className="p-4 md:p-6">
           <div className={`mx-auto grid max-w-[1800px] gap-4 ${previewOpen ? "2xl:grid-cols-[minmax(520px,760px)_minmax(520px,1fr)]" : ""}`}>
             <Suspense fallback={<AdminModuleLoader label="Loading admin module..." />}>

@@ -23,6 +23,15 @@ const SponsorEditor = ({
   const localeContent = sponsor[language];
   const [websiteDraft, setWebsiteDraft] = useState(sponsor.website || "");
   const [websiteError, setWebsiteError] = useState("");
+  const logoMaxWidth = Number(sponsor.logoMaxWidth) || 0;
+  const logoMaxHeight = Number(sponsor.logoMaxHeight) || 0;
+  const previewLogoStyle = {
+    width: "auto",
+    height: "auto",
+    maxWidth: `${logoMaxWidth || 140}px`,
+    maxHeight: `${logoMaxHeight || 64}px`,
+    objectFit: "contain",
+  };
 
   const commitWebsite = () => {
     if (!websiteDraft) {
@@ -108,11 +117,59 @@ const SponsorEditor = ({
         />
       </div>
 
+      <div className="mt-4 rounded-2xl border border-white/10 bg-black/20 p-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <div className="text-xs font-black uppercase text-cyan-200">Logo size</div>
+            <p className="mt-1 text-xs text-white/45">0 uses the global sponsor logo size from Design.</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => onPatch({ logoMaxWidth: 0, logoMaxHeight: 0 })}
+            className="rounded-xl border border-white/15 px-3 py-2 text-xs"
+          >
+            Reset size
+          </button>
+        </div>
+        <div className="mt-4 grid gap-4 md:grid-cols-2">
+          <label className="block">
+            <div className="mb-2 flex items-center justify-between text-xs">
+              <span className="font-black uppercase text-white/70">Max width</span>
+              <span className="text-white/50">{logoMaxWidth ? `${logoMaxWidth}px` : "Global"}</span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="600"
+              step="10"
+              value={logoMaxWidth}
+              onChange={(event) => onPatch({ logoMaxWidth: Number(event.target.value) })}
+              className="w-full"
+            />
+          </label>
+          <label className="block">
+            <div className="mb-2 flex items-center justify-between text-xs">
+              <span className="font-black uppercase text-white/70">Max height</span>
+              <span className="text-white/50">{logoMaxHeight ? `${logoMaxHeight}px` : "Global"}</span>
+            </div>
+            <input
+              type="range"
+              min="0"
+              max="260"
+              step="4"
+              value={logoMaxHeight}
+              onChange={(event) => onPatch({ logoMaxHeight: Number(event.target.value) })}
+              className="w-full"
+            />
+          </label>
+        </div>
+      </div>
+
       <div className="mt-5 rounded-2xl border border-white/10 bg-black/20 p-4">
         <div className="text-xs font-black uppercase text-cyan-200">Live preview</div>
         <div className="mt-3 flex items-center gap-4">
-          <div className="flex h-16 w-24 items-center justify-center overflow-hidden rounded-xl border border-white/10 bg-white/[0.04]">
-            {sponsor.logo ? <img src={sponsor.logo} alt="" className="h-full w-full object-contain" /> : <span className="text-xs text-white/45">Text</span>}
+          <div className="flex min-h-20 min-w-32 max-w-full items-center justify-center overflow-visible rounded-xl border border-white/10 bg-white/[0.04] p-3">
+            {sponsor.logo ? <img src={sponsor.logo} alt="" style={previewLogoStyle} /> : <span className="text-xs text-white/45">Text</span>}
           </div>
           <div>
             <div className="font-black">{sponsor.name}</div>
