@@ -156,7 +156,7 @@ const Hero = () => {
                         alt=""
                         className="cinematic-center-ring-image"
                         style={{
-                          objectFit: centerMark.imageFit || "contain",
+                          objectFit: "contain",
                           opacity: (centerMark.imageOpacity ?? 45) / 100,
                           transform: `scale(${ev("heroCenterMarkImageScale")})`,
                         }}
