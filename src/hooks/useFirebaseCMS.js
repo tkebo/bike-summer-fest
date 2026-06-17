@@ -34,6 +34,11 @@ const INVITES_COLLECTION = () => collection(db, "pending_invites");
 const INVITE_REF = (email) => doc(db, "pending_invites", email.toLowerCase());
 const INVITABLE_ROLES = new Set(["admin", "editor", "viewer"]);
 const normalizeEmail = (email) => String(email || "").trim().toLowerCase();
+const getCloudErrorStatus = (error) => {
+  if (error?.code) return `Offline: ${error.code}`;
+  if (error?.message) return `Offline: ${error.message.slice(0, 80)}`;
+  return "Offline";
+};
 
 export async function loadPublishedConfig() {
   const snap = await getDoc(PUBLISHED_REF());
@@ -256,7 +261,7 @@ export const useFirebaseCMS = () => {
       return published;
     } catch (error) {
       console.error(error);
-      setCloudStatus("Offline");
+      setCloudStatus(getCloudErrorStatus(error));
       return null;
     }
   }, []);
@@ -279,8 +284,9 @@ export const useFirebaseCMS = () => {
       return true;
     } catch (error) {
       console.error(error);
-      setCloudStatus("Offline");
-      setCloudSaveStatus("Offline");
+      const status = getCloudErrorStatus(error);
+      setCloudStatus(status);
+      setCloudSaveStatus(status);
       return false;
     }
   }, [adminProfile, user]);
@@ -321,7 +327,7 @@ export const useFirebaseCMS = () => {
       return true;
     } catch (error) {
       console.error(error);
-      setCloudStatus("Offline");
+      setCloudStatus(getCloudErrorStatus(error));
       setPublishStatus("Publish failed");
       return false;
     }
