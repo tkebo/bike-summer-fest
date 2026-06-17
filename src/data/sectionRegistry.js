@@ -49,17 +49,4 @@ export const createDefaultSections = () => defaultSectionIds.map((id, index) => 
   maxWidth: 1280,
   gap: 24,
   radius: 32,
-  content: id === "custom" ? {
-    eyebrowKa: "ახალი სექცია",
-    eyebrowEn: "New Section",
-    titleKa: "სათაური",
-    titleEn: "Section Title",
-    textKa: "დაამატე ტექსტი ამ სექციისთვის.",
-    textEn: "Add section text here.",
-    image: "",
-    mediaType: "image",
-    buttonTextKa: "",
-    buttonTextEn: "",
-    buttonUrl: "",
-  } : undefined,
 }));

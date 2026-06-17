@@ -7,7 +7,7 @@ import {
 } from "firebase/auth";
 
 import {
-  getFirestore,
+  initializeFirestore,
 } from "firebase/firestore";
 
 const fallbackFirebaseConfig = {
@@ -38,6 +38,8 @@ export const auth = initializeAuth(app, {
 export const googleProvider =
   new GoogleAuthProvider();
 
-export const db = getFirestore(app);
+export const db = initializeFirestore(app, {
+  ignoreUndefinedProperties: true,
+});
 
 export default app;

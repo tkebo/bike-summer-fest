@@ -403,22 +403,28 @@ const validateContentShape = (payload) => {
   if (Array.isArray(sanitized.config?.sections)) {
     sanitized.config.sections = sanitized.config.sections
       .filter((section) => isPlainObject(section) && allowedSectionIds.includes(section.id))
-      .map((section, index) => ({
-        id: section.id,
-        label: sanitizeDeep(section.label || section.id),
-        visible: section.visible !== false,
-        order: Number.isFinite(Number(section.order)) ? Number(section.order) : index + 1,
-        anchor: sanitizeDeep(section.anchor || section.id),
-        layout: ["grid", "split", "centered", "full-width", "cards"].includes(section.layout) ? section.layout : "centered",
-        backgroundImage: sanitizeUrl(section.backgroundImage || "", ""),
-        overlayOpacity: Number.isFinite(Number(section.overlayOpacity)) ? Number(section.overlayOpacity) : 0,
-        paddingX: Number.isFinite(Number(section.paddingX)) ? Number(section.paddingX) : 48,
-        paddingY: Number.isFinite(Number(section.paddingY)) ? Number(section.paddingY) : 112,
-        maxWidth: Number.isFinite(Number(section.maxWidth)) ? Number(section.maxWidth) : 1280,
-        gap: Number.isFinite(Number(section.gap)) ? Number(section.gap) : 24,
-        radius: Number.isFinite(Number(section.radius)) ? Number(section.radius) : 32,
-        content: section.id === "custom" ? sanitizeSectionContent(section.content) : undefined,
-      }));
+      .map((section, index) => {
+        const nextSection = {
+          id: section.id,
+          label: sanitizeDeep(section.label || section.id),
+          visible: section.visible !== false,
+          order: Number.isFinite(Number(section.order)) ? Number(section.order) : index + 1,
+          anchor: sanitizeDeep(section.anchor || section.id),
+          layout: ["grid", "split", "centered", "full-width", "cards"].includes(section.layout) ? section.layout : "centered",
+          backgroundImage: sanitizeUrl(section.backgroundImage || "", ""),
+          overlayOpacity: Number.isFinite(Number(section.overlayOpacity)) ? Number(section.overlayOpacity) : 0,
+          paddingX: Number.isFinite(Number(section.paddingX)) ? Number(section.paddingX) : 48,
+          paddingY: Number.isFinite(Number(section.paddingY)) ? Number(section.paddingY) : 112,
+          maxWidth: Number.isFinite(Number(section.maxWidth)) ? Number(section.maxWidth) : 1280,
+          gap: Number.isFinite(Number(section.gap)) ? Number(section.gap) : 24,
+          radius: Number.isFinite(Number(section.radius)) ? Number(section.radius) : 32,
+        };
+        if (section.id === "custom") {
+          const content = sanitizeSectionContent(section.content);
+          if (content) nextSection.content = content;
+        }
+        return nextSection;
+      });
   }
 
   return sanitized;
