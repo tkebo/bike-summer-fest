@@ -7,7 +7,7 @@ const Countdown = () => {
   if (eventSettings.countdown.enabled === false) return null;
   const finishedMessage = lang === "ka" ? eventSettings.countdown.finishedMessageKa : eventSettings.countdown.finishedMessageEn;
   const shortLabels = lang === "ka"
-    ? { days: "დღე", hours: "საათი", minutes: "წუთი", seconds: "წამი" }
+    ? { days: "დღე", hours: "სთ", minutes: "წთ", seconds: "წმ" }
     : { days: "Days", hours: "Hrs", minutes: "Min", seconds: "Sec" };
   const countdownItems = [
     { value: timeLeft.days, label: countdownLabels.days, shortLabel: shortLabels.days },

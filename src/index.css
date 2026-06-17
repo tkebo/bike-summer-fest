@@ -774,6 +774,14 @@ textarea:focus-visible {
   animation: countdownTick 1s ease-in-out infinite;
 }
 
+.countdown-label-full {
+  display: inline;
+}
+
+.countdown-label-short {
+  display: none;
+}
+
 @keyframes cinematicHeroDrift {
   from { transform: scale(1.02) translate3d(-0.6%, -0.4%, 0); }
   to { transform: scale(1.08) translate3d(0.7%, 0.5%, 0); }
