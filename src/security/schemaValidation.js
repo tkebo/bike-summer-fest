@@ -43,6 +43,12 @@ const isValidDateString = (value) => typeof value === "string" && /^\d{4}-\d{2}-
 const isValidTimeString = (value) => typeof value === "string" && /^([01]\d|2[0-3]):[0-5]\d$/.test(value);
 const isValidEmail = (value) => typeof value === "string" && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 const sanitizePhone = (value) => sanitizeDeep(value || "").replace(/[^\d+()\-\s]/g, "");
+const sanitizeActionUrl = (value, fallback = "") => {
+  const clean = sanitizeDeep(value || "");
+  if (/^#[A-Za-z][\w-]*$/.test(clean)) return clean;
+  if (clean.startsWith("/")) return sanitizeUrl(clean, fallback);
+  return sanitizeHttpUrl(clean, fallback);
+};
 
 const isPlainObject = (value) => value !== null && typeof value === "object" && !Array.isArray(value);
 
@@ -110,6 +116,7 @@ const validateContentShape = (payload) => {
   if (sanitized.config?.heroImage) {
     sanitized.config.heroImage = sanitizeUrl(sanitized.config.heroImage, "");
   }
+  sanitized.config.ticketButtonLink = sanitizeActionUrl(sanitized.config?.ticketButtonLink || "#tickets", "#tickets");
   if (sanitized.config?.introImage) {
     sanitized.config.introImage = sanitizeUrl(sanitized.config.introImage, "");
   }
@@ -214,7 +221,7 @@ const validateContentShape = (payload) => {
         status: ["coming_soon", "available", "sold_out", "hidden"].includes(ticket.status) ? ticket.status : "coming_soon",
         price: sanitizeDeep(ticket.price || ""),
         currency: sanitizeDeep(ticket.currency || ""),
-        ctaLink: sanitizeUrl(ticket.ctaLink || "#contact", "#contact"),
+        ctaLink: sanitizeActionUrl(ticket.ctaLink || "#contact", "#contact"),
         ka: {
           name: sanitizeDeep(ticket.ka?.name || ""),
           desc: sanitizeDeep(ticket.ka?.desc || ""),

@@ -417,6 +417,7 @@ export const defaultContent = {
       },
     },
     heroImage: "",
+    ticketButtonLink: "#tickets",
     galleryImages: [],
     externalGalleryUrl: "",
     sponsorLogos: [],

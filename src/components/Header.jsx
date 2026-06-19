@@ -6,7 +6,8 @@ import Countdown from "./Countdown";
 import AdminFrame from "./AdminFrame";
 
 const Header = () => {
-  const { ev, lang, setLang, navItems, menuOpen, setMenuOpen, closeMenu, introArrivalActive } = useCMS();
+  const { cmsData, ev, lang, setLang, navItems, menuOpen, setMenuOpen, closeMenu, introArrivalActive } = useCMS();
+  const ticketButtonLink = cmsData.config.ticketButtonLink || "#tickets";
   const languageOptions = [
     ["ka", "KA"],
     ["en", "EN"],
@@ -143,7 +144,7 @@ const Header = () => {
                     path="nav.tickets" 
                     langContext={lang} 
                     as="a" 
-                    href="#tickets" 
+                    href={ticketButtonLink} 
                     className="font-black text-white transition hover:scale-105" 
                     style={{
                       width: ev("ticketBtnWidth") === 0 ? "auto" : `${ev("ticketBtnWidth")}px`,
@@ -184,7 +185,7 @@ const Header = () => {
                       {label}
                     </button>
                   ))}
-                  <Editable path="nav.tickets" langContext={lang} as="a" href="#tickets" onClick={closeMenu} className="col-span-2 flex min-h-11 items-center justify-center rounded-2xl bg-orange-500 px-4 py-3 text-sm font-black text-white" />
+                  <Editable path="nav.tickets" langContext={lang} as="a" href={ticketButtonLink} onClick={closeMenu} className="col-span-2 flex min-h-11 items-center justify-center rounded-2xl bg-orange-500 px-4 py-3 text-sm font-black text-white" />
                 </div>
                 <div className="grid gap-3">
                   {navItems.map((item) => (

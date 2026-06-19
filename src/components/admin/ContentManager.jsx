@@ -6,7 +6,7 @@ import ArrayEditor from "./ArrayEditor";
 const groups = [
   { key: "logo", title: "Logo", objectFields: ["logo"] },
   { key: "navigation", title: "Navigation", objectFields: ["nav"] },
-  { key: "hero", title: "Hero", fields: ["heroDate", "heroSubtitle", "heroExploreBtn", "heroGetTicketsBtn", "heroText"], arrays: ["heroTitleLines"] },
+  { key: "hero", title: "Hero", fields: ["heroDate", "heroSubtitle", "heroExploreBtn", "heroGetTicketsBtn", "heroText"], configFields: ["ticketButtonLink"], arrays: ["heroTitleLines"] },
   { key: "countdown", title: "Countdown labels", objectFields: ["countdownLabels"] },
   { key: "highlights", title: "Highlights", fields: ["highlightsLabel", "highlightsTitle"], arrays: ["highlights"] },
   { key: "about", title: "About", fields: ["aboutLabel", "slogan1", "slogan2", "slogan3", "aboutText"] },
@@ -62,6 +62,7 @@ const multilineFields = new Set([
 
 const flattenGroupKeys = (group) => [
   ...(group.fields || []),
+  ...(group.configFields || []),
   ...(group.arrays || []),
   ...(group.objectFields || []),
 ];
@@ -112,6 +113,13 @@ const ContentManager = ({ cmsData, updateContent, editorSaveStatus }) => {
                 <div className="grid gap-3 md:grid-cols-2">
                   {group.fields.map((field) => (
                     <ContentField key={field} label={field} value={cmsData[language][field]} multiline={multilineFields.has(field)} onChange={(value) => updateContent(`${language}.${field}`, value)} />
+                  ))}
+                </div>
+              )}
+              {!!group.configFields?.length && (
+                <div className="grid gap-3 md:grid-cols-2">
+                  {group.configFields.map((field) => (
+                    <ContentField key={field} label={`config.${field}`} value={cmsData.config[field]} onChange={(value) => updateContent(`config.${field}`, value)} />
                   ))}
                 </div>
               )}
